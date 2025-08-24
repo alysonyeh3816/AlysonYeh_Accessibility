@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-hant-TW">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>輪播-純圖片：使用左右按鈕、指示圈切換輪播圖</title>
+  <style>
+      :root {--blue: #005fcc;}  
+      *{box-sizing:border-box;margin:0;padding:0}
+      :focus-visible{outline:3px solid var(--blue);outline-offset:2px;box-shadow:0 0 0 3px rgb(253, 253, 253);border-radius:4px}
+      .visually-hidden{clip:rect(1px,1px,1px,1px);clip-path:inset(50%);height:1px;width:1px;margin:-1px;overflow:hidden;padding:0;position:absolute}
+
+      body{font-family:sans-serif;padding:20px}
+      .skip-link{position:absolute;left:12px;top:0;transform:translateY(-150%);padding:12px 16px;color: rgb(37, 37, 37); background:#fff;border:2px solid var(--blue);text-decoration:none;font-weight:600;z-index:1000}
+      .skip-link:focus,.skip-link:focus-visible{transform:translateY(12px);outline:0}
+      h1{text-align:center; margin-top: 20px;}
+
+      .carousel_section{max-width:1200px;margin:40px auto;aspect-ratio:16/5;background:#cecece;position:relative}
+      
+      .shell{position:absolute;top:0;left:0;width:100%;height:100%}
+      #togglePlay{margin:10px auto;display:block;background:var(--blue);color:#fff;border:none;padding:6px 12px;font-size:14px;border-radius:4px;cursor:pointer}
+
+      .carousel_region{width:100%;aspect-ratio:16/5;background:#ebebeb;position:relative;overflow:hidden;outline:0}
+      .carouselBtn_outer{position:absolute;top:5%;left:50%;transform:translate(-50%,0);z-index:10000}
+      .carousel{width:100%;height:100%}
+      
+      .pic_big{position:relative;height:100%}
+      .pic_big li{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;z-index:0;transition:opacity .5s ease}
+      .pic_big li[id=now]{opacity:1;z-index:1}
+      .pic_big li img{width:100%;height:auto;aspect-ratio:16/5;object-fit:cover}
+      
+      .btn_next,.btn_pre{position:absolute;top:50%;transform:translateY(-50%);width:60px;height:60px;background:rgba(0,0,0,.5);border:none;z-index:10;cursor:pointer}
+      .btn_next:hover,.btn_pre:hover{background:rgba(46, 87, 223, 0.5);border:none;z-index:10;cursor:pointer}
+      .btn_pre{left:10px}
+      .btn_next{right:10px}
+      .btn_next::before,.btn_pre::before{content:"";display:inline-block;width:0;height:0;border-style:solid}
+      .btn_pre::before{border-width:15px 20px 15px 0;border-color:transparent #fff transparent transparent}
+      .btn_next::before{border-width:15px 0 15px 20px;border-color:transparent transparent transparent #fff}
+      
+      .carousel_1_tab_box{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:1000}
+      .carousel_1_tab{display:flex;justify-content:center;gap:10px}
+      .carousel_1_tab button{background:0 0;border:none;padding:0;width:20px;height:20px;cursor:pointer}
+      .carousel_1_tab svg circle{fill:#c4c4c4}
+      .carousel_1_tab button.active svg circle{fill:var(--blue)}
+  </style>
+</head>
+
+<body>
+
+  <body>
+      <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+  <main>
+    <h1 id="mainh1">輪播-純圖片：使用左右按鈕、指示圈切換輪播圖</h1>
+  <div class="carousel_section">
+    <div class="shell" tabindex="0" aria-label="第一種輪播圖區塊" role="region"></div>
+
+    <div class="carouselBtn_outer">
+      <button id="togglePlay" aria-pressed="true" aria-label="啟動輪播">播放中</button>
+    </div>
+
+    <div id="carousel_1kind" class="carousel_region">
+      <div class="carousel">
+
+        <button class="btn_pre" aria-label="前一張"></button>
+        <button class="btn_next" aria-label="下一張"></button>
+        
+        <ul class="pic_big" aria-live="off">
+          <li><img aria-hidden="false" src="../images/carousel_1.jpg" alt="圖片1 雲層內的光" /></li>
+          <li><img aria-hidden="true" src="../images/carousel_2.jpg" alt="圖片2 秋天高山雲海" /></li>
+          <li><img aria-hidden="true" src="../images/carousel_3.jpg" alt="圖片3 櫻花近拍" /></li>
+        </ul>
+
+        <div class="carousel_1_tab_box">
+          <div class="carousel_1_tab">
+            <button aria-label="項目一"><svg>
+                <circle cx="9" cy="9" r="8" stroke="#555" stroke-width="2" />
+              </svg></button>
+            <button aria-label="項目二"><svg>
+                <circle cx="9" cy="9" r="8" stroke="#555" stroke-width="2" />
+              </svg></button>
+            <button aria-label="項目三"><svg>
+                <circle cx="9" cy="9" r="8" stroke="#555" stroke-width="2" />
+              </svg></button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="live-region" class="visually-hidden" role="status" aria-live="off"></div>
+</main>  
+  
+  <script>
+      var skip = document.querySelector('.skip-link');
+      if (skip) {
+        skip.addEventListener('click', function () {
+          var target = document.getElementById('mainh1');
+          if (!target) return;
+          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: false });
+        });
+      }
+
+    const carousel = document.getElementById('carousel_1kind');
+    const liveRegionContainer = document.getElementById('live-region');
+    const slides = carousel.querySelectorAll('.pic_big li');
+    const prevBtn = carousel.querySelector('.btn_pre');
+    const nextBtn = carousel.querySelector('.btn_next');
+    const dots = carousel.querySelectorAll('.carousel_1_tab button');
+    const toggleBtn = document.getElementById('togglePlay');
+
+    let currentIndex = 0; 
+    let interval = null;  
+    let isPlaying = true; 
+    let userIntendedToPlay = true; 
+
+    function goToSlide(index, isUserAction = false) {
+      slides.forEach((slide, i) => {
+        slide.setAttribute('id', i === index ? 'now' : '');
+        slide.querySelector('img').setAttribute('aria-hidden', i === index ? 'false' : 'true');
+
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+        dot.setAttribute('aria-pressed', i === index ? 'true' : 'false');
+      });
+
+      currentIndex = index;
+
+      if (isUserAction) {
+        liveRegionContainer.setAttribute('aria-live', 'polite');
+        const alt = slides[index].querySelector('img').alt;
+        liveRegionContainer.textContent = `第 ${index + 1} 張，共 ${slides.length} 張：${alt}`;
+      }
+    }
+
+    function nextSlide() {
+      goToSlide((currentIndex + 1) % slides.length);
+    }
+
+    function prevSlide() {
+      goToSlide((currentIndex - 1 + slides.length) % slides.length);
+    }
+
+    function startAutoPlay() {
+      if (interval) return;
+      interval = setInterval(() => nextSlide(), 3600);
+      toggleBtn.textContent = '播放中';
+      toggleBtn.setAttribute('aria-pressed', 'true');
+      isPlaying = true;
+    }
+
+    function stopAutoPlay() {
+      clearInterval(interval);
+      interval = null;
+      toggleBtn.textContent = '暫停中';
+      toggleBtn.setAttribute('aria-pressed', 'false');
+      isPlaying = false;
+    }
+
+    function resetAutoPlay() {
+      if (isPlaying) {
+        clearInterval(interval);
+        interval = setInterval(() => nextSlide(), 3600);
+      }
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      userIntendedToPlay = toggleBtn.getAttribute('aria-pressed') !== 'true';
+      userIntendedToPlay ? startAutoPlay() : stopAutoPlay();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      goToSlide(currentIndex, true);
+      resetAutoPlay();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      goToSlide(currentIndex, true);
+      resetAutoPlay();
+    });
+
+    dots.forEach((dot, i) => {
+      dot.setAttribute('aria-pressed', 'false');
+      dot.addEventListener('click', () => {
+        goToSlide(i, true);
+        resetAutoPlay();
+      });
+    });
+
+    carousel.addEventListener('focusin', () => {
+      stopAutoPlay();
+    });
+
+    carousel.addEventListener('focusout', () => {
+      setTimeout(() => {
+        if (!carousel.contains(document.activeElement)) {
+          if (userIntendedToPlay) {
+            startAutoPlay();
+          } else {
+            stopAutoPlay();
+          }
+          liveRegionContainer.setAttribute('aria-live', 'off');
+          liveRegionContainer.textContent = '';
+        }
+      }, 0);
+    });
+
+    goToSlide(0);
+    startAutoPlay();
+  </script>
+  </body>
+</html>

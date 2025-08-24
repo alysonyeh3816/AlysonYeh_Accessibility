@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>輪播-純圖片：Tab鍵遍歷各輪播圖</title>
+  <style>
+    :root{
+      --focus: #005fcc;
+      --radius: 8px;
+      --caption-bg: #00000066;
+      --caption-fg: #fff;
+      --fade-dur: 600ms;
+      --btn-bg: #00000055;
+      --btn-fg: #fff;
+      --dot-size: 12px;
+      --dot-gap: 10px;
+      --indicator-bg: #ffffffcc;
+      --indicator-fg: #0f172a;
+    }
+    * { box-sizing: border-box; }
+    *:focus-visible{outline: 3px solid #fff; outline-offset: -3px; box-shadow: 0 0 0 4px var(--focus);}
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", sans-serif; background:#f7f7f8; }
+    .wrap { max-width: 1200px; margin: 32px auto; padding: 0 16px; }
+
+    .skip-link{position:absolute;left:12px;top:0;transform:translateY(-150%);padding:12px 16px;background:#fff;border:2px solid var(--brand);border-radius:var(--radius);text-decoration:none;color:var(--ink);font-weight:600;z-index:1000}
+    .skip-link:focus,.skip-link:focus-visible{transform:translateY(12px);}
+    h1{ text-align: center; }
+
+    .carousel { position: relative; aspect-ratio: 16 / 6; background: #ddd; border-radius: var(--radius); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+    .viewport { width: 100%; height: 100%; position: relative; isolation: isolate; }
+
+    .play-btn { position: absolute; top: 10px; right: 2px; pointer-events: auto; z-index: 1;}
+
+    .slide { position: absolute; inset: 0; opacity: 0; transition: opacity var(--fade-dur) ease; margin-left: 44px; margin-right: 44px; }
+    .slide.is-active { opacity: 1; }
+
+    .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .caption { position: absolute; left: 16px; right: 16px; bottom: 16px; background: var(--caption-bg); color: var(--caption-fg); padding: 14px 16px; border-radius: calc(var(--radius) - 2px); transform: translateY(12px); opacity: 0; transition: transform var(--fade-dur) ease, opacity var(--fade-dur) ease; }
+    .slide.is-active .caption { transform: translateY(0); opacity: 1; }
+
+    .slide:focus-visible, .slide:focus-within { opacity: 1; z-index: 2; }
+    /* .slide:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; } */
+
+    .controls { position: absolute; inset: 0; pointer-events: none; }
+    .edge-btns{ position: absolute; top: 50%; left: 0; right: 0; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 6px; gap: 8px; }
+    .ctrl-btn{ pointer-events: auto; background: var(--btn-bg); color: var(--btn-fg); border: 0; padding: 10px 12px; border-radius: var(--radius); font-size: 14px; line-height: 1; cursor: pointer; }
+    .ctrl-btn:hover{ background: #2e1010; }
+    
+
+    .indicators{ position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: var(--dot-gap); background: var(--indicator-bg); color: var(--indicator-fg); border-radius: 999px; padding: 6px 10px; pointer-events: auto; }
+    .dot{ width: var(--dot-size); height: var(--dot-size); border-radius: 999px; border: 0; cursor: pointer; background:#94a3b8; }
+    .dot[aria-current="true"]{ background:#0ea5e9; }
+
+    @media (prefers-reduced-motion: reduce){
+      .slide, .caption { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+    <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+  <main class="wrap">
+    <h1 id="mainh1">輪播-純圖片：Tab鍵遍歷各輪播圖</h1>
+
+    <section id="heroCarousel" class="carousel" aria-label="鍵盤焦點輪播" role="region" data-autoplay="true" data-interval="3600">
+        <div class="play-btn">
+          <button type="button" id="togglePlay" class="ctrl-btn" aria-label="開啟輪播" >⏸</button>
+        </div>
+      <div class="viewport" aria-live="off">
+        <figure class="slide is-active" tabindex="0" role="group" aria-label="四之一">
+          <img src="../images/dense_forest.jpg" alt="高大樹木與濃密綠葉的樹林" />
+          <figcaption class="caption"><h3>鄉間樹林的生命力</h3><p>高大樹木盤根錯節，展現自然力量。</p></figcaption>
+        </figure>
+        <figure class="slide" tabindex="0" role="group" aria-label="四之二">
+          <img src="../images/roselle.jpg" alt="枝頭長滿深紅色洛神花花萼" />
+          <figcaption class="caption"><h3>洛神花盛開時節</h3><p>深紅色花萼點綴枝頭，鮮豔奪目。</p></figcaption>
+        </figure>
+        <figure class="slide" tabindex="0" role="group" aria-label="四之三">
+          <img src="../images/taipei_bridge.jpg" alt="夜晚橋上多輛機車行駛的景象" />
+          <figcaption class="caption"><h3>台北橋上機車潮</h3><p>夜色中機車川流不息，燈光閃爍。</p></figcaption>
+        </figure>
+        <figure class="slide" tabindex="0" role="group"  aria-label="四之四">
+          <img src="../images/tamsui_river.jpg" alt="夜色下淡水河畔與城市燈火倒影" />
+          <figcaption class="caption"><h3>淡水河畔夜景</h3><p>河面倒映城市燈火。</p></figcaption>
+        </figure>
+      </div>
+
+      <div class="controls">
+        <div class="edge-btns">
+          <button type="button" class="ctrl-btn prev" tabindex="-1" aria-label="上一張">‹</button>
+          <button type="button" class="ctrl-btn next" tabindex="-1" aria-label="下一張">›</button>
+        </div>
+
+        <div class="indicators" role="tablist" aria-label="輪播指示">
+          <button class="dot" tabindex="-1" role="tab" aria-label="前往第 1 張" aria-current="true"></button>
+          <button class="dot" tabindex="-1" role="tab" aria-label="前往第 2 張"></button>
+          <button class="dot" tabindex="-1" role="tab" aria-label="前往第 3 張"></button>
+          <button class="dot" tabindex="-1" role="tab" aria-label="前往第 4 張"></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      /* Skip to main */
+      var skip = document.querySelector('.skip-link');
+      if (skip) {
+        skip.addEventListener('click', function () {
+          var target = document.getElementById('mainh1');
+          if (!target) return;
+          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: false });
+        });
+      }
+
+      const root = document.getElementById('heroCarousel');
+      const slides = Array.from(root.querySelectorAll('.slide'));
+      const prevBtn = root.querySelector('.prev');
+      const nextBtn = root.querySelector('.next');
+      const dots = Array.from(root.querySelectorAll('.dot'));
+      const toggleBtn = document.getElementById('togglePlay');
+
+      const total = slides.length;
+      let index = 0;
+      let interval = null;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const cfgAutoplay = root.dataset.autoplay === 'true';
+      const cfgInterval = Math.max(parseInt(root.dataset.interval || '3600', 10), 1500);
+      let userPrefAutoPlay = cfgAutoplay && !reduceMotion;
+
+      function setActive(newIndex){
+        index = (newIndex + total) % total;
+        slides.forEach((el,i)=>{
+          el.classList.toggle('is-active', i === index);
+          // el.setAttribute('aria-label', `${i+1} / ${total}`);
+        });
+        dots.forEach((d,i)=> d.setAttribute('aria-current', i===index ? 'true' : 'false'));
+      }
+      function next(){ setActive(index+1); }
+      function prev(){ setActive(index-1); }
+
+      function startAutoPlay(){
+        if(interval || !userPrefAutoPlay) return;
+        interval = setInterval(next, cfgInterval);
+        toggleBtn.setAttribute('aria-pressed','true');
+        toggleBtn.textContent = '⏸';
+      }
+      function stopAutoPlay(){
+        if(interval){ clearInterval(interval); interval = null; }
+        toggleBtn.setAttribute('aria-pressed','false');
+        toggleBtn.textContent = '▶';
+      }
+
+      prevBtn.addEventListener('click', prev);
+      nextBtn.addEventListener('click', next);
+      toggleBtn.addEventListener('click', ()=>{
+        userPrefAutoPlay = !userPrefAutoPlay;
+        if(userPrefAutoPlay){ startAutoPlay(); } else { stopAutoPlay(); }
+      });
+
+      dots.forEach((d,i)=> d.addEventListener('click', ()=> setActive(i)) );
+
+      slides.forEach((slide,i)=>{
+        slide.addEventListener('focus', ()=>{
+          stopAutoPlay();
+          setActive(i);
+        });
+      });
+
+      root.addEventListener('focusout', (e)=>{
+        if(!root.contains(e.relatedTarget)){
+          if(userPrefAutoPlay){ startAutoPlay(); }
+        }
+      });
+      root.addEventListener('mouseenter', stopAutoPlay);
+      root.addEventListener('mouseleave', ()=>{ if(userPrefAutoPlay){ startAutoPlay(); } });
+
+      setActive(0);
+      if(!reduceMotion && userPrefAutoPlay){ startAutoPlay(); }
+    })();
+  </script>
+</body>
+</html>

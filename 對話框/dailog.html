@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>兩種無障礙對話框範例</title>
+  <style>
+    :root{
+      --brand:#0a63ff;
+      --ink:#0e1b2b;
+      --muted:#5b6b87;
+      --panel:#ffffff;
+      --bg:#f6f7fb;
+      --ring: 3px solid var(--brand);
+      --radius: 16px;
+      --shadow: 0 16px 40px rgba(0,0,0,.18);
+      --border: 1px solid color-mix(in srgb, #0e1b2b, transparent 85%);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{ --ink:#eaf1ff; --muted:#a9b7cf; --panel:#121721; --bg:#0a0f18; --border: 1px solid color-mix(in srgb, #eaf1ff, transparent 85%); }
+    }
+
+    html,body{height:100%}
+    body{
+      margin:0; padding: 0; color:var(--ink); line-height:1.65; letter-spacing:.2px;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans TC",sans-serif;
+      background:
+        radial-gradient(1400px 700px at 10% -10%, #e8f0ff 0, transparent 55%),
+        radial-gradient(1200px 600px at 110% 120%, #eaf7ef 0, transparent 60%),
+        var(--bg);
+      display:flex; align-items:flex-start; justify-content:center;
+    }
+    main{ width:min(1100px, 100%); }
+    h1{ text-align: center; }
+    .lead{ color:var(--muted); margin-top:.25rem }
+
+        .skip-link {
+      position: absolute; left: 12px; top: 0;
+      transform: translateY(-150%);
+      padding: 12px 16px; background: #fff;
+      border: 2px solid var(--brand); border-radius: var(--radius);
+      box-shadow: var(--shadow); text-decoration: none;
+      color: var(--ink); font-weight: 600; z-index: 1000;
+    }
+    .skip-link:focus, .skip-link:focus-visible {
+      transform: translateY(12px); outline: none;
+    }
+
+    :where(button, a, input, select, textarea, [tabindex]):focus-visible{
+      outline: var(--ring);
+      outline-offset: 3px;
+    }
+
+    .section{ background:var(--panel); border:var(--border); border-radius:var(--radius); box-shadow: var(--shadow);
+      padding:clamp(16px,2.6vw,28px); margin-top:22px; }
+    .section h2{ margin:0 0 .4rem; font-size:clamp(20px,2.4vw,26px) }
+    .section p.note{ color:var(--muted); margin:.1rem 0 1rem }
+
+    .btn{ appearance:none; border:0; cursor:pointer; background:var(--brand); color:#fff; font-weight:700;
+      padding:.8rem 1.1rem; border-radius:12px; box-shadow: 0 6px 20px rgba(10,99,255,.28);
+      transition: transform .08s ease, box-shadow .18s ease, background .2s ease; }
+    .btn:hover{ transform: translateY(-1px) }
+    .btn:active{ transform: translateY(0) scale(.98) }
+    .btn.ghost{ background:#e8f0ff; color:#0a2e6f }
+    .BtnShadow{box-shadow: 4px 4px 4px -4px;}
+    @media (prefers-color-scheme: dark){ .btn.ghost{ background:#1b2431; color:#eaf1ff } }
+
+    .muted{ color:var(--muted) }
+    .row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end }
+    textarea{ width:min(720px, 100%); font:inherit; padding:.8rem 1rem; border-radius:12px; border:var(--border); background:var(--panel); color:var(--ink); }
+
+    .visually-hidden{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+
+
+    .notes{ display:block; font-size:1rem; line-height:1.6; min-width:280px; max-width:100%; }
+    #ex_alertdialog [aria-disabled="true"]{ opacity:.45 }
+
+    [role="alertdialog"]{ box-sizing:border-box; padding: 18px; border:var(--border); background:var(--panel); min-height:auto; border-radius: 14px; width:min(560px, 92vw); box-shadow: var(--shadow); }
+    .dialog_label{ text-align:center; margin:0 0 .4rem }
+    .dialog_desc{ padding:10px 2px; color:var(--muted) }
+    .dialog_form_actions{ text-align:right; padding:8px 0 0; display:flex; gap:10px; justify-content:flex-end }
+
+    .dialog-backdrop{ display:none; position:fixed; inset:0; background: rgba(0,0,0,.5); place-items:center; padding:20px; z-index: 1000; }
+    .dialog-backdrop.active{ display:grid }
+
+    .has-dialog{ overflow:hidden }
+
+    #notes_save{ display:inline-flex; align-items:center; gap:.5rem }
+    #notes_save svg{ display:block; width:.9rem }
+    #notes_save .icon{ display:none }
+    @keyframes rotate{ from{ transform:rotate(0) } to{ transform:rotate(360deg) } }
+    #notes_save.loading .spinner{ display:block; animation: rotate 2s linear infinite }
+    #notes_save.saved .check{ display:block }
+
+    .overlay{ position: fixed; inset:0; background: rgba(0,0,0,.50); display:none; place-items:center; padding: 20px; z-index: 999; }
+    .overlay.active{ display:grid }
+    body.no-scroll{ overflow:hidden }
+
+    .modal{ background:var(--panel); width:min(640px, 92vw); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: clamp(18px, 3.6vw, 36px); max-height: calc(100dvh - 40px); overflow:auto; animation: pop .18s ease-out both; }
+    @keyframes pop{ from{ opacity:0; transform: translateY(8px) scale(.98) } to{ opacity:1; transform: none } }
+    @media (prefers-reduced-motion: reduce){ *{ animation: none !important; transition: none !important } }
+
+    .modal header{ display:flex; align-items:center; justify-content: space-between; gap:12px; margin-bottom:4px }
+    .modal h2{ margin:0; font-weight:800; letter-spacing:.3px; font-size: clamp(18px,2.2vw,24px) }
+    .modal .desc{ color:var(--muted); margin:6px 0 16px }
+
+    .grid{ display:grid; gap:16px; margin: 18px 0 10px }
+    .card{ display:grid; grid-template-columns: 48px 1fr; gap:12px; align-items:start; padding:12px; border-radius:12px; border:var(--border);
+      background: color-mix(in srgb, var(--panel), transparent 0%); transition: transform .08s ease, box-shadow .18s ease, background .2s ease; }
+    .card:hover{ transform: translateY(-1px); box-shadow: 0 8px 26px rgba(0,0,0,.12) }
+    .card:has(:focus-visible){ outline: var(--ring); outline-offset:2px }
+    .card h5{ margin:0 0 .2rem; font-weight:700 }
+    .card p{ margin:0; color:var(--muted) }
+
+    .bi{ width:48px; height:48px; fill: currentColor; opacity:.95 }
+    .text-secondary{ color:#6c7a92 }
+    .text-warning{ color:#c98500 }
+    .text-primary{ color:#0a63ff }
+    @media (max-width: 480px){ .card{ grid-template-columns: 40px 1fr; padding:10px } .bi{ width:40px; height:40px } }
+  </style>
+</head>
+<body>
+    <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+  <main>
+    <h1 id="mainh1">兩種無障礙對話框範例</h1>
+    <p class="lead">A. <strong>警示對話框（alertdialog）</strong>、B. <strong>一般對話框（dialog）</strong>。</p>
+
+    <section class="section" aria-labelledby="sec-a-title" id="ex_alertdialog">
+      <h2 id="sec-a-title">A. 警示對話框（確認是否捨棄輸入）</h2>
+      <p class="note">示範 <code>role="alertdialog"</code>、焦點管理、<kbd>Esc</kbd> 關閉、動態字數提示。</p>
+
+      <div class="row" style="margin:.5rem 0 1rem">
+        <label for="notes" class="visually-hidden">輸入框</label>
+        <textarea class="notes" name="notes" id="notes" rows="7">這是一個範例文字框，裡面自然包含了文字。使用者可以選擇儲存此文字—這將觸發一個基本警告，或是選擇捨棄這段文字—這將觸發一個警告對話框，提示使用者進行確認。</textarea>
+      </div>
+      <div class="row" >
+        <div id="notes_save_status" class="visually-hidden" role="alert" aria-live="polite"></div>
+        <button type="button" id="notes_save" class="btn">
+          儲存
+          <svg class="icon spinner" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 32c-4.274 0-8.292-1.664-11.314-4.686s-4.686-7.040-4.686-11.314c0-3.026 0.849-5.973 2.456-8.522 1.563-2.478 3.771-4.48 6.386-5.791l1.344 2.682c-2.126 1.065-3.922 2.693-5.192 4.708-1.305 2.069-1.994 4.462-1.994 6.922 0 7.168 5.832 13 13 13s13-5.832 13-13c0-2.459-0.69-4.853-1.994-6.922-1.271-2.015-3.066-3.643-5.192-4.708l1.344-2.682c2.615 1.31 4.824 3.313 6.386 5.791 1.607 2.549 2.456 5.495 2.456 8.522 0 4.274-1.664 8.292-4.686 11.314s-7.040 4.686-11.314 4.686z"></path></svg>
+          <svg class="icon check" viewBox="0 0 32 32" aria-hidden="true"><path d="M27 4l-15 15-7-7-5 5 12 12 20-20z"></path></svg>
+        </button>
+        <button type="button" class="btn ghost BtnShadow" data-textbox="notes" id="notes_discard" onclick="openAlertDialog('alertdialog', this)">放棄內容</button>
+      </div>
+
+      <div class="dialog-backdrop" id="backdrop-a">
+        <div id="alertdialog" role="alertdialog" aria-modal="true" aria-labelledby="dialog_label" aria-describedby="dialog_desc" class="hidden">
+          <h3 id="dialog_label" class="dialog_label">再次確認</h3>
+          <div id="dialog_desc" class="dialog_desc">
+            <p>確定放棄所有輸入的內容嗎？</p>
+          </div>
+          <div class="dialog_form_actions">
+            <button type="button" class="btn ghost BtnShadow" id="notes_cancel" onclick="closeDialog(this)">否</button>
+            <button type="button" class="btn" id="notes_confirm" onclick="discardInput()">是</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="sec-b-title">
+      <h2 id="sec-b-title">B. 一般對話框（功能導覽）</h2>
+      <p class="note">示範 <code>role="dialog"</code>、焦點管理、<kbd>Esc</kbd> 關閉、多處關閉按鈕。</p>
+      <p>
+        <button class="btn" id="openModalBtn" aria-haspopup="dialog" aria-controls="modalTour">瞭解最新功能</button>
+      </p>
+
+      <div class="overlay" id="overlay" aria-hidden="true">
+        <section class="modal" id="modalTour" role="dialog" aria-modal="true" aria-labelledby="tourTitle" aria-describedby="tourDesc">
+          <header>
+            <h2 id="tourTitle" tabindex="-1">最新功能</h2>
+            <button class="btn ghost BtnShadow" id="closeBtn" aria-label="關閉對話框">關閉</button>
+          </header>
+          <p id="tourDesc" class="desc">本視窗介紹本站三項最新功能與簡要說明。</p>
+
+          <div class="grid" role="list">
+            <article class="card" role="listitem">
+              <svg class="bi text-secondary" aria-hidden="true" focusable="false" viewBox="0 0 16 16">
+                <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
+              </svg>
+              <div>
+                <h5>功能一</h5>
+                <p>內容說明</p>
+              </div>
+            </article>
+
+            <article class="card" role="listitem">
+              <svg class="bi text-warning" aria-hidden="true" focusable="false" viewBox="0 0 16 16">
+                <path d="M7.84 4.1a.178.178 0 0 1 .32 0l.634 1.285a.178.178 0 0 0 .134.098l1.42.206c.145.021.204.2.098.303L9.42 6.993a.178.178 0 0 0-.051.158l.242 1.414a.178.178 0 0 1-.258.187l-1.27-.668a.178.178 0 0 0-.165 0l-1.27.668a.178.178 0 0 1-.257-.187l.242-1.414a.178.178 0 0 0-.05-.158l-1.03-1.001a.178.178 0 0 1 .098-.303l1.42-.206a.178.178 0 0 0 .134-.098L7.84 4.1z"/>
+                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+              </svg>
+              <div>
+                <h5>功能二</h5>
+                <p>內容說明</p>
+              </div>
+            </article>
+
+            <article class="card" role="listitem">
+              <svg class="bi text-primary" aria-hidden="true" focusable="false" viewBox="0 0 16 16">
+                <path d="M0 1a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1zm4 0v6h8V1H4zm8 8H4v6h8V9zM1 1v2h2V1H1zm2 3H1v2h2V4zM1 7v2h2V7H1zm2 3H1v2h2v-2zm-2 3v2h2v-2H1zM15 1h-2v2h2V1zm-2 3v2h2V4h-2zm2 3h-2v2h2V7zm-2 3v2h2v-2h-2zm2 3h-2v2h2v-2z"/>
+              </svg>
+              <div>
+                <h5>功能三</h5>
+                <p>內容說明</p>
+              </div>
+            </article>
+          </div>
+
+          <p>
+            <button type="button" class="btn" id="closeBottomBtn">關閉訊息</button>
+          </p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    var skip = document.querySelector('.skip-link');
+    if (skip) {
+      skip.addEventListener('click', function () {
+        var target = document.getElementById('mainh1');
+        if (!target) return;
+        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: false });
+      });
+    }
+
+  'use strict';
+  var aria = window.aria || {};
+  aria.KeyCode = { ESC:27 };
+  aria.Utils = aria.Utils || {};
+  aria.Utils.dialogOpenClass = 'has-dialog';
+
+  aria.Utils.matches = function (element, selector) {
+    if (!Element.prototype.matches) {
+      Element.prototype.matches = Element.prototype.matchesSelector || Element.prototype.mozMatchesSelector || Element.prototype.msMatchesSelector || Element.prototype.oMatchesSelector || Element.prototype.webkitMatchesSelector || function (s) {
+        var matches = element.parentNode.querySelectorAll(s); var i = matches.length; while (--i >= 0 && matches.item(i) !== this) {} return i > -1; };
+    }
+    return element.matches(selector);
+  };
+  aria.Utils.remove = function (item) {
+    if (item.remove && typeof item.remove === 'function') return item.remove();
+    if (item.parentNode && item.parentNode.removeChild && typeof item.parentNode.removeChild === 'function') return item.parentNode.removeChild(item);
+    return false;
+  };
+  aria.Utils.isFocusable = function (element) {
+    if (element.tabIndex < 0) return false; if (element.disabled) return false;
+    switch (element.nodeName) {
+      case 'A': return !!element.href && element.rel != 'ignore';
+      case 'INPUT': return element.type != 'hidden';
+      case 'BUTTON': case 'SELECT': case 'TEXTAREA': return true;
+      default: return false;
+    }
+  };
+  aria.Utils.getAncestorBySelector = function (element, selector) {
+    if (!aria.Utils.matches(element, selector + ' ' + element.tagName)) return null;
+    var currentNode = element, ancestor = null;
+    while (ancestor === null) {
+      if (aria.Utils.matches(currentNode.parentNode, selector)) { ancestor = currentNode.parentNode; }
+      else { currentNode = currentNode.parentNode; }
+    }
+    return ancestor;
+  };
+  aria.Utils.hasClass = function (element, className) { return new RegExp('(\\s|^)' + className + '(\\s|$)').test(element.className); };
+  aria.Utils.addClass = function (element, className) { if (!aria.Utils.hasClass(element, className)) element.className += ' ' + className; };
+  aria.Utils.removeClass = function (element, className) { var classRegex = new RegExp('(\\s|^)' + className + '(\\s|$)'); element.className = element.className.replace(classRegex, ' ').trim(); };
+  aria.Utils.bindMethods = function (object /* , ...methodNames */) { var methodNames = Array.prototype.slice.call(arguments, 1); methodNames.forEach(function (method) { object[method] = object[method].bind(object); }); };
+
+  aria.Utils.focusFirstDescendant = function (element) {
+    for (var i = 0; i < element.childNodes.length; i++) {
+      var child = element.childNodes[i];
+      if (aria.Utils.attemptFocus(child) || aria.Utils.focusFirstDescendant(child)) { return true; }
+    }
+    return false;
+  };
+  aria.Utils.attemptFocus = function (element) {
+    if (!aria.Utils.isFocusable(element)) return false;
+    aria.Utils.IgnoreUtilFocusChanges = true;
+    try { element.focus(); } catch (e) {}
+    aria.Utils.IgnoreUtilFocusChanges = false;
+    return document.activeElement === element;
+  };
+  aria.handleEscape = function (event) {
+    var key = event.which || event.keyCode;
+    if (key === aria.KeyCode.ESC && aria.openedDialog) { aria.openedDialog.close(); event.stopPropagation(); }
+  };
+  document.addEventListener('keyup', aria.handleEscape);
+
+  aria.Dialog = function (dialogId, focusAfterClosed, focusFirst) {
+    this.dialogNode = document.getElementById(dialogId);
+    if (this.dialogNode === null) throw new Error('No element found with id="' + dialogId + '".');
+
+    var validRoles = ['dialog', 'alertdialog'];
+    var isDialog = (this.dialogNode.getAttribute('role') || '').trim().split(/\s+/g).some(function (token) { return validRoles.some(function (role) { return token === role; }); });
+    if (!isDialog) throw new Error('Dialog() requires a DOM element with ARIA role of dialog or alertdialog.');
+
+    var backdropClass = 'dialog-backdrop';
+    if (this.dialogNode.parentNode.classList.contains(backdropClass)) { this.backdropNode = this.dialogNode.parentNode; }
+    else { this.backdropNode = document.createElement('div'); this.backdropNode.className = backdropClass; this.dialogNode.parentNode.insertBefore(this.backdropNode, this.dialogNode); this.backdropNode.appendChild(this.dialogNode); }
+    this.backdropNode.classList.add('active');
+
+    document.body.classList.add(aria.Utils.dialogOpenClass);
+
+    if (typeof focusAfterClosed === 'string') this.focusAfterClosed = document.getElementById(focusAfterClosed);
+    else if (typeof focusAfterClosed === 'object') this.focusAfterClosed = focusAfterClosed;
+    else throw new Error('the focusAfterClosed parameter is required for the aria.Dialog constructor.');
+
+    if (typeof focusFirst === 'string') this.focusFirst = document.getElementById(focusFirst);
+    else if (typeof focusFirst === 'object') this.focusFirst = focusFirst;
+    else this.focusFirst = null;
+
+    var preDiv = document.createElement('div');
+    this.preNode = this.dialogNode.parentNode.insertBefore(preDiv, this.dialogNode); this.preNode.tabIndex = 0;
+    var postDiv = document.createElement('div');
+    this.postNode = this.dialogNode.parentNode.insertBefore(postDiv, this.dialogNode.nextSibling); this.postNode.tabIndex = 0;
+
+    this.addListeners(); aria.openedDialog = this; this.dialogNode.className = ''; 
+
+    if (this.focusFirst) { this.focusFirst.focus(); }
+    else { aria.Utils.focusFirstDescendant(this.dialogNode); }
+    this.lastFocus = document.activeElement;
+  };
+  aria.Dialog.prototype.close = function () {
+    aria.openedDialog = null; this.removeListeners(); aria.Utils.remove(this.preNode); aria.Utils.remove(this.postNode);
+    this.dialogNode.className = 'hidden'; this.backdropNode.classList.remove('active'); this.focusAfterClosed.focus();
+    document.body.classList.remove(aria.Utils.dialogOpenClass);
+  };
+  aria.Dialog.prototype.addListeners = function () { document.addEventListener('focus', this.trapFocus, true); };
+  aria.Dialog.prototype.removeListeners = function () { document.removeEventListener('focus', this.trapFocus, true); };
+  aria.Dialog.prototype.trapFocus = function (event) {
+    if (aria.Utils.IgnoreUtilFocusChanges) return; var opened = aria.openedDialog; if (!opened) return;
+    if (opened.dialogNode.contains(event.target)) { opened.lastFocus = event.target; }
+    else { aria.Utils.focusFirstDescendant(opened.dialogNode); if (opened.lastFocus === document.activeElement) { aria.Utils.focusLastDescendant && aria.Utils.focusLastDescendant(opened.dialogNode); } opened.lastFocus = document.activeElement; }
+  };
+
+  aria.Utils.disableCtrl = function (ctrl) { ctrl.setAttribute('aria-disabled', 'true'); };
+  aria.Utils.enableCtrl = function (ctrl) { ctrl.removeAttribute('aria-disabled'); };
+  aria.Utils.setLoading = function (saveBtn, saveStatusView) {
+    saveBtn.classList.add('loading'); aria.Utils.disableCtrl(saveBtn);
+    const loadingTimeout = window.setTimeout(() => { saveStatusView.textContent = '載入中'; }, 200);
+    const fakeLoadingTimeout = Math.random() * 2000;
+    window.setTimeout(() => { saveBtn.classList.remove('loading'); saveBtn.classList.add('saved'); window.clearTimeout(loadingTimeout); saveStatusView.textContent = '儲存成功'; }, fakeLoadingTimeout);
+  };
+
+  aria.Notes = function Notes(notesId, saveId, saveStatusId, discardId, localStorageKey) {
+    this.notesInput = document.getElementById(notesId);
+    this.saveBtn = document.getElementById(saveId);
+    this.saveStatusView = document.getElementById(saveStatusId);
+    this.discardBtn = document.getElementById(discardId);
+    this.localStorageKey = localStorageKey || 'alertdialog-notes';
+    this.initialized = false;
+    Object.defineProperty(this, 'controls', { get: function () { return document.querySelectorAll('[data-textbox=' + this.notesInput.id + ']'); } });
+    Object.defineProperty(this, 'hasContent', { get: function () { return this.notesInput.value.length > 0; } });
+    Object.defineProperty(this, 'savedValue', { get: function () { return JSON.parse(localStorage.getItem(this.localStorageKey)); }, set: function (val) { this.save(val); } });
+    Object.defineProperty(this, 'isCurrent', { get: function () { return this.notesInput.value === this.savedValue; } });
+    Object.defineProperty(this, 'oninput', { get: function () { return this.notesInput.oninput; }, set: function (fn) { if (typeof fn !== 'function') throw new TypeError('oninput must be a function'); this.notesInput.addEventListener('input', fn); } });
+    if (this.saveBtn && this.discardBtn) { this.init(); }
+  };
+  aria.Notes.prototype.save = function (val) {
+    const isDisabled = this.saveBtn.getAttribute('aria-disabled') === 'true'; if (isDisabled) return;
+    localStorage.setItem(this.localStorageKey, JSON.stringify(val || this.notesInput.value));
+    aria.Utils.disableCtrl(this.saveBtn); aria.Utils.setLoading(this.saveBtn, this.saveStatusView);
+  };
+  aria.Notes.prototype.loadSaved = function () { if (this.savedValue) { this.notesInput.value = this.savedValue; } };
+  aria.Notes.prototype.restoreSaveBtn = function () { this.saveBtn.classList.remove('loading'); this.saveBtn.classList.remove('saved'); this.saveBtn.removeAttribute('aria-disabled'); this.saveStatusView.textContent = ''; };
+  aria.Notes.prototype.discard = function () { localStorage.clear(); this.notesInput.value = ''; this.toggleControls(); this.restoreSaveBtn(); };
+  aria.Notes.prototype.disableControls = function () { this.controls.forEach(aria.Utils.disableCtrl); };
+  aria.Notes.prototype.enableControls = function () { this.controls.forEach(aria.Utils.enableCtrl); };
+  aria.Notes.prototype.toggleControls = function () { if (this.hasContent) { this.enableControls(); } else { this.disableControls(); } };
+  aria.Notes.prototype.toggleCurrent = function () { if (!this.isCurrent) { this.notesInput.classList.remove('can-save'); aria.Utils.enableCtrl(this.saveBtn); this.restoreSaveBtn(); } else { this.notesInput.classList.add('can-save'); aria.Utils.disableCtrl(this.saveBtn); } };
+  aria.Notes.prototype.keydownHandler = function (e) { var mod = navigator.userAgent.includes('Mac') ? e.metaKey : e.ctrlKey; if ((e.key === 's') & mod) { e.preventDefault(); this.save(); } };
+  aria.Notes.prototype.init = function () {
+    if (!this.initialized) {
+      this.loadSaved(); this.toggleCurrent();
+      this.saveBtn.addEventListener('click', this.save.bind(this, undefined));
+      this.discardBtn.addEventListener('click', this.discard.bind(this));
+      this.notesInput.addEventListener('input', this.toggleControls.bind(this));
+      this.notesInput.addEventListener('input', this.toggleCurrent.bind(this));
+      this.notesInput.addEventListener('keydown', this.keydownHandler.bind(this));
+      this.initialized = true;
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', function initAlertDialog() {
+    var notes = new aria.Notes('notes','notes_save','notes_save_status','notes_confirm');
+    window.closeDialog = function () { if (aria.openedDialog) aria.openedDialog.close(); };
+    window.discardInput = function () { notes.discard.call(notes); window.closeDialog(); };
+    window.openAlertDialog = function (dialogId, triggerBtn, focusFirst) {
+      if (triggerBtn.getAttribute('aria-disabled') === 'true') return;
+      var target = document.getElementById(triggerBtn.getAttribute('data-textbox'));
+      var dialog = document.getElementById(dialogId);
+      var desc = document.getElementById(dialog.getAttribute('aria-describedby'));
+      var wordCount = document.getElementById('word_count');
+      if (!wordCount) { wordCount = document.createElement('p'); wordCount.id = 'word_count'; desc.appendChild(wordCount); }
+      var count = target.value.split('').length; var frag = '個字';
+      wordCount.textContent = count + ' ' + frag + ' 將被刪除。';
+      new aria.Dialog(dialogId, target, focusFirst);
+    };
+  });
+  </script>
+
+
+  <script>
+    const overlay = document.getElementById('overlay');
+    const modal = document.getElementById('modalTour');
+    const openBtn = document.getElementById('openModalBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const closeBottomBtn = document.getElementById('closeBottomBtn');
+    const title = document.getElementById('tourTitle');
+    let lastFocus = null;
+
+    function openModal(){
+      lastFocus = document.activeElement;
+      overlay.classList.add('active');
+      overlay.setAttribute('aria-hidden','false');
+      document.body.classList.add('no-scroll');
+      requestAnimationFrame(()=> title.focus());
+      trapEnable();
+    }
+    function closeModal(){
+      overlay.classList.remove('active');
+      overlay.setAttribute('aria-hidden','true');
+      document.body.classList.remove('no-scroll');
+      trapDisable();
+      if(lastFocus){ lastFocus.focus(); }
+    }
+
+    openBtn.setAttribute('type','button');
+    openBtn.addEventListener('click', openModal);
+    openBtn.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+        e.preventDefault(); openModal();
+      }
+    });
+    closeBtn.addEventListener('click', closeModal);
+    closeBottomBtn.addEventListener('click', closeModal);
+
+    overlay.addEventListener('pointerdown', (e)=>{ if(e.target === overlay){ closeModal(); } });
+
+    let trapHandler = null;
+    function getFocusable(container){
+      return container.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+    }
+    function trapEnable(){
+      trapHandler = (e)=>{
+        if(!overlay.classList.contains('active')) return;
+        if(e.key === 'Escape'){ e.preventDefault(); closeModal(); return; }
+        if(e.key !== 'Tab') return;
+        const f = getFocusable(modal);
+        if(!f.length) return;
+        const first = f[0], last = f[f.length-1];
+        if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+      };
+      document.addEventListener('keydown', trapHandler);
+    }
+    function trapDisable(){ if(trapHandler){ document.removeEventListener('keydown', trapHandler); trapHandler = null; } }
+  </script>
+</body>
+</html>

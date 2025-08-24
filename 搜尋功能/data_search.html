@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>同頁查詢資料範例 AA 級</title>
+  <style>
+    :root{
+      --ink:#0f172a;        
+      --muted:#475569;      
+      --bg:#f8fafc;         
+      --card:#ffffff;       
+      --brand:#0a63ff;      
+      --ring: #0a63ff;      
+      --ok:#0f766e;         
+      --warn:#b91c1c;       
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin: 0;
+      padding:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans TC",sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -20%, #e8f0ff 0, transparent 60%),
+        radial-gradient(1200px 600px at 110% 120%, #eaf7ef 0, transparent 60%),
+        var(--bg);
+      
+      display:flex; justify-content:center; align-items:flex-start;
+    }
+
+    .skip-link {
+      position: absolute; left: 12px; top: 0;
+      transform: translateY(-150%);
+      padding: 12px 16px; background: #fff;
+      border: 2px solid var(--brand); border-radius: var(--radius);
+      box-shadow: var(--shadow); text-decoration: none;
+      color: var(--ink); font-weight: 600; z-index: 1000;
+    }
+    .skip-link:focus, .skip-link:focus-visible {
+      transform: translateY(12px); outline: none;
+    }
+
+    .wrap{
+      width:min(960px, 100%);
+      display:grid; gap:16px;
+    }
+    header h1{
+      font-size: clamp(22px, 2.2vw, 30px);
+      margin:40px 0 0 0 ;
+    }
+    header p{color:var(--muted); margin:0}
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow: 0 8px 30px rgba(2,8,23,.06);
+      padding:16px;
+    }
+    form[role="search"]{
+      display:grid; gap:12px;
+    }
+    .row{
+      display:grid; grid-template-columns: 1fr auto; gap:12px;
+    }
+    label{font-weight:600}
+    input[type="search"]{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid #cbd5e1;
+      border-radius:12px;
+      font-size:16px;
+      background:#fff;
+    }
+    button{
+      padding:12px 16px;
+      border:0;
+      border-radius:12px;
+      background:var(--brand);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    :where(input,button,a,[tabindex]):focus-visible{
+      outline: 3px solid var(--ring);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 6px rgba(10,99,255,.15);
+    }
+
+    .status{
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:600;
+      line-height:1.45;
+    }
+    .status.ok{ background:#ecfdf5; color:var(--ok); border:1px solid #a7f3d0; }
+    .status.warn{ background:#fef2f2; color:var(--warn); border:1px solid #fecaca; }
+
+    .results{
+      display:grid; gap:12px;
+    }
+    .results header{
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .count{ color:var(--muted); font-size:14px; }
+    ul.list{
+      list-style:none; padding:0; margin:0;
+      display:grid; gap:10px;
+    }
+    .item{
+      background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:12px;
+    }
+    .item h3{ margin:0 0 6px; font-size:18px;}
+    .meta{ color:var(--muted); font-size:14px; margin:0 0 6px}
+    .desc{ margin:0; }
+
+    .card h3{margin-bottom: 0;}
+    .card ol{margin-top: 10px;}
+
+    .sr-only{
+      position:absolute!important; width:1px!important; height:1px!important;
+      padding:0!important; margin:-1px!important; overflow:hidden!important;
+      clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important;
+    }
+  </style>
+</head>
+<body>
+    <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+  <main class="wrap">
+    <header>
+      <h1 id="mainh1">同頁查詢資料範例 AA 級</h1>
+      <p>每次查詢以 <code>role="status"</code> 主動告知筆數。</p>
+    </header>
+
+    <section class="card" aria-labelledby="searchTitle">
+      <h2 id="searchTitle" style="margin-top:0">水果資訊查詢</h2>
+      <form role="search" id="searchForm">
+        <div class="row">
+          <div>
+            <label for="q" style="display:inline-block; margin-bottom: 10px;" aria-hidden="true">請輸入關鍵字(搜尋後會於下方產生相應資訊)</label>
+            <input id="q" name="q" type="search" aria-label="請輸入關鍵字，例如：酸甜、多汁、台灣、夏季" placeholder="例如：酸甜、多汁、台灣、夏季..." autocomplete="off" />
+          </div>
+          <div style="align-self:end">
+            <button type="submit" id="doSearch">查詢</button>
+          </div>
+        </div>
+
+        <div id="liveStatus" class="status" role="status" aria-live="polite" aria-atomic="true">
+          尚未查詢。
+        </div>
+      </form>
+    </section>
+
+    <section class="card results" aria-labelledby="resultTitle" role="region">
+      <header>
+        <h2 id="resultTitle" style="margin:0">查詢結果</h2>
+        <p class="count" id="countText" aria-live="off">目前 0 筆</p>
+      </header>
+      <ul class="list" id="resultList" aria-describedby="resultTitle"></ul>
+    </section>
+
+    <section class="card" aria-labelledby="tipsTitle">
+      <h2 id="tipsTitle" style="margin-top:0">檢測員教學重點</h2>
+      <h3>必要檢測項目</h3>
+      <ol>
+        <li>使用螢幕報讀器（或 Accessibility 樹）確認 <code>role="status"</code> 的 live region 有讀出「找到 X 筆」或「查無資料」。</li>
+        <li>檢查表單語意：<code>role="search"</code>、<code>label</code> 與輸入框關聯正確。</li>
+        <li>檢查焦點可見度：以 <kbd>Tab</kbd> 操作時有清楚的焦點框。</li>
+      </ol>
+      <h3>建議項目(非必要但有更佳)</h3>
+      <ol>
+        <li>在查詢後，確認頁面上 <strong>自動出現</strong> 筆數告知（視覺可見）。</li>
+        <li>結果區塊以 <code>role="region"</code> 並以標題 <code>aria-labelledby</code> 關聯，結構清晰。</li>
+      </ol>
+    </section>
+  </main>
+
+  <script>
+    var skip = document.querySelector('.skip-link');
+    if (skip) {
+      skip.addEventListener('click', function () {
+        var target = document.getElementById('mainh1');
+        if (!target) return;
+        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: false });
+      });
+    }
+
+  const DB = [
+    { id: 1,  title: "蘋果", category: "水果", tags:["紅色","甜","台灣"], desc: "香甜多汁，富含膳食纖維與維生素C。" },
+    { id: 2,  title: "香蕉", category: "水果", tags:["黃色","香甜","熱帶"], desc: "熱帶常見水果，鉀含量高，助於維持心臟健康。" },
+    { id: 3,  title: "葡萄", category: "水果", tags:["紫色","綠色","多汁"], desc: "果皮可食，含多酚類抗氧化物。" },
+    { id: 4,  title: "芒果", category: "水果", tags:["橘色","熱帶","甜"], desc: "香氣濃郁，果肉細緻，夏季盛產。" },
+    { id: 5,  title: "鳳梨", category: "水果", tags:["黃色","酸甜","熱帶"], desc: "含有鳳梨酵素，有助消化。" },
+    { id: 6,  title: "西瓜", category: "水果", tags:["紅色","多汁","夏季"], desc: "水分含量高，清涼解渴。" },
+    { id: 7,  title: "哈密瓜", category: "水果", tags:["綠色","香甜","瓜類"], desc: "香甜爽口，果肉多汁。" },
+    { id: 8,  title: "草莓", category: "水果", tags:["紅色","酸甜","春季"], desc: "外形小巧，含豐富維生素C。" },
+    { id: 9,  title: "藍莓", category: "水果", tags:["藍色","酸甜","抗氧化"], desc: "富含花青素，有助保護視力。" },
+    { id: 10, title: "檸檬", category: "水果", tags:["黃色","酸","柑橘類"], desc: "酸味強烈，常用於調味與飲品。" },
+    { id: 11, title: "柚子", category: "水果", tags:["綠色","酸甜","中秋"], desc: "果肉多汁，口感清香。" },
+    { id: 12, title: "橘子", category: "水果", tags:["橘色","甜","柑橘類"], desc: "皮易剝，甜味濃。" },
+    { id: 13, title: "櫻桃", category: "水果", tags:["紅色","小巧","甜"], desc: "果肉緊實，富含鐵質。" },
+    { id: 14, title: "李子", category: "水果", tags:["紫色","酸甜","核果"], desc: "酸甜多汁，含膳食纖維。" },
+    { id: 15, title: "奇異果", category: "水果", tags:["綠色","酸甜","維生素C"], desc: "果肉多籽，營養豐富。" },
+    { id: 16, title: "百香果", category: "水果", tags:["紫色","香氣濃","酸甜"], desc: "富含香氣，常用於果汁與甜點。" },
+    { id: 17, title: "椰子", category: "水果", tags:["白色","熱帶","椰香"], desc: "椰汁清甜，果肉可食用。" },
+    { id: 18, title: "火龍果", category: "水果", tags:["紅色","白肉","多籽"], desc: "口感清爽，籽富含膳食纖維。" },
+    { id: 19, title: "楊桃", category: "水果", tags:["黃色","酸甜","五角形"], desc: "切面呈星形，富含維生素C。" },
+    { id: 20, title: "木瓜", category: "水果", tags:["橘色","甜","消化"], desc: "含木瓜酵素，有助消化蛋白質。" },
+    { id: 21, title: "番茄", category: "水果", tags:["紅色","多汁","茄科"], desc: "雖常當蔬菜使用，但實為水果。" },
+    { id: 22, title: "蓮霧", category: "水果", tags:["紅色","爽脆","台灣"], desc: "口感清脆，水分多。" },
+    { id: 23, title: "桑葚", category: "水果", tags:["紫色","多汁","春季"], desc: "甜中帶酸，富含花青素。" },
+    { id: 24, title: "龍眼", category: "水果", tags:["褐色","甜","夏季"], desc: "又稱桂圓，果肉甜美。" },
+    { id: 25, title: "荔枝", category: "水果", tags:["紅色","甜","夏季"], desc: "果肉多汁，甜味濃郁。" },
+    { id: 26, title: "香瓜", category: "水果", tags:["綠色","香甜","瓜類"], desc: "果肉香甜柔軟。" },
+    { id: 27, title: "柿子", category: "水果", tags:["橘色","甜","秋季"], desc: "果肉綿密，熟透後極甜。" },
+    { id: 28, title: "酪梨", category: "水果", tags:["綠色","濃郁","健康脂肪"], desc: "富含單元不飽和脂肪酸。" },
+    { id: 29, title: "棗子", category: "水果", tags:["綠色","爽脆","冬季"], desc: "果肉脆甜，維生素含量高。" },
+    { id: 30, title: "山竹", category: "水果", tags:["紫色","白肉","熱帶"], desc: "果肉甜美，口感細膩。" },
+    { id: 31, title: "紅毛丹", category: "水果", tags:["紅色","白肉","熱帶"], desc: "外皮多毛，果肉甜美。" },
+    { id: 32, title: "黃金奇異果", category: "水果", tags:["黃色","甜","維生素C"], desc: "果肉金黃，口感香甜。" },
+    { id: 33, title: "綠葡萄", category: "水果", tags:["綠色","甜","多汁"], desc: "果肉透明，甜味濃。" },
+    { id: 34, title: "蜜柑", category: "水果", tags:["橘色","甜","柑橘類"], desc: "果皮薄，汁水豐富。" },
+    { id: 35, title: "白草莓", category: "水果", tags:["白色","淡紅籽","甜"], desc: "果肉白色，帶有淡淡香氣。" },
+    { id: 36, title: "青蘋果", category: "水果", tags:["綠色","酸","爽脆"], desc: "酸味明顯，口感脆。" },
+    { id: 37, title: "蜜桃", category: "水果", tags:["粉紅色","香甜","夏季"], desc: "果肉柔軟多汁。" },
+    { id: 38, title: "白桃", category: "水果", tags:["白色","香甜","夏季"], desc: "果肉白嫩，汁水豐富。" },
+    { id: 39, title: "青芒果", category: "水果", tags:["綠色","酸","熱帶"], desc: "酸爽開胃，常醃漬食用。" },
+    { id: 40, title: "紅心芭樂", category: "水果", tags:["粉紅色","香甜","台灣"], desc: "果肉粉紅，香氣濃郁。" },
+    { id: 41, title: "白心芭樂", category: "水果", tags:["白色","香甜","台灣"], desc: "果肉白色，口感清脆。" },
+    { id: 42, title: "楊梅", category: "水果", tags:["紅色","酸甜","春季"], desc: "果皮有顆粒，酸甜多汁。" },
+    { id: 43, title: "椪柑", category: "水果", tags:["橘色","甜","柑橘類"], desc: "果皮薄且易剝。" },
+    { id: 44, title: "佛手柑", category: "水果", tags:["黃色","香氣濃","柑橘類"], desc: "外形特別，多用於香料與泡茶。" },
+    { id: 45, title: "覆盆子", category: "水果", tags:["紅色","酸甜","莓果"], desc: "小巧酸甜，富含維生素C。" },
+    { id: 46, title: "黑莓", category: "水果", tags:["黑色","酸甜","莓果"], desc: "果實烏黑，含豐富抗氧化物。" },
+    { id: 47, title: "白桑葚", category: "水果", tags:["白色","甜","春季"], desc: "比黑桑葚甜度高。" },
+    { id: 48, title: "黃皮果", category: "水果", tags:["黃色","酸甜","熱帶"], desc: "外皮金黃，味道酸甜。" },
+    { id: 49, title: "釋迦", category: "水果", tags:["綠色","白肉","熱帶"], desc: "果肉香甜柔軟，常用於甜品。" },
+    { id: 50, title: "榴槤", category: "水果", tags:["黃色","濃香","熱帶"], desc: "氣味獨特，果肉細膩香甜。" }
+  ];
+
+  const form = document.getElementById('searchForm');
+  const input = document.getElementById('q');
+  const list = document.getElementById('resultList');
+  const liveStatus = document.getElementById('liveStatus');
+  const countText = document.getElementById('countText');
+
+  const norm = s => (s||"").toString().trim().toLowerCase();
+
+  function matchRecord(rec, terms){
+    if (!terms.length) return true; 
+    const hay = [
+      rec.title, rec.desc, rec.category, ...(rec.tags||[])
+    ].map(norm).join(' ');
+    return terms.every(t => hay.includes(t));
+  }
+
+  function render(items){
+    list.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    items.forEach(rec=>{
+      const li = document.createElement('li');
+      li.className = 'item';
+      li.innerHTML = `
+        <h3>${escapeHTML(rec.title)}</h3>
+        <p class="meta">分類：${escapeHTML(rec.category)}　｜　標籤：${(rec.tags||[]).map(escapeHTML).join('、')||'—'}</p>
+        <p class="desc">${escapeHTML(rec.desc)}</p>
+      `;
+      frag.appendChild(li);
+    });
+    list.appendChild(frag);
+  }
+
+  function updateAnnounce(count, q){
+    const msg = count > 0
+      ? `查詢「${q || '（空白，顯示全部）'}」共找到 ${count} 筆資料。`
+      : `查詢「${q || '（空白）'}」查無資料，請重新查找。`;
+
+    liveStatus.textContent = msg;
+    liveStatus.className = `status ${count>0 ? 'ok' : 'warn'}`;
+
+    countText.textContent = `目前 ${count} 筆`;
+  }
+
+  function doSearch(q){
+    const terms = norm(q).split(/\s+/).filter(Boolean);
+    const results = DB.filter(rec => matchRecord(rec, terms));
+    render(results);
+    updateAnnounce(results.length, q);
+  }
+
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, c=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    doSearch(input.value);
+  });
+
+  doSearch('');
+  input.focus();
+  </script>
+</body>
+</html>
