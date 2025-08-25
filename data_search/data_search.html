@@ -78,9 +78,10 @@
     }
 
     .wrap {
-      width: min(960px, 100%);
-      display: grid;
+      width: 100%;
       gap: 16px;
+      justify-content: center;
+      align-items: center; 
     }
 
     header h1 {
@@ -96,6 +97,7 @@
     }
 
     .card {
+      width: 100%;
       background: var(--card);
       border-radius: var(--radius);
       box-shadow: 0 8px 30px rgba(2, 8, 23, .06);
@@ -242,7 +244,8 @@
     <p>每次查詢以 <code>role="status"</code> 主動告知筆數。</p>
   </header>
 
-  <main class="wrap">
+  <main>
+    <div class="wrap">
     <section class="card" aria-labelledby="searchTitle">
       <h2 id="searchTitle" style="margin-top:0">水果資訊查詢</h2>
       <form role="search" id="searchForm">
@@ -272,6 +275,8 @@
       </header>
       <ul class="list" id="resultList" aria-describedby="resultTitle"></ul>
     </section>
+</div>
+
 
     <h2 id="auditCode">相應稽核評量碼</h2>
     <div id="accordionContainer"></div>
@@ -325,7 +330,7 @@
           <p>確認螢幕報讀軟體會主動回饋搜尋結果（例如：找到含關鍵字的筆數或狀態訊息）。</p>
         </li>
         <li>
-          <p>確認搜尋功能各元件之名稱與角色與其功能相符（正確 ARIA/HTML 揭露）。</p>
+          <p>確認搜尋功能各元件之名稱與角色與其功能相符。</p>
         </li>
         <li>
           <p>在不同瀏覽器中，焦點（Tab）呈現瀏覽器預設樣式或作者指定的清晰可見樣式（如雙色焦點框）。</p>
@@ -341,6 +346,7 @@
         </li>
       </ol>
     </div>
+    <a href="../index.html" class="back-to-catalog">回到目錄</a>
   </main>
 
   <script>
