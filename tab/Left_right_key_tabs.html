@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/accordion.css">
+  <script src="../js/accordion.js" defer></script>
+
   <title>頁籤類型：左右鍵直接切換頁籤（無須 Enter/Space）</title>
   <style>
     :root {
@@ -262,239 +265,17 @@
         animation: none !important;
       }
     }
-
-    .accordion-container {
-      max-width: 880px;
-      margin: 32px auto;
-      background: var(--a-panel);
-      border: 1px solid var(--a-line);
-      border-radius: var(--a-radius);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
-    }
-
-    .accordion-item {
-      border-bottom: 1px solid var(--a-line);
-    }
-
-    .accordion-item:last-child {
-      border-bottom: 0;
-    }
-
-    .accordion-trigger {
-      width: 100%;
-      background: #fff;
-      border: 0;
-      text-align: left;
-      padding: 14px 48px 14px 16px;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--a-ink-900);
-      cursor: pointer;
-      position: relative;
-    }
-
-    .accordion-trigger:hover {
-      background: #e9e8e8;
-    }
-
-    .accordion-trigger::after {
-      content: "+";
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--a-ink-500);
-      font-weight: 700;
-    }
-
-    .accordion-trigger[aria-expanded="true"]::after {
-      content: "–";
-    }
-
-    .accordion-content {
-      background: #fff;
-      color: var(--ink-700);
-      border-top: 1px solid var(--a-line);
-      padding: 0 16px;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height .25s ease, padding .2s ease;
-    }
-
-    .accordion-content.is-open {
-      padding: 12px 16px 16px;
-      max-height: 520px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .accordion-content {
-        transition: none;
-      }
-    }
-
-    .accordion-content p {
-      margin: 8px 0 0;
-      line-height: 1.6;
-    }
-
-    .accordion-content strong {
-      color: var(--a-ink-900);
-    }
-
-
-    #quickLink,
-    a[href="#auditCode"],
-    a[href="#detectionItem"] {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      padding: 8px 12px;
-      margin: 8px 8px 16px 0;
-      border: 1px solid var(--a-line);
-      border-radius: 999px;
-      background: #fff;
-      color: var(--a-ink-900);
-      text-decoration: none;
-      font-weight: 600;
-      line-height: 1;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
-    }
-
-    #quickLink::before,
-    a[href="#auditCode"]::before,
-    a[href="#detectionItem"]::before {
-      content: "↘";
-      font-weight: 700;
-      color: var(--a-ink-500);
-    }
-
-    #quickLink:hover,
-    a[href="#auditCode"]:hover,
-    a[href="#detectionItem"]:hover {
-      background: #3f4f5e;
-      color: #fff;
-    }
-
-    #quickLink:focus-visible,
-    a[href="#auditCode"]:focus-visible,
-    a[href="#detectionItem"]:focus-visible {
-      outline: 3px solid var(--a-focus);
-      outline-offset: 3px;
-      box-shadow: none;
-    }
-
-    #quickLink {
-      display: block;
-      margin: 16px auto;
-      width: fit-content;
-    }
-
-
-    h2 {
-      margin: 40px 0 12px;
-      font-size: 20px;
-      line-height: 1.35;
-      font-weight: 800;
-      color: var(--a-ink-900);
-      letter-spacing: .2px;
-      border-bottom: 2px solid var(--a-line);
-      padding-bottom: 6px;
-    }
-
-    h2:focus-visible {
-      outline: 3px solid var(--a-focus);
-      outline-offset: 4px;
-    }
-
-
-    .test-guide-container h2#detectionItem {
-      text-align: left;
-      margin: 20px 0 12px;
-      font-size: 20px;
-      line-height: 1.35;
-      font-weight: 800;
-      color: var(--a-ink-900);
-      letter-spacing: .2px;
-      border-bottom: 2px solid var(--a-line);
-      padding-bottom: 6px;
-    }
-
-
-    .test-guide-container h3 {
-      margin: 8px 0 16px;
-      font-size: 17px;
-      line-height: 1.5;
-      font-weight: 700;
-      color: var(--a-ink-700);
-      padding: 8px 12px;
-      border-left: 4px solid var(--a-blue);
-      background: #f9fafb;
-      border-radius: 6px;
-    }
-
-    .test-guide-container h3:focus-visible {
-      outline: 3px solid var(--a-focus);
-      outline-offset: 3px;
-    }
-
-
-    .test-guide-container {
-      max-width: 880px;
-      margin: 32px auto;
-      padding: 24px;
-      background: #fff;
-      border: 1px solid var(--a-line);
-      border-radius: var(--a-radius);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
-    }
-
-    .test-guide-container ol,
-    .test-guide-container ul {
-      margin-left: 20px;
-      line-height: 1.6;
-    }
-
-    .test-guide-container li p {
-      margin-bottom: .5rem;
-    }
-
-
-    .accordion-container,
-    .accordion-item {
-      overflow: visible;
-    }
-
-    .accordion-trigger:focus,
-    .accordion-trigger:focus-visible {
-      position: relative;
-      z-index: 2;
-      outline-offset: 4px;
-    }
-
-
-    .accordion-content {
-      overflow: hidden;
-    }
-
-    .accordion-content:focus,
-    .accordion-content:focus-visible {
-      position: relative;
-      z-index: 1;
-      outline-offset: 4px;
-    }
-
-    .accordion-trigger {
-      scroll-margin-block-start: 16px;
-    }
   </style>
 </head>
 
 <body>
   <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+      <div class="top-link">
+      <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a>
+      <a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
+    </div>
   <main>
     <h1 id="mainh1">頁籤類型：左右鍵直接切換頁籤（無須 Enter/Space）</h1>
-    <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a><a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
-
     <div id="tab-container">
       <div role="tablist" aria-label="範例頁籤元件" aria-orientation="horizontal">
         <button role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1" tabindex="0">WCAG 2.1</button>
@@ -584,7 +365,7 @@
           <p>以上均符合則全數通過。</p>
         </li>
       </ol>
-
+    </div>
   </main>
 
   <script>
@@ -599,114 +380,6 @@
         });
       }
 
-
-      const accordionData = [
-        {
-          title: "指引1.4：可辨識",
-          content: `
-      <p><strong>CS1140101E</strong> 當使用者介面元件取得焦點時，使用 CSS 變更其呈現方式。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(6)、(7)、(10) 通過，則此項通過。</p>
-      <p><strong>GN2141100E</strong> 使用網頁作者設定的高可視焦點指示器。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(6)、(7)、(10)、(11) 通過，則此項通過。</p>
-    `
-        },
-        {
-          title: "指引2.1：鍵盤可操作",
-          content: `
-      <p><strong>GN1210101E</strong> 確認所有功能都能透過鍵盤介面來操作。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8) 全部通過，則此項通過。</p>
-      <p><strong>GN1210200E</strong> 確認使用者不會困在內容中。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8)、(12) 全部通過，則此項通過。</p>
-    `
-        },
-        {
-          title: "指引2.4：可導覽",
-          content: `
-      <p><strong>GN1240300E</strong> 按照內容的序列及關連性來安排互動元件的放置順序。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7) 通過，則此項通過。</p>
-    `
-        },
-        {
-          title: "指引4.1：相容性",
-          content: `
-      <p><strong>GN1410200E</strong> 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知。</p>
-      <p>⇒ 檢測方式 (1)、(2)、(3)、(4)、(5)、(6)、(7)、(8)、(9) 通過，則此項通過。</p>
-    `
-        }
-      ];
-
-      function initializeAccordion(containerId, data) {
-        const container = document.getElementById(containerId);
-        if (!container) {
-          console.error(`Accordion container with ID '${containerId}' not found.`);
-          return;
-        }
-
-        let accordionHtml = '';
-
-        data.forEach((item, index) => {
-          const triggerId = `trigger${index + 1}`;
-          const contentId = `content${index + 1}`;
-
-          accordionHtml += `
-            <div class="accordion-item">
-              <h3>
-                <button 
-                  class="accordion-trigger" 
-                  aria-expanded="false" 
-                  aria-controls="${contentId}"
-                  id="${triggerId}"
-                  aria-label="${item.title}"
-                >
-                  ${item.title}
-                </button>
-              </h3>
-              <div 
-                class="accordion-content" 
-                id="${contentId}" 
-                role="region" 
-                aria-labelledby="${triggerId}"
-                hidden
-              >
-                ${item.content}
-              </div>
-            </div>
-          `;
-        });
-
-        container.innerHTML = `<div class="accordion-container">${accordionHtml}</div>`;
-
-        const triggers = container.querySelectorAll('.accordion-trigger');
-
-        triggers.forEach(trigger => {
-          trigger.addEventListener('click', () => {
-            const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
-            const content = document.getElementById(trigger.getAttribute('aria-controls'));
-
-            trigger.setAttribute('aria-expanded', !isExpanded);
-
-            content.hidden = isExpanded;
-
-            content.classList.toggle('is-open');
-          });
-
-          trigger.addEventListener('keydown', (e) => {
-            const parent = trigger.closest('.accordion-container');
-            const allTriggers = parent.querySelectorAll('.accordion-trigger');
-            const currentIndex = Array.from(allTriggers).indexOf(trigger);
-
-            if (e.key === 'ArrowDown' && currentIndex < allTriggers.length - 1) {
-              allTriggers[currentIndex + 1].focus();
-            } else if (e.key === 'ArrowUp' && currentIndex > 0) {
-              allTriggers[currentIndex - 1].focus();
-            }
-          });
-        });
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        initializeAccordion('accordionContainer', accordionData);
-      });
 
       const tablist = document.querySelector('[role="tablist"]');
       const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
@@ -806,6 +479,50 @@
         sync.observe(panel, { attributes: true, attributeFilter: ['hidden'] });
       }
     })();
+
+
+          const accordionData = [
+        {
+          title: "指引1.4：可辨識",
+          content: `
+      <p><strong>CS1140101E</strong> 當使用者介面元件取得焦點時，使用 CSS 變更其呈現方式。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(6)、(7)、(10) 通過，則此項通過。</p>
+      <p><strong>GN2141100E</strong> 使用網頁作者設定的高可視焦點指示器。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(6)、(7)、(10)、(11) 通過，則此項通過。</p>
+    `
+        },
+        {
+          title: "指引2.1：鍵盤可操作",
+          content: `
+      <p><strong>GN1210101E</strong> 確認所有功能都能透過鍵盤介面來操作。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8) 全部通過，則此項通過。</p>
+      <p><strong>GN1210200E</strong> 確認使用者不會困在內容中。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8)、(12) 全部通過，則此項通過。</p>
+    `
+        },
+        {
+          title: "指引2.4：可導覽",
+          content: `
+      <p><strong>GN1240300E</strong> 按照內容的序列及關連性來安排互動元件的放置順序。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7) 通過，則此項通過。</p>
+    `
+        },
+        {
+          title: "指引4.1：相容性",
+          content: `
+      <p><strong>GN1410200E</strong> 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知。</p>
+      <p>⇒ 檢測方式 (1)、(2)、(3)、(4)、(5)、(6)、(7)、(8)、(9) 通過，則此項通過。</p>
+    `
+        }
+      ];
+  
+       document.addEventListener('DOMContentLoaded', function () {
+      if (typeof window.initializeAccordion === 'function') {
+        window.initializeAccordion('accordionContainer', accordionData);
+      } else {
+        console.error('initializeAccordion 未載入。請確認 ../js/accordion.js 是否將函式掛到 window。');
+      }
+    });   
   </script>
 </body>
 
