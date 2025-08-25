@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>活動報名表_CAY</title>
+    <link rel="shortcut icon" type="image/ico" href="./img/favicon.ico" />
+    <link rel="icon" type="image/png" href="./img/favicon.png" />
+    <link rel="apple-touch-icon" type="image/png" href="./img/favicon.png" />
+
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/fresco/fresco.css">
+    <link rel="stylesheet" href="./css/cny-navbar.css">
+    <link rel="stylesheet" href="./css/cny-series.css">
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 表單容器 */
+    .cay-wrapper {
+      max-width: 900px;
+      margin: 100px auto;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      box-sizing: border-box;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    /* 側邊資訊 */
+    .cay-sidebar {
+      background: #f8f8f8;
+      padding: 2rem;
+      border-right: 1px solid #ddd;
+    }
+
+    .cay-sidebar h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    /* 主要內容 */
+    .cay-content {
+      padding: 2rem;
+    }
+
+    .cay-content h1 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 0.5rem;
+      color: #2c3e50;
+    }
+
+    /* 表單群組 */
+    .cay-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .cay-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    /* 輸入框 */
+    .cay-input {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      line-height: 1.5;
+      color: #333;
+      box-sizing: border-box;
+    }
+
+    /* 多選/單選 */
+    .cay-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .cay-options label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+    }
+
+    /* 客製化下拉 */
+    .cay-select {
+      position: relative;
+      width: 100%;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 0.6rem;
+      line-height: 1.5;
+      box-sizing: border-box;
+    }
+
+    .cay-select span {
+      display: block;
+      color: #555;
+    }
+
+    .cay-options-box {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #aaa;
+      border-top: none;
+      z-index: 1000;
+    }
+
+    .cay-options-box div {
+      padding: 0.6rem;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .cay-options-box div:hover {
+      background: #f0f0f0;
+    }
+
+    .cay-select.open .cay-options-box {
+      display: block;
+    }
+
+    /* 按鈕 */
+    .cay-btn {
+      background: #2c3e50;
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 40px;
+      display: inline-block;
+    }
+
+    .cay-btn:hover {
+      background: #34495e;
+    }
+
+
+  </style>
+</head>
+<body>
+  <!-- Bootstrap navbar 保留 -->
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+          <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" rolr="presentation"></a>
+          </div>
+          <div class="collapse navbar-collapse" id="top-navbar">
+              <ul class="nav navbar-nav navbar-right navbar_align_s">
+                  <li class="dropdown">
+                      <a href=""class="dropdown-toggle navbar_back" data-toggle="dropdown" role="button" aria-expanded="false">作品集<span class="caret"></span></a>
+                      <ul class="dropdown-menu" role="menu">
+                          <li class="navbar_back disabled"><a href="./scenery.html">風景-其他</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="javascript:void(0);">活動報名表</a></li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+
+  <!-- 表單不受 Bootstrap 影響 -->
+  <div class="cay-wrapper" id="mainContent" role="status">
+    <div class="cay-sidebar">
+      <h2>聯絡資訊</h2>
+      <p>地址：新竹市東區某某路 300 號</p>
+      <p>Email：example@test.org</p>
+    </div>
+
+    <div class="cay-content">
+      <h1>活動報名表</h1>
+      <form id="signupForm">
+        <div class="cay-group">
+          <label for="name">姓名</label>
+          <input type="text" id="name" name="name" class="cay-input" />
+        </div>
+        <div class="cay-group">
+          <label for="email">電子郵件</label>
+          <input type="email" id="email" name="email" class="cay-input" required />
+        </div>
+
+        <div class="cay-group">
+          <label for="date1">請勾選您感興趣的攝影分享會時間：</label>
+          <div class="cay-options">
+            <label><input id="date1" type="checkbox" name="share" value="ml" />2025/8/30</label>
+            <label><input type="checkbox" name="share" value="dl" />2025/9/5</label>
+            <label><input type="checkbox" name="share" value="nlp" />2025/9/13</label>
+          </div>
+        </div>
+
+        <div class="cay-group">
+          <label>請勾選您感興趣的攝影講座時間：</label>
+          <div class="cay-options">
+            <label><input type="checkbox" name="talk" value="ml" />2025/9/19</label>
+            <label><input type="checkbox" name="talk" value="dl" />2025/9/20</label>
+            <label><input type="checkbox" name="talk" value="nlp" />2025/9/27</label>
+          </div>
+        </div>
+
+        <div class="cay-group">
+          <label>請選擇如若舉辦活動您最可能出席的城市</label>
+          <div class="cay-select" id="fakeSelect">
+            <span data-value="">請選擇</span>
+            <div class="cay-options-box">
+              <div data-value="1">台北市</div>
+              <div data-value="2">桃園市</div>
+              <div data-value="3">新竹市</div>
+              <div data-value="4">台中市</div>
+              <div data-value="5">台南市</div>
+              <div data-value="6">高雄市</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cay-group">
+          <p>請選擇您的餐點需求：</p>
+          <input type="radio" id="meal1" name="meal1" value="veg" /> 素純<br />
+          <input type="radio" id="meal2" name="meal1" value="normal" /> 蛋奶素<br />
+          <input type="radio" id="meal3" name="meal1" value="halal" /> 葷食<br />
+        </div>
+
+        <button type="submit" class="cay-btn">送出表單</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const select = document.getElementById("fakeSelect");
+    const selected = select.querySelector("span");
+    const options = select.querySelectorAll(".cay-options-box div");
+
+    select.addEventListener("click", () => {
+      select.classList.toggle("open");
+    });
+
+    options.forEach((opt) => {
+      opt.addEventListener("click", () => {
+        selected.textContent = opt.textContent;
+        selected.setAttribute("data-value", opt.getAttribute("data-value"));
+        select.classList.remove("open");
+      });
+    });
+
+    const form = document.getElementById("signupForm");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const customValue = selected.getAttribute("data-value");
+
+      if (!name) {
+        alert("請填寫姓名");
+        return;
+      }
+      if (!emailPattern.test(email)) {
+        alert("請輸入正確的電子郵件格式");
+        return;
+      }
+      if (!customValue) {
+        alert("請選擇報名場次");
+        return;
+      }
+
+      const container = document.getElementById("mainContent");
+      container.innerHTML =
+        '<div role="status" style="padding:2rem; font-size:1.5rem; color:#2c3e50;">表單送出成功，謝謝填寫，期待見面！</div>';
+    });
+  </script>
+      <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="./js/fresco/fresco.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/masonry.pkgd.min.js"></script>
+    <script src="./js/imagesLoaded.js"></script>
+    <script type="text/javascript"></script>
+</body>
+</html>

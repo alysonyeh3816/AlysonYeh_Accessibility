@@ -1,0 +1,346 @@
+@mixin bg($w:100%,$h:20hv)
+  position: relative
+  background: #fff
+  width: $w
+  height: $h
+@mixin fullheight($h:100%)
+  height: $h
+@mixin rect_pos_l($t:50%,$l:30%)
+  position: absolute
+  top: $t
+  right: $l
+@mixin rect_pos_r($t:50%,$l:30%)
+  position: absolute
+  top: $t
+  left: $l
+@mixin font($fontsize:13px,$line_height:22px,$letter_sp:1.5px)
+  border: solid 2px rgba(0,0,0,0.3)
+  font-family: 'EB Garamond', 'Ramaraja', '微軟正黑體'
+  color: rgba(0,0,0,0.75)
+  line-height: $line_height
+  letter-spacing: $letter_sp
+  font-size: $fontsize
+  position: absolute
+  bottom: -5px
+@mixin slogan
+  opacity: 0
+  content: "Observing and recording the natural world."
+  position: absolute
+  bottom: 10px
+
+
+
+//初始化
+// *
+//   border: solid 1px
+html,body
+  +bg(100%,100%)
+  overflow: hidden
+.overview
+  font-size: 285px
+  position: absolute
+  bottom: 50px
+  color: rgba(0,0,0,0.04)
+@media only screen and (min-width: 2241px)
+    .fullheight
+      +fullheight
+    .overview
+      font-size: 350px
+      bottom: 400px
+    //上下浮動框框
+    .top_b,.bottom_b
+      +font(16px,24px,1px)
+      padding: 30px
+      &::after
+        +slogan
+        transition-duration: 1.3s
+
+    .top_b
+      &:hover
+        &::after
+          +slogan
+          opacity: 1
+          bottom: 100px
+    .bottom_b
+      padding: 60px 35px 0 40px
+      &:hover
+        &::after
+          +slogan
+          opacity: 1
+          bottom: 95px
+
+    .bottom_b
+      & .bottom_b_mark
+        position: absolute
+        right: 10%
+        bottom: 150px
+
+    .top_b
+      +bg(360px,360px)
+      +rect_pos_l(230px,-5%)
+    .bottom_b
+      +bg(390px,365px)
+      +rect_pos_r(490px,-5%)
+
+@media only screen and (min-width: 1920px) and (max-width: 2240px)
+    .fullheight
+      +fullheight
+    .overview
+      font-size: 300px
+      bottom: 220px
+    //上下浮動框框
+    .top_b,.bottom_b
+      +font(16px,25px,1.2px)
+      padding: 30px
+      &::after
+        +slogan
+        transition-duration: 1.3s
+
+    .top_b
+      &:hover
+        &::after
+          +slogan
+          opacity: 1
+          bottom: 80px
+    .bottom_b
+      padding: 45px 35px 0 30px
+      &:hover
+        &::after
+          +slogan
+          opacity: 1
+          bottom: 70px
+
+    .bottom_b
+      & .bottom_b_mark
+        position: absolute
+        right: 10%
+        bottom: 130px
+
+    .top_b
+      +bg(335px,335px)
+      +rect_pos_l(190px,-5%)
+    .bottom_b
+      +bg(360px,330px)
+      +rect_pos_r(435px,-5%)
+
+@media only screen and (min-width: 1501px) and (max-width: 1919px)
+    .fullheight
+      +fullheight
+    .overview
+      font-size: 290px
+      bottom: 120px
+    //上下浮動框框
+    .top_b,.bottom_b
+      +font(14px)
+      padding: 20px
+      &::after
+        +slogan
+        transition-duration: 1s
+
+    .top_b
+      &:hover
+        &::after
+          +slogan
+          opacity: 1
+          bottom: 68px
+    .bottom_b
+      padding: 40px 25px 0 25px
+      &:hover
+        &::after
+          +slogan
+          opacity: 1
+          bottom: 35px
+
+    .bottom_b
+      & .bottom_b_mark
+        position: absolute
+        right: 10%
+        bottom: 90px
+
+    .top_b
+      +bg(290px,290px)
+      +rect_pos_l(135px,-6%)
+    .bottom_b
+      +bg(295px,287px)
+      +rect_pos_r(350px,-7%)
+
+@media only screen and (min-width: 1001px) and (max-width: 1500px)
+  .fullheight
+    +fullheight
+  //上下浮動框框
+  .top_b,.bottom_b
+    +font(14px)
+    padding: 20px
+    &::after
+      +slogan
+      transition-duration: 1.3s
+
+  .top_b
+    padding-top: 16px
+    &:hover
+      &::after
+        +slogan
+        opacity: 1
+        bottom: 70px
+  .bottom_b
+    padding: 40px 25px 0 25px
+    &:hover
+      &::after
+        +slogan
+        opacity: 1
+        bottom: 45px
+
+  .bottom_b
+    & .bottom_b_mark
+      position: absolute
+      right: 10%
+      bottom: 100px
+
+  .top_b
+    +bg(285px,285px)
+    +rect_pos_l(80px,-8%)
+  .bottom_b
+    +bg(288px,270px)
+    +rect_pos_r(275px,-8%)
+
+@media only screen and (min-width: 820px) and (max-width: 1000px)
+  .fullheight
+    +fullheight
+  //上下浮動框框
+  .top_b,.bottom_b
+    +bg
+    +font
+    padding: 13px
+    &::after
+      +slogan
+      transition-duration: 1s
+
+  .top_b
+    &:hover
+      &::after
+        +slogan
+        opacity: 1
+        bottom: 34px
+  .bottom_b
+    padding: 25px
+    &:hover
+      &::after
+        +slogan
+        opacity: 1
+        bottom: 26px
+
+  .bottom_b
+    & .bottom_b_mark
+      position: absolute
+      right: 10%
+      bottom: 75px
+
+  .top_b
+    +bg(250px,250px)
+    +rect_pos_l(80px,-8%)
+  .bottom_b
+    +bg(255px,255px)
+    +rect_pos_r(280px,-8%)
+@media only screen and (min-width: 768px) and (max-width: 819px)
+    .fullheight
+      +fullheight
+    //上下浮動框框
+    .top_b,.bottom_b
+      +bg
+      +font(12px,18px,1px)
+      padding: 15px
+      &::after
+        +slogan
+        transition-duration: 1s
+
+    .top_b
+      padding-top: 10px
+      &:hover
+        &::after
+          +slogan
+          opacity: 1
+          bottom: 20px
+    .bottom_b
+      padding-top: 20px
+      &:hover
+        &::after
+          +slogan
+          opacity: 1
+          bottom: 25px
+
+    .bottom_b
+      & .bottom_b_mark
+        position: absolute
+        right: 10%
+        top: 60%
+
+    .top_b
+      +bg(216px,216px)
+      +rect_pos_l(60px,-8%)
+    .bottom_b
+      +bg(219px,219px)
+      +rect_pos_r(240px,-8%)
+
+@media only screen and (min-width: 636px) and (max-width: 767px)
+      html,body
+        +bg(100%,100%)
+        overflow: initial
+      .overview
+        display: none
+      .top_b
+        +font
+        border: none
+        position: static
+        padding: 0 0 25px 15px
+      .top_b::after
+        display: block
+        margin-top: 10px
+        content: "Observing and recording the natural world."
+      .bottom_b
+        display: none
+
+      .aside-fixed
+        padding-bottom: 10px
+        position: relative
+        top: 85px
+      .mail
+        position: relative
+        top: -10px
+      .vert-align-footer
+        position: relative
+        margin-top: -5px
+      .text-muted,.copyright
+        margin: 1% auto
+
+@media only screen and (max-width: 635px)
+    html,body
+      +bg(100%,100%)
+      overflow: initial
+    .overview
+      display: none
+    .top_b
+      +font
+      border: none
+      position: static
+      padding: 5px 0 30px 10px
+    .top_b::after
+      display: block
+      margin-top: 10px
+      content: "Observing and recording the natural world."
+    .bottom_b
+      display: none
+
+    .aside-fixed
+      padding-bottom: 10px
+      position: relative
+      top: 85px
+    .mail
+      position: relative
+      top: -10px
+    .vert-align-footer
+      position: relative
+      margin-top: -5px
+    .text-muted,.copyright
+      margin: 1% auto
+
+//測試
