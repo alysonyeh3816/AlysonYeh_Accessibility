@@ -22,7 +22,7 @@
         :focus-visible {
             outline: 3px solid var(--focus);
             outline-offset: 2px;
-            box-shadow: none;
+            box-shadow: 0 0 0 3px #fff;
         }
 
         .visually-hidden {
@@ -212,6 +212,11 @@
             width: 20px;
             height: 20px;
             cursor: pointer;
+        }
+
+        .carousel_1_tab button:focus-visible{
+            border-radius: 30%;
+    
         }
 
         .carousel_1_tab svg circle {
