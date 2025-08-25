@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>輪播-純圖片輪播：使用索引標籤</title>
+    <link rel="stylesheet" href="../css/accordion.css">
+    <script src="../js/accordion.js" defer></script>
+    <style>
+        :root {
+            --card-w: min(100%, 960px);
+            --slide-h: clamp(260px, 45vw, 520px);
+            --brand: #0a63ff;
+            --ink: #111;
+            --surface: #ffffff;
+            --line: #ccd2dd;
+            --radius: 12px;
+        }
+
+        /* 基本排版與置中 */
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(1200px 600px at 10% -20%, #e8f0ff 0, transparent 60%),
+                radial-gradient(1200px 600px at 110% 120%, #eaf7ef 0, transparent 60%),
+                #f6f7fb;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        /* Skip link */
+        .skip-link {
+            position: absolute;
+            left: 12px;
+            top: 0;
+            transform: translateY(-150%);
+            padding: 12px 16px;
+            background: #fff;
+            border: 2px solid var(--brand);
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .skip-link:focus,
+        .skip-link:focus-visible {
+            transform: translateY(12px);
+            outline: none;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        /* 全域 focus-visible：深藍＋白雙色焦點框 */
+        *:focus-visible {
+            outline: 3px solid #1b5ae0;
+            /* 深藍 */
+            outline-offset: 2px;
+            box-shadow:
+                0 0 0 4px #fff,
+                /* 白色外框 */
+                0 0 0 6px #1b5ae0;
+            /* 深藍外框 */
+            border-radius: 6px;
+        }
+
+        /* Tablist 容器 */
+        .carousel-tablist {
+            width: var(--card-w);
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow:
+                0 12px 30px rgba(10, 30, 60, .08),
+                0 2px 6px rgba(10, 30, 60, .06);
+            border: 1px solid rgba(20, 20, 20, .06);
+        }
+
+        .carousel-tablist .carousel-inner {
+            position: relative;
+        }
+
+        .carousel-tablist .carousel-items {
+            padding: 0;
+        }
+
+        .carousel-tablist .carousel-item {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: var(--slide-h);
+            overflow: hidden;
+            background: #ddd;
+        }
+
+        .carousel-tablist .carousel-item.active {
+            display: block;
+        }
+
+        .carousel-tablist .carousel-item .carousel-image a img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: saturate(1.02) contrast(1.02);
+            transform: scale(1.001);
+        }
+
+        /* 字幕 */
+        .carousel-tablist .carousel-item .carousel-caption {
+            position: absolute;
+            inset: auto 0 0 0;
+            padding: 22px min(4vw, 24px) 24px;
+            color: #fff;
+            text-align: left;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0)0%, rgba(0, 0, 0, .25)30%, rgba(0, 0, 0, .55)65%, rgba(0, 0, 0, .75)100%);
+        }
+
+        .carousel-tablist .carousel-item .carousel-caption h3 {
+            margin: 0 0 8px;
+            font-size: clamp(18px, 2.2vw, 24px);
+            line-height: 1.25;
+        }
+
+        .carousel-tablist .carousel-item .carousel-caption p {
+            margin: 0;
+            font-size: clamp(14px, 1.6vw, 16px);
+            line-height: 1.6;
+            opacity: .95;
+        }
+
+        .carousel-tablist .carousel-item .carousel-caption a {
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            padding: 2px 4px;
+        }
+
+        .carousel-tablist .carousel-item .carousel-caption a:hover {
+            text-decoration: underline;
+        }
+
+        /* 控制列 */
+        .carousel-tablist .controls {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+            pointer-events: none;
+        }
+
+        .carousel-tablist .rotation,
+        .carousel-tablist [role="tablist"] {
+            pointer-events: auto;
+        }
+
+        /* 暫停/播放按鈕 */
+        .carousel-tablist .rotation {
+            height: 30px;
+            padding: 0;
+            background: rgba(0, 0, 0, .40);
+            border: 1px solid rgba(255, 255, 255, .35);
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            transition: transform .12s ease, background .2s ease, border-color .2s ease;
+        }
+
+        .carousel-tablist .rotation:hover,
+        .carousel-tablist .rotation:focus-visible {
+            background: rgba(10, 99, 255, 1);
+            border-color: #fff;
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* SVG 圖示設定 */
+        .carousel-tablist .svg-play .background,
+        .carousel-tablist .svg-play .border {
+            fill: transparent;
+            stroke: transparent;
+        }
+
+        .carousel-tablist .svg-play .pause,
+        .carousel-tablist .svg-play .play {
+            fill: transparent;
+            stroke: transparent;
+        }
+
+        .carousel-tablist .svg-play .pause {
+            stroke-width: 4;
+        }
+
+        .carousel-tablist .svg-play .play {
+            stroke-width: 1;
+        }
+
+        .carousel-tablist .rotation.pause .svg-play .pause {
+            stroke: #fff;
+        }
+
+        .carousel-tablist .rotation.play .svg-play .play {
+            fill: #fff;
+            stroke: #fff;
+        }
+
+        /* Tablist 與 Tab */
+        .carousel-tablist .tab-wrapper {
+            flex: 1 1 auto;
+            height: 30px;
+            text-align: center;
+        }
+
+        .carousel-tablist [role="tablist"] {
+            background: rgba(0, 0, 0, .55);
+            border: 1px solid rgba(255, 255, 255, .35);
+            border-radius: 999px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            padding: 2px 6px;
+            margin-left: auto;
+        }
+
+        .carousel-tablist [role="tab"] {
+            width: 34px;
+            height: 34px;
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        /* 特例：tab 的 focus-visible 不用雙色框，而是跟 hover 相同 */
+        .carousel-tablist [role="tab"]:focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .carousel-tablist [role="tab"] circle.tab-background {
+            fill: rgba(255, 255, 255, .12);
+            stroke: rgba(255, 255, 255, .12);
+        }
+
+        .carousel-tablist [role="tab"] circle.tab {
+            fill: transparent;
+            stroke: #fff;
+            stroke-width: 2px;
+            opacity: .7;
+        }
+
+        .carousel-tablist [role="tab"][aria-selected="true"] circle.tab {
+            fill: #fff;
+            stroke: #fff;
+            opacity: 1;
+        }
+
+        /* hover 與 focus-visible 共用 */
+        .carousel-tablist [role="tab"]:hover circle.tab-background,
+        .carousel-tablist [role="tab"]:focus-visible circle.tab-background {
+            fill: #fff;
+            opacity: 1;
+        }
+
+        .carousel-tablist [role="tab"]:hover circle.tab,
+        .carousel-tablist [role="tab"]:focus-visible circle.tab {
+            stroke: var(--brand);
+        }
+
+        .carousel-tablist [role="tab"] circle.border {
+            display: none;
+        }
+
+        /* Tablist 聚焦整條膠囊 */
+        .carousel-tablist [role="tablist"].focus {
+            background: rgba(10, 99, 255, .95);
+            border-color: transparent;
+        }
+
+        /* 更易於存取樣式 */
+        .carousel-tablist-moreaccessible {
+            border-radius: 16px;
+            border: 1px solid rgba(20, 20, 20, .08);
+            box-shadow: 0 10px 22px rgba(10, 30, 60, .05), 0 1px 3px rgba(10, 30, 60, .06);
+        }
+
+        .carousel-tablist-moreaccessible .carousel-item {
+            height: auto;
+            padding: 5px;
+        }
+
+        .carousel-tablist .carousel-items.focus {
+            border-radius: 16px;
+            padding: 2px;
+            border: solid 3px var(--brand);
+        }
+
+        .carousel-tablist-moreaccessible .carousel-item .carousel-caption {
+            position: static;
+            background: #fff;
+            color: #111;
+            padding: 14px 16px 18px;
+            border-top: 1px solid rgba(20, 20, 20, .06);
+        }
+
+        .carousel-tablist-moreaccessible .carousel-item .carousel-caption a {
+            color: var(--ink);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+    <main>
+        <h1 id="mainh1">輪播-純圖片輪播：使用索引標籤</h1>
+
+        <div class="top-link">
+            <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a>
+            <a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
+        </div>
+
+        <!-- 你的原始 HTML 結構、圖片與 JS 完整保留（僅外觀 CSS 調整） -->
+        <section id="myCarousel" class="carousel-tablist" aria-roledescription="輪播" aria-label="精選電視節目">
+            <div class="carousel-inner">
+                <div class="controls">
+                    <button class="rotation" type="button" aria-label="停止輪播">
+                        <svg width="42" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg" class="svg-play">
+                            <rect class="background" x="2" y="2" rx="5" ry="5" width="38" height="24"></rect>
+                            <rect class="border" x="4" y="4" rx="5" ry="5" width="34" height="20"></rect>
+                            <polygon class="pause" points="17 8 17 20"></polygon>
+                            <polygon class="pause" points="24 8 24 20"></polygon>
+                            <polygon class="play" points="15 8 15 20 27 14"></polygon>
+                        </svg>
+                    </button>
+
+                    <div class="tab-wrapper">
+                        <div role="tablist" aria-label="輪播圖組">
+                            <!-- 指示圈（與原本相同） -->
+                            <button id="carousel-tab-1" type="button" role="tab" aria-label="輪播 1" aria-selected="true"
+                                aria-controls="carousel-item-1">
+                                <svg width="34" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="border" cx="16" cy="17" r="10"></circle>
+                                    <circle class="tab-background" cx="16" cy="17" r="8"></circle>
+                                    <circle class="tab" cx="16" cy="17" r="6"></circle>
+                                </svg>
+                            </button>
+                            <button id="carousel-tab-2" type="button" role="tab" tabindex="-1" aria-label="輪播 2"
+                                aria-selected="false" aria-controls="carousel-item-2">
+                                <svg width="34" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="border" cx="16" cy="17" r="10"></circle>
+                                    <circle class="tab-background" cx="16" cy="17" r="8"></circle>
+                                    <circle class="tab" cx="16" cy="17" r="6"></circle>
+                                </svg>
+                            </button>
+                            <button id="carousel-tab-3" type="button" role="tab" tabindex="-1" aria-label="輪播 3"
+                                aria-selected="false" aria-controls="carousel-item-3">
+                                <svg width="34" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="border" cx="16" cy="17" r="10"></circle>
+                                    <circle class="tab-background" cx="16" cy="17" r="8"></circle>
+                                    <circle class="tab" cx="16" cy="17" r="6"></circle>
+                                </svg>
+                            </button>
+                            <button id="carousel-tab-4" type="button" role="tab" tabindex="-1" aria-label="輪播 4"
+                                aria-selected="false" aria-controls="carousel-item-4">
+                                <svg width="34" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="border" cx="16" cy="17" r="10"></circle>
+                                    <circle class="tab-background" cx="16" cy="17" r="8"></circle>
+                                    <circle class="tab" cx="16" cy="17" r="6"></circle>
+                                </svg>
+                            </button>
+                            <button id="carousel-tab-5" type="button" role="tab" tabindex="-1" aria-label="輪播 5"
+                                aria-selected="false" aria-controls="carousel-item-5">
+                                <svg width="34" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="border" cx="16" cy="17" r="10"></circle>
+                                    <circle class="tab-background" cx="16" cy="17" r="8"></circle>
+                                    <circle class="tab" cx="16" cy="17" r="6"></circle>
+                                </svg>
+                            </button>
+                            <button id="carousel-tab-6" type="button" role="tab" tabindex="-1" aria-label="輪播 6"
+                                aria-selected="false" aria-controls="carousel-item-6">
+                                <svg width="34" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="border" cx="16" cy="17" r="10"></circle>
+                                    <circle class="tab-background" cx="16" cy="17" r="8"></circle>
+                                    <circle class="tab" cx="16" cy="17" r="6"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 你的原本 slides 保留不變（略） -->
+                <div id="myCarousel-items" class="carousel-items playing" aria-live="off">
+                    <!-- ...把你原本的 1~6 張 .carousel-item 放回來即可（與題目相同）... -->
+                    <!-- 下面只示範第1張，其他請照原本貼上 -->
+                    <div class="carousel-item active" id="carousel-item-1" role="tabpanel" aria-roledescription="slide"
+                        aria-label="六之一">
+                        <div class="carousel-image">
+                            <a href="https://www.klook.com/zh-TW/activity/109967-amsterdam-highlights-history-2-hour-walking-tour/"
+                                id="carousel-image-1">
+                                <img src="../images/amsterdamslide__800x600.jpg" alt="阿姆斯特丹徒步之旅" />
+                            </a>
+                        </div>
+                        <div class="carousel-caption">
+                            <h2><a href="https://www.youtube.com/watch?v=2bjv3-_2NL4">動態歐洲：阿姆斯特丹、布拉格、柏林</a></h2>
+                            <p>
+                                <span class="contrast">3月3日星期二晚上7點在電視上播出</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" id="carousel-item-2" role="tabpanel" aria-roledescription="slide"
+                        aria-label="六之二">
+                        <div class="carousel-image">
+                            <a href="https://lalalovetravel.com/articles/352-england-cornwall" id="carousel-image-2">
+                                <img src="../images/lands-endslide__800x600.jpg" alt="康沃爾郡的天涯海角" />
+                            </a>
+                        </div>
+
+                        <div class="carousel-caption">
+                            <h2>
+                                <a href="https://ahhhzz.com/eurostar/"> 前往西南英國和巴黎 </a>
+                            </h2>
+
+                            <div>
+                                <p><span class="contrast">9月14日至9月24日或27日</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" id="carousel-item-3" role="tabpanel" aria-roledescription="slide"
+                        aria-label="六之三">
+                        <div class="carousel-image">
+                            <a href="https://zh.freepik.com/premium%E5%9C%96%E7%89%87/mother-daughter-playing-laptop-together-living-room-home-happy-loving-family-concept_21928881.htm"
+                                id="carousel-image-3">
+                                <img src="../images/trustslide-2__800x600.jpg" alt="媽媽和女兒在筆記型電腦上玩丹尼爾老虎遊戲" />
+                            </a>
+                        </div>
+
+                        <div class="carousel-caption">
+                            <h2>
+                                <a
+                                    href="https://www.ptskids.tw/?gad_source=1&gad_campaignid=17785803973&gbraid=0AAAAAox0ZUex1u-dpX5oJAUu7WTq9UOCz&gclid=Cj0KCQjw-4XFBhCBARIsAAdNOkvNiaRpC6T-uT6kCBQIxBT-h5FO8KEzsydeNFPe-lFFDSBrLTUOu7AaAu7jEALw_wcB">
+                                    公共電視的優質兒童節目 </a>
+                            </h2>
+
+                            <div></div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" id="carousel-item-4" role="tabpanel" aria-roledescription="slide"
+                        aria-label="六之四">
+                        <div class="carousel-image">
+                            <a href="https://www.w3.org/WAI/content-images/wai-aria-practices/patterns/carousel/examples/images/foyleswarslide__800x600.jpg"
+                                id="carousel-image-4" title="點擊打開原圖">
+                                <img src="../images/foyleswarslide__800x600.jpg"
+                                    alt="戰地神探宣傳照：一名身穿西裝、頭戴軟呢帽的男子和一名頭髮梳理整齊的女子嚴肅地看著鏡頭" />
+                            </a>
+                        </div>
+
+                        <div class="carousel-caption">
+                            <h2>
+                                <a href="https://www.imdb.com/title/tt0310455/"> 戰地神探 </a>
+                            </h2>
+
+                            <div>
+                                <p>
+                                    <span class="contrast">3月8日週日晚上8點，電視上：最終季度的預告大揭密</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" id="carousel-item-5" role="tabpanel" aria-roledescription="slide"
+                        aria-label="六之五">
+                        <div class="carousel-image">
+                            <a href="https://www.w3.org/WAI/content-images/wai-aria-practices/patterns/carousel/examples/images/britcomdavidslide__800x600.jpg"
+                                id="carousel-image-5" title="點擊打開原圖">
+                                <img src="../images/britcomdavidslide__800x600.jpg"
+                                    alt="英國國旗與 WILL-TV 主持人 David Thiel 合影" />
+                            </a>
+                        </div>
+
+                        <div class="carousel-caption">
+                            <h2>
+                                <a href="https://news.illinois.edu/on-the-job-david-thiel/"> 誰是 David Thiel </a>
+                            </h2>
+
+                            <div></div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" id="carousel-item-6" role="tabpanel" aria-roledescription="slide"
+                        aria-label="六之六">
+                        <div class="carousel-image">
+                            <a href="https://will.illinois.edu/midamericangardener/panelists" id="carousel-image-6">
+                                <img src="../images/mag800-2__800x600.jpg" alt="《美國中部園丁》片場嘉賓" />
+                            </a>
+                        </div>
+
+                        <div class="carousel-caption">
+                            <h2>
+                                <a href="https://will.illinois.edu/midamericangardener"> 美國中部園丁：每週四晚上7點 </a>
+                            </h2>
+
+                            <div class="hidden-xs hidden-sm">
+                                <p><span class="contrast">觀看最新的集數</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <h2 id="auditCode">相應稽核評量碼</h2>
+        <div id="accordionContainer"></div>
+
+        <a id="quickLink" href="#mainh1" aria-label="移至待檢測元件">移至待檢測元件</a>
+
+        <h2 id="detectionItem">檢測方式</h2>
+        <div class="test-guide-container">
+            <h3>檢測項目：純資訊輪播或跑馬燈</h3>
+            <ol>
+                <li>
+                    <p>確認輪播/跑馬燈組件是否會動，若不會動則進入(5)。</p>
+                </li>
+                <li>
+                    <p>若輪播／跑馬燈組件具有自動播放或自動移動效果，則：</p>
+                    <ul>
+                        <li>應確認組件中提供暫停按鈕（或刪除/隱藏按鈕，下同，統稱為「暫停/中止/隱藏元件」）。</li>
+                        <li>該暫停/中止/隱藏元件應為整個輪播/跑馬燈組件中第一個可聚焦元件。</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>若第一個可聚焦元件為整個輪播/跑馬燈組件本身，則暫停/中止/隱藏元件可作為第二個可聚焦元件，並確認可用鍵盤操作暫停/中止/隱藏功能且行為相符。</p>
+                </li>
+                <li>
+                    <p>若輪播組件提供暫停機制，則以下須擇一達成：</p>
+                    <ul>
+                        <li><strong>類型一</strong>：同時提供暫停、播放按鈕，須確認兩者均可操作。</li>
+                        <li><strong>類型二</strong>：僅提供暫停按鈕，確認該按鈕具切換功能，可進行暫停及播放。</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>以滑鼠確認各輪播圖/跑馬燈是否具有功能（例如連結）。</p>
+                </li>
+                <li>
+                    <p>確認具有功能後，以 Tab 鍵遊走組件各元件，焦點跳位順序應符合邏輯。</p>
+                </li>
+                <li>
+                    <p>確認各元件可操作（<em>需在無法達成類型一的前提下方可採用類型二</em>）：</p>
+                    <ul>
+                        <li>
+                            <strong>類型一</strong>（Tab 可走入各「項目」）：
+                            <ul>
+                                <li>焦點遊走至某項目時，被選中之項目應可視。</li>
+                                <li>應主動報讀該項目內容；若為連結，應可用 Enter/空白鍵啟動。</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>類型二</strong>（Tab 無法走入各「項目」，但可走到控制元件）：
+                            <ul>
+                                <li>
+                                    <strong>A 方式（向前/向後按鈕）</strong>：
+                                    <ul>
+                                        <li>焦點停留於切換按鈕時，應報讀其名稱（如向前/向後/上一張/下一張）。</li>
+                                        <li>按下切換按鈕後，被選中之項目應可視。</li>
+                                        <li>螢幕報讀器應主動報讀對應的圖片資訊（或回饋按鈕已按下）。</li>
+                                        <li>Tab 可繼續遊走至對應之唯一項目，且可鍵盤啟動其功能（如連結）。</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>B 方式（指示標籤）</strong>：
+                                    <ul>
+                                        <li>焦點停留於指示標籤時，應朗讀項目值或名稱（如項目一/項目二）。</li>
+                                        <li>被選取的項目需清楚可見。</li>
+                                        <li>被選取時應主動朗讀相應提示（如已按下/已選取）。</li>
+                                        <li>使用者可透過 Tab 將焦點移動到該唯一項目；若為連結可用 Enter/空白鍵啟動。</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <p>承(7)，確認鍵盤可操作（類型一或類型二，<em>此處不考量報讀</em>）。</p>
+                </li>
+                <li>
+                    <p>（若採類型一）當焦點停於某項目時，該項目會暫停，且焦點指示器清楚可見。</p>
+                </li>
+                <li>
+                    <p>再次按 Tab，焦點可移動並選取下一項。</p>
+                </li>
+                <li>
+                    <p>焦點取到各可聚焦元素時，在不同瀏覽器均呈現預設焦點樣式或作者設定的明確可見樣式。</p>
+                </li>
+                <li>
+                    <p>焦點指示器至少有 1 CSS 像素圍繞元素，且聚焦/未聚焦對比變化達 3:1；若對比不足，指示器邊線厚度至少 2 CSS 像素。</p>
+                </li>
+                <li>
+                    <p>確認名稱/角色/行為相符：</p>
+                    <ul>
+                        <li>輪播圖片為圖片角色。</li>
+                        <li>暫停鍵、向前/向後鍵為按鈕角色。</li>
+                        <li>具連結功能之項目為連結角色。</li>
+                        <li>（類型二 A）按下向左/向右鍵後應主動報讀對應圖片資訊（或回饋已按下）。</li>
+                        <li>（類型二 B）指示標籤被選取後應主動報讀相應提示（如已按下/已選取）。</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>以 Tab 與 Shift+Tab 遊走整組組件，最終可順利離開該組件。</p>
+                </li>
+                <li>
+                    <p>以上均符合則全數通過。</p>
+                </li>
+            </ol>
+
+            <p style="margin: 40px 0 10px 0;"><strong>註一：</strong>若第一個鍵盤焦點是整組輪播，並且能報讀整組件為輪播，則暫停/中止/隱藏等機制可以為第二個焦點。</p>
+            <p><strong>註一（白話）：</strong>有些實作會用一個大標籤包裹整個輪播（或在前方放說明標籤）並讓其可聚焦與報讀「輪播圖」，因此暫停/隱藏等按鈕就會成為第二個可聚焦元件。</p>
+
+    </main>
+
+    <script>
+        /* Skip to main */
+        var skip = document.querySelector('.skip-link');
+        if (skip) {
+            skip.addEventListener('click', function () {
+                var target = document.getElementById('mainh1');
+                if (!target) return;
+                if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+                target.focus({ preventScroll: false });
+            });
+        }
+
+        /*
+         *   File:   carousel-tablist.js
+         *
+         *   Desc:   Carousel Tablist widget that implements ARIA Authoring Practices
+         *
+         */
+
+        "use strict";
+
+        // takes options object: { accessibleCaptions: boolean, autoplay: boolean, playButton: boolean }
+        // defaults are: { accessibleCaptions: true, autoplay: false, playButton: true }
+
+        var CarouselTablist = function (node, options) {
+            // merge passed options with defaults
+            options = Object.assign(
+                { moreaccessible: false, paused: false, norotate: false },
+                options || {}
+            );
+
+            // a prefers-reduced-motion user setting must always override autoplay
+            var hasReducedMotion = window.matchMedia(
+                "(prefers-reduced-motion: reduce)"
+            );
+            if (hasReducedMotion.matches) {
+                options.paused = true;
+            }
+
+            /* DOM properties */
+            this.domNode = node;
+
+            this.tablistNode = node.querySelector("[role=tablist]");
+            this.containerNode = node.querySelector(".carousel-items");
+
+            this.tabNodes = [];
+            this.tabpanelNodes = [];
+
+            this.liveRegionNode = node.querySelector(".carousel-items");
+            this.pausePlayButtonNode = document.querySelector(
+                ".carousel-tablist .controls button.rotation"
+            );
+
+            this.playLabel = "自動輪播停止中";
+            this.pauseLabel = "自動輪播啟動中";
+
+            /* 狀態屬性 */
+            this.hasUserActivatedPlay = false; // 當使用者按下播放/暫停按鈕時會設為 true
+            this.isAutoRotationDisabled = options.norotate; // 用來控制是否停用自動輪播
+            this.isPlayingEnabled = !options.paused; // 此屬性也會在 updatePlaying 方法中設定
+            this.timeInterval = 5000; // 幻燈片輪播的時間間隔（毫秒）
+            this.currentIndex = 0; // 目前顯示的幻燈片索引
+            this.slideTimeout = null; // 用來儲存 setTimeout 的參考值
+
+            // 初始化選項卡（tabs）
+            this.tablistNode.addEventListener(
+                "focusin",
+                this.handleTabFocus.bind(this)
+            );
+            this.tablistNode.addEventListener(
+                "focusout",
+                this.handleTabBlur.bind(this)
+            );
+
+            var nodes = node.querySelectorAll('[role="tab"]');
+
+            for (var i = 0; i < nodes.length; i++) {
+                var n = nodes[i];
+
+                this.tabNodes.push(n);
+
+                n.addEventListener("keydown", this.handleTabKeydown.bind(this));
+                n.addEventListener("click", this.handleTabClick.bind(this));
+
+                // 初始化對應的標籤面板（tabpanel）
+
+                var tabpanelNode = document.getElementById(
+                    n.getAttribute("aria-controls")
+                );
+
+                if (tabpanelNode) {
+                    this.tabpanelNodes.push(tabpanelNode);
+
+                    // 當 tabpanel 中的任何元素獲得焦點時，支援停止輪播
+                    tabpanelNode.addEventListener(
+                        "focusin",
+                        this.handleTabpanelFocusIn.bind(this)
+                    );
+                    tabpanelNode.addEventListener(
+                        "focusout",
+                        this.handleTabpanelFocusOut.bind(this)
+                    );
+
+                    var imageLink = tabpanelNode.querySelector(".carousel-image a");
+
+                    if (imageLink) {
+                        imageLink.addEventListener(
+                            "focus",
+                            this.handleImageLinkFocus.bind(this)
+                        );
+                        imageLink.addEventListener(
+                            "blur",
+                            this.handleImageLinkBlur.bind(this)
+                        );
+                    }
+                } else {
+                    this.tabpanelNodes.push(null);
+                }
+            }
+
+            // 暫停/播放按鈕
+            if (this.pausePlayButtonNode) {
+                this.pausePlayButtonNode.addEventListener(
+                    "click",
+                    this.handlePausePlayButtonClick.bind(this)
+                );
+            }
+
+            // 處理滑鼠懸停事件
+            this.domNode.addEventListener(
+                "mouseover",
+                this.handleMouseOver.bind(this)
+            );
+            this.domNode.addEventListener(
+                "mouseout",
+                this.handleMouseOut.bind(this)
+            );
+
+            // 根據 options 初始化輪播行為
+
+            this.enableOrDisableAutoRotation(options.norotate); // 啟用或停用自動播放
+            this.updatePlaying(!options.paused && !options.norotate); // 根據選項更新播放狀態
+            this.setAccessibleStyling(options.moreaccessible); // 設定無障礙樣式
+            this.rotateSlides(); // 啟動輪播
+        };
+
+        /* 公用函式：啟用或停用輪播，如果禁用，則隱藏播放/暫停按鈕 */
+        CarouselTablist.prototype.enableOrDisableAutoRotation = function (
+            disable
+        ) {
+            this.isAutoRotationDisabled = disable;
+            this.pausePlayButtonNode.hidden = disable;
+        };
+
+        /* 公用函式：更新控制項與說明文字的樣式 */
+        CarouselTablist.prototype.setAccessibleStyling = function (accessible) {
+            if (accessible) {
+                this.domNode.classList.add("carousel-tablist-moreaccessible");
+            } else {
+                this.domNode.classList.remove("carousel-tablist-moreaccessible");
+            }
+        };
+
+        CarouselTablist.prototype.hideTabpanel = function (index) {
+            var tabNode = this.tabNodes[index];
+            var panelNode = this.tabpanelNodes[index];
+
+            tabNode.setAttribute("aria-selected", "false");
+            tabNode.setAttribute("tabindex", "-1");
+
+            if (panelNode) {
+                panelNode.classList.remove("active");
+            }
+        };
+
+        CarouselTablist.prototype.showTabpanel = function (index, moveFocus) {
+            var tabNode = this.tabNodes[index];
+            var panelNode = this.tabpanelNodes[index];
+
+            tabNode.setAttribute("aria-selected", "true");
+            tabNode.removeAttribute("tabindex");
+
+            if (panelNode) {
+                panelNode.classList.add("active");
+            }
+
+            if (moveFocus) {
+                tabNode.focus();
+            }
+        };
+
+        CarouselTablist.prototype.setSelectedTab = function (index, moveFocus) {
+            if (index === this.currentIndex) {
+                return;
+            }
+            this.currentIndex = index;
+
+            for (var i = 0; i < this.tabNodes.length; i++) {
+                this.hideTabpanel(i);
+            }
+
+            this.showTabpanel(index, moveFocus);
+        };
+
+        CarouselTablist.prototype.setSelectedToPreviousTab = function (
+            moveFocus
+        ) {
+            var nextIndex = this.currentIndex - 1;
+
+            if (nextIndex < 0) {
+                nextIndex = this.tabNodes.length - 1;
+            }
+
+            this.setSelectedTab(nextIndex, moveFocus);
+        };
+
+        CarouselTablist.prototype.setSelectedToNextTab = function (moveFocus) {
+            var nextIndex = this.currentIndex + 1;
+
+            if (nextIndex >= this.tabNodes.length) {
+                nextIndex = 0;
+            }
+
+            this.setSelectedTab(nextIndex, moveFocus);
+        };
+
+        CarouselTablist.prototype.rotateSlides = function () {
+            if (!this.isAutoRotationDisabled) {
+                if (
+                    (!this.hasFocus && !this.hasHover && this.isPlayingEnabled) ||
+                    this.hasUserActivatedPlay
+                ) {
+                    this.setSelectedToNextTab(false);
+                }
+            }
+
+            this.slideTimeout = setTimeout(
+                this.rotateSlides.bind(this),
+                this.timeInterval
+            );
+        };
+
+        CarouselTablist.prototype.updatePlaying = function (play) {
+            this.isPlayingEnabled = play;
+
+            if (play) {
+                this.pausePlayButtonNode.setAttribute("aria-label", this.pauseLabel);
+                this.pausePlayButtonNode.classList.remove("play");
+                this.pausePlayButtonNode.classList.add("pause");
+                // this.liveRegionNode.setAttribute('aria-live', 'off');
+            } else {
+                this.pausePlayButtonNode.setAttribute("aria-label", this.playLabel);
+                this.pausePlayButtonNode.classList.remove("pause");
+                this.pausePlayButtonNode.classList.add("play");
+                // this.liveRegionNode.setAttribute('aria-live', 'polite');
+            }
+        };
+
+        /* 事件處理器 */
+
+        CarouselTablist.prototype.handleImageLinkFocus = function () {
+            // 當圖片連結獲得焦點時，加入 focus 樣式
+            this.liveRegionNode.classList.add("focus");
+        };
+
+        CarouselTablist.prototype.handleImageLinkBlur = function () {
+            // 當圖片連結失去焦點時，移除 focus 樣式
+            this.liveRegionNode.classList.remove("focus");
+        };
+
+        CarouselTablist.prototype.handleMouseOver = function (event) {
+            // 當滑鼠進入輪播範圍，但不是懸停在播放/暫停按鈕上時，設置為 hover 狀態
+            if (!this.pausePlayButtonNode.contains(event.target)) {
+                this.hasHover = true;
+            }
+        };
+
+        CarouselTablist.prototype.handleMouseOut = function () {
+            // 當滑鼠移出輪播範圍，取消 hover 狀態
+            this.hasHover = false;
+        };
+
+        /* 播放/暫停按鈕的事件處理器 */
+
+        CarouselTablist.prototype.handlePausePlayButtonClick = function () {
+            // 使用者點擊播放/暫停按鈕時，切換播放狀態
+            this.hasUserActivatedPlay = !this.isPlayingEnabled;
+            this.updatePlaying(!this.isPlayingEnabled);
+        };
+
+        /* 選項卡（Tab）的事件處理器 */
+
+        CarouselTablist.prototype.handleTabKeydown = function (event) {
+            var flag = false;
+
+            switch (event.key) {
+                case "ArrowRight":
+                    this.setSelectedToNextTab(true);
+                    flag = true;
+                    break;
+
+                case "ArrowLeft":
+                    this.setSelectedToPreviousTab(true);
+                    flag = true;
+                    break;
+
+                case "Home":
+                    this.setSelectedTab(0, true);
+                    flag = true;
+                    break;
+
+                case "End":
+                    this.setSelectedTab(this.tabNodes.length - 1, true);
+                    flag = true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (flag) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        };
+
+        CarouselTablist.prototype.handleTabClick = function (event) {
+            var index = this.tabNodes.indexOf(event.currentTarget);
+            this.setSelectedTab(index, true);
+        };
+
+        CarouselTablist.prototype.handleTabFocus = function () {
+            this.tablistNode.classList.add("focus");
+            // this.liveRegionNode.setAttribute('aria-live', 'polite');
+            this.hasFocus = true;
+        };
+
+        CarouselTablist.prototype.handleTabBlur = function () {
+            this.tablistNode.classList.remove("focus");
+            // if (this.playState) {
+            //   this.liveRegionNode.setAttribute('aria-live', 'off');
+            // }
+
+            this.hasFocus = false;
+        };
+
+        /* 標籤面板（Tabpanels）的事件處理器 */
+
+        CarouselTablist.prototype.handleTabpanelFocusIn = function () {
+            // 當面板內有元素獲得焦點時，標記為已聚焦
+            this.hasFocus = true;
+        };
+
+        CarouselTablist.prototype.handleTabpanelFocusOut = function () {
+            // 當面板內元素失去焦點時，標記為未聚焦
+            this.hasFocus = false;
+        };
+
+        /* 初始化 Carousel Tablists 及選項設定 */
+
+        window.addEventListener(
+            "load",
+            function () {
+                var carouselEls = document.querySelectorAll(".carousel-tablist"); // 抓取所有輪播元素
+                var carousels = [];
+
+                // 根據勾選框的預設狀態與 URL 參數來設定範例行為
+                // 如果 URL 中有對應參數，也會更新勾選框的狀態
+                var checkboxes = document.querySelectorAll(
+                    ".carousel-options input[type=checkbox]"
+                );
+                var urlParams = new URLSearchParams(location.search);
+                var carouselOptions = {};
+
+                // 根據勾選框預設狀態與 URL 參數來初始化範例功能
+                // 並更新勾選框狀態（例如 ?paused=true）
+                checkboxes.forEach(function (checkbox) {
+                    var checked = checkbox.checked;
+
+                    if (urlParams.has(checkbox.value)) {
+                        var urlParam = urlParams.get(checkbox.value);
+                        if (typeof urlParam === "string") {
+                            checked = urlParam === "true";
+                            checkbox.checked = checked;
+                        }
+                    }
+
+                    carouselOptions[checkbox.value] = checkbox.checked;
+                });
+
+                carouselEls.forEach(function (node) {
+                    carousels.push(new CarouselTablist(node, carouselOptions));
+                });
+
+                // 為每個勾選框加入 change（變更）事件監聽器
+                checkboxes.forEach(function (checkbox) {
+                    var updateEvent;
+
+                    // 根據勾選框的 value 設定要呼叫的更新方法
+                    switch (checkbox.value) {
+                        case "moreaccessible":
+                            // 當 value 是 'moreaccessible' 時，對應要呼叫的函式是 setAccessibleStyling
+                            updateEvent = "setAccessibleStyling";
+                            break;
+                        case "norotate":
+                            // 當 value 是 'norotate' 時，對應要呼叫的函式是 enableOrDisableAutoRotation
+                            updateEvent = "enableOrDisableAutoRotation";
+                            break;
+                    }
+
+                    // 當勾選框狀態改變時，更新輪播的行為並更新網址參數
+                    checkbox.addEventListener("change", function (event) {
+                        urlParams.set(event.target.value, event.target.checked + "");
+                        window.history.replaceState(
+                            null,
+                            "",
+                            window.location.pathname + "?" + urlParams
+                        );
+
+                        if (updateEvent) {
+                            carousels.forEach(function (carousel) {
+                                carousel[updateEvent](event.target.checked);
+                            });
+                        }
+                    });
+                });
+
+
+
+
+            },
+            false
+        );
+
+
+        const accordionData = [
+            {
+                title: "指引1.4：可辨識",
+                content: `
+    <p><strong>CS1140101E</strong> 當使用者介面元件取得焦點時，使用 CSS 變更其呈現方式。</p>
+    <p>⇒ 檢測方式 <strong>(9)</strong>、<strong>(11)</strong> 通過，則此項通過。</p>
+    <p><strong>GN2141100E</strong> 使用網頁作者設定的高可視焦點指示器。</p>
+    <p>⇒ 檢測方式 <strong>(9)</strong>、<strong>(11)</strong>、<strong>(12)</strong> 通過，則此項通過。</p>
+    `
+            },
+            {
+                title: "指引2.1：鍵盤可操作",
+                content: `
+    <p><strong>GN1210101E</strong> 確認所有功能都能透過鍵盤介面來操作。</p>
+    <p>⇒ 檢測方式 <strong>(2)</strong>、<strong>(3)</strong>、<strong>(4)</strong>、<strong>(5)</strong>、<strong>(7)</strong> 全部通過，則此項通過。</p>
+    <p><strong>GN1210200E</strong> 確認使用者不會困在內容中。</p>
+    <p>⇒ 檢測方式 <strong>(10)</strong>、<strong>(14)</strong> 全部通過，則此項通過。</p>
+    `
+            },
+            {
+                title: "指引2.2：充足時間",
+                content: `
+    <p><strong>GN1220200E</strong> 讓內容能加以暫停，並可從暫停處重新開始。</p>
+    <p>⇒ 檢測方式 <strong>(4)</strong> 通過，則此項通過。</p>
+    <p><strong>GN1220202E</strong> 在網頁內使用可以停止移動、閃動、自動更新等內容的控制元件。</p>
+    <p>⇒ 檢測方式 <strong>(1)</strong>、<strong>(2)</strong>、<strong>(3)</strong> 通過，則此項通過。</p>
+    `
+            },
+            {
+                title: "指引2.4：可導覽",
+                content: `
+    <p><strong>GN1240300E</strong> 按照內容的序列及關連性來安排互動元件的放置順序。</p>
+    <p>⇒ 檢測方式 <strong>(6)</strong> 通過，則此項通過。</p>
+    `
+            },
+            {
+                title: "指引4.1：相容性",
+                content: `
+    <p><strong>GN1410200E</strong> 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知。</p>
+    <p>⇒ 檢測方式 <strong>(7)</strong>、<strong>(13)</strong> 通過，則此項通過。</p>
+    `
+            }
+        ];
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof window.initializeAccordion === 'function') {
+                window.initializeAccordion('accordionContainer', accordionData);
+            } else {
+                console.error('initializeAccordion 未載入。請確認 ../js/accordion.js 是否將函式掛到 window。');
+            }
+        });
+    </script>
+</body>
+
+</html>

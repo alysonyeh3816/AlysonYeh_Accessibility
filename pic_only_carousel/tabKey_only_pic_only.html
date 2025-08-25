@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>輪播-純圖片：Tab鍵遍歷各輪播圖</title>
+  <style>
+    :root {
+      --focus: #005fcc;
+      --radius: 8px;
+      --caption-bg: #00000066;
+      --caption-fg: #fff;
+      --fade-dur: 600ms;
+      --btn-bg: #00000055;
+      --btn-fg: #fff;
+      --dot-size: 12px;
+      --dot-gap: 10px;
+      --indicator-bg: #ffffffcc;
+      --indicator-fg: #0f172a;
+
+      --a-ink-900: #111827;
+      --a-ink-700: #374151;
+      --a-ink-500: #6b7280;
+      --a-line: #e5e7eb;
+      --a-panel: #ffffff;
+      --a-radius: 10px;
+      --a-focus: #0a63ff;
+      --a-blue: #005fcc;
+    }
+
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    *:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: -3px;
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    main{margin-top: 40px;}
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", sans-serif;
+      background: #fff;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      transform: translateY(-150%);
+      padding: 12px 16px;
+      background: #fff;
+      border: 2px solid var(--brand);
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 600;
+      z-index: 1000
+    }
+
+    .skip-link:focus,
+    .skip-link:focus-visible {
+      transform: translateY(12px);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .carousel {
+      position: relative;
+      aspect-ratio: 16 / 6;
+      background: #ddd;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    }
+
+    .viewport {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .play-btn {
+      position: absolute;
+      top: 10px;
+      right: 2px;
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity var(--fade-dur) ease;
+      margin-left: 44px;
+      margin-right: 44px;
+    }
+
+    .slide.is-active {
+      opacity: 1;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .caption {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      background: var(--caption-bg);
+      color: var(--caption-fg);
+      padding: 14px 16px;
+      border-radius: calc(var(--radius) - 2px);
+      transform: translateY(12px);
+      opacity: 0;
+      transition: transform var(--fade-dur) ease, opacity var(--fade-dur) ease;
+    }
+
+    .slide.is-active .caption {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .slide:focus-visible,
+    .slide:focus-within {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    /* .slide:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; } */
+
+    .controls {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .edge-btns {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      padding: 0 6px;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      pointer-events: auto;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      border: 0;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .ctrl-btn:hover {
+      background: #2e1010;
+    }
+
+
+    .indicators {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: var(--dot-gap);
+      background: var(--indicator-bg);
+      color: var(--indicator-fg);
+      border-radius: 999px;
+      padding: 6px 10px;
+      pointer-events: auto;
+    }
+
+    .dot {
+      width: var(--dot-size);
+      height: var(--dot-size);
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+      background: #94a3b8;
+    }
+
+    .dot[aria-current="true"] {
+      background: #0ea5e9;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .slide,
+      .caption {
+        transition: none !important;
+      }
+    }
+
+    .accordion-container {
+      max-width: 880px;
+      margin: 32px auto;
+      background: var(--a-panel);
+      border: 1px solid var(--a-line);
+      border-radius: var(--a-radius);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid var(--a-line);
+    }
+
+    .accordion-item:last-child {
+      border-bottom: 0;
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      background: #fff;
+      border: 0;
+      text-align: left;
+      padding: 14px 48px 14px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--a-ink-900);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .accordion-trigger:hover {
+      background: #e9e8e8;
+    }
+
+    .accordion-trigger::after {
+      content: "+";
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--a-ink-500);
+      font-weight: 700;
+    }
+
+    .accordion-trigger[aria-expanded="true"]::after {
+      content: "–";
+    }
+
+    .accordion-content {
+      background: #fff;
+      color: var(--ink-700);
+      border-top: 1px solid var(--a-line);
+      padding: 0 16px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .25s ease, padding .2s ease;
+    }
+
+    .accordion-content.is-open {
+      padding: 12px 16px 16px;
+      max-height: 520px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .accordion-content {
+        transition: none;
+      }
+    }
+
+    .accordion-content p {
+      margin: 8px 0 0;
+      line-height: 1.6;
+    }
+
+    .accordion-content strong {
+      color: var(--a-ink-900);
+    }
+
+
+    #quickLink,
+    a[href="#auditCode"],
+    a[href="#detectionItem"] {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: 8px 12px;
+      margin: 8px 8px 16px 0;
+      border: 1px solid var(--a-line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--a-ink-900);
+      text-decoration: none;
+      font-weight: 600;
+      line-height: 1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+    }
+
+    #quickLink::before,
+    a[href="#auditCode"]::before,
+    a[href="#detectionItem"]::before {
+      content: "↘";
+      font-weight: 700;
+      color: var(--a-ink-500);
+    }
+
+    #quickLink:hover,
+    a[href="#auditCode"]:hover,
+    a[href="#detectionItem"]:hover {
+      background: #3f4f5e;
+      color: #fff;
+    }
+
+    #quickLink:focus-visible,
+    a[href="#auditCode"]:focus-visible,
+    a[href="#detectionItem"]:focus-visible {
+      outline: 3px solid var(--a-focus);
+      outline-offset: 3px;
+      box-shadow: none;
+    }
+
+    #quickLink {
+      display: block;
+      margin: 16px auto;
+      width: fit-content;
+    }
+
+
+    h2 {
+      margin: 40px 0 12px;
+      font-size: 20px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: var(--a-ink-900);
+      letter-spacing: .2px;
+      border-bottom: 2px solid var(--a-line);
+      padding-bottom: 6px;
+    }
+
+    h2:focus-visible {
+      outline: 3px solid var(--a-focus);
+      outline-offset: 4px;
+    }
+
+
+    .test-guide-container h2#detectionItem {
+      text-align: left;
+      margin: 20px 0 12px;
+      font-size: 20px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: var(--a-ink-900);
+      letter-spacing: .2px;
+      border-bottom: 2px solid var(--a-line);
+      padding-bottom: 6px;
+    }
+
+
+    .test-guide-container h3 {
+      margin: 8px 0 16px;
+      font-size: 17px;
+      line-height: 1.5;
+      font-weight: 700;
+      color: var(--a-ink-700);
+      padding: 8px 12px;
+      border-left: 4px solid var(--a-blue);
+      background: #f9fafb;
+      border-radius: 6px;
+    }
+
+    .test-guide-container h3:focus-visible {
+      outline: 3px solid var(--a-focus);
+      outline-offset: 3px;
+    }
+
+
+    .test-guide-container {
+      max-width: 880px;
+      margin: 32px auto;
+      padding: 24px;
+      background: #fff;
+      border: 1px solid var(--a-line);
+      border-radius: var(--a-radius);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+    }
+
+    .test-guide-container ol,
+    .test-guide-container ul {
+      margin-left: 20px;
+      line-height: 1.6;
+    }
+
+    .test-guide-container li p {
+      margin-bottom: .5rem;
+    }
+
+
+    .accordion-container,
+    .accordion-item {
+      overflow: visible;
+    }
+
+    .accordion-trigger:focus,
+    .accordion-trigger:focus-visible {
+      position: relative;
+      z-index: 2;
+      outline-offset: 4px;
+    }
+
+
+    .accordion-content {
+      overflow: hidden;
+    }
+
+    .accordion-content:focus,
+    .accordion-content:focus-visible {
+      position: relative;
+      z-index: 1;
+      outline-offset: 4px;
+    }
+
+    .accordion-trigger {
+      scroll-margin-block-start: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+  <main>
+      <h1 id="mainh1">輪播-純圖片：Tab鍵遍歷各輪播圖</h1>
+      <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a><a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>    
+    <div class="wrap">
+      <section id="heroCarousel" class="carousel" aria-label="鍵盤焦點輪播" role="region" data-autoplay="true"
+        data-interval="3600">
+        <div class="play-btn">
+          <button type="button" id="togglePlay" class="ctrl-btn" aria-label="開啟輪播">⏸</button>
+        </div>
+        <div class="viewport" aria-live="off">
+          <figure class="slide is-active" tabindex="0" role="group" aria-label="四之一">
+            <img src="../images/dense_forest.jpg" alt="高大樹木與濃密綠葉的樹林" />
+            <figcaption class="caption">
+              <p>鄉間樹林的生命力</p>
+              <p>高大樹木盤根錯節，展現自然力量。</p>
+            </figcaption>
+          </figure>
+          <figure class="slide" tabindex="0" role="group" aria-label="四之二">
+            <img src="../images/roselle.jpg" alt="枝頭長滿深紅色洛神花花萼" />
+            <figcaption class="caption">
+              <p>洛神花盛開時節</p>
+              <p>深紅色花萼點綴枝頭，鮮豔奪目。</p>
+            </figcaption>
+          </figure>
+          <figure class="slide" tabindex="0" role="group" aria-label="四之三">
+            <img src="../images/taipei_bridge.jpg" alt="夜晚橋上多輛機車行駛的景象" />
+            <figcaption class="caption">
+              <p>台北橋上機車潮</p>
+              <p>夜色中機車川流不息，燈光閃爍。</p>
+            </figcaption>
+          </figure>
+          <figure class="slide" tabindex="0" role="group" aria-label="四之四">
+            <img src="../images/tamsui_river.jpg" alt="夜色下淡水河畔與城市燈火倒影" />
+            <figcaption class="caption">
+              <p>淡水河畔夜景</p>
+              <p>河面倒映城市燈火。</p>
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="controls">
+          <div class="edge-btns">
+            <button type="button" class="ctrl-btn prev" tabindex="-1" aria-label="上一張">‹</button>
+            <button type="button" class="ctrl-btn next" tabindex="-1" aria-label="下一張">›</button>
+          </div>
+
+          <div class="indicators" role="tablist" aria-label="輪播指示">
+            <button class="dot" tabindex="-1" role="tab" aria-label="前往第 1 張" aria-current="true"></button>
+            <button class="dot" tabindex="-1" role="tab" aria-label="前往第 2 張"></button>
+            <button class="dot" tabindex="-1" role="tab" aria-label="前往第 3 張"></button>
+            <button class="dot" tabindex="-1" role="tab" aria-label="前往第 4 張"></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <h2 id="auditCode">相應稽核評量碼</h2>
+    <div id="accordionContainer"></div>
+
+    <a id="quickLink" href="#mainh1" aria-label="移至待檢測元件">移至待檢測元件</a>
+
+    <h2 id="detectionItem">檢測方式</h2>
+    <div class="test-guide-container">
+      <h3>檢測項目：純資訊輪播或跑馬燈</h3>
+      <ol>
+        <li>
+          <p>確認輪播/跑馬燈組件是否會動，若不會動則進入(5)。</p>
+        </li>
+        <li>
+          <p>若輪播／跑馬燈組件具有自動播放或自動移動效果，則：</p>
+          <ul>
+            <li>應確認組件中提供暫停按鈕（或刪除/隱藏按鈕，下同，統稱為「暫停/中止/隱藏元件」）。</li>
+            <li>該暫停/中止/隱藏元件應為整個輪播/跑馬燈組件中第一個可聚焦元件。</li>
+            <li>若第一個可聚焦元件為整個輪播/跑馬燈組件本身，則暫停/中止/隱藏元件可作為第二個可聚焦元件（見註一）。</li>
+          </ul>
+        </li>
+        <li>
+          <p>確認鍵盤可操作「暫停/中止/隱藏元件」，並且功能與之相符。</p>
+        </li>
+        <li>
+          <p>若輪播組件提供暫停機制，則以下須擇一達成：</p>
+          <ul>
+            <li><strong>類型一</strong>、同時提供暫停、播放按鈕，須確認暫停與播放按鈕均可操作。</li>
+            <li><strong>類型二</strong>、僅提供暫停按鈕，則確認暫停按鈕本身具切換功能，可進行暫停及播放功能。</li>
+          </ul>
+        </li>
+        <li>
+          <p>以滑鼠確認各輪播圖/跑馬燈是否無功能(功能常見如連結)。</p>
+        </li>
+        <li>
+          <p>確認無功能後，以tab鍵遊走輪播圖/跑馬燈組件各元件，確認焦點跳位順序符合邏輯。</p>
+        </li>
+        <li>
+          <p>確認各元件可操作（類型一或類型二，擇一即可）：</p>
+          <ul>
+            <li><strong>類型一</strong>、若鍵盤焦點(tab鍵)無法走入輪播圖片/跑馬燈各項目，則以tab鍵遊走入向前、向後鍵或指示標籤後，應達成以下A、B、C方式任一種操作：
+              <ul>
+                <li><strong>A方式</strong>：若輪播圖/跑馬燈各項目以向前、向後鍵進行切換，則需符合以下要求：
+                  <ul>
+                    <li>若輪播圖/跑馬燈各項目以「向前」或「向後」進行切換，則當鍵盤焦點至其上時，應報讀按鈕名稱（如：「向前」、「向後」、「上一張」、「下一張」等同義標籤皆可）。</li>
+                    <li>當按下上述切換按鈕時，被選中之輪播圖片/跑馬燈項目應可視。</li>
+                    <li>螢幕報讀器應主動報讀被選取之輪播圖片/跑馬燈項目內容。</li>
+                  </ul>
+                </li>
+                <li><strong>B方式</strong>：若輪播圖／跑馬燈項目以指示標籤進行切換，則需符合以下要求：
+                  <ul>
+                    <li>當鍵盤焦點停留於指示標籤時，螢幕報讀器應朗讀該項目的項目值（例如：「項目一」、「項目二」等）或其他等效描述。</li>
+                    <li>當某項目被選取後，該項目應在視覺上清晰可見。</li>
+                    <li>螢幕報讀器應完整報讀被選取項目的內容（例如替代文字、標題、描述等）。</li>
+                  </ul>
+                </li>
+                <li><strong>C方式</strong>：若輪播圖/跑馬燈個項目以指示標籤進行切換，則需符合以下要求：
+                  <ul>
+                    <li>當鍵盤焦點（Tab 鍵）停留於指示標籤時，螢幕報讀器應直接報讀該輪播圖片／跑馬燈項目的名稱。</li>
+                    <li>當項目被選取後，該項目應在視覺上清晰可見。</li>
+                    <li>螢幕報讀軟體應主動報讀相應提示，如：已按下、已選取。</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li><strong>類型二</strong>、若鍵盤焦點(tab鍵)可游走輪播圖片/跑馬燈各項目，則該項目被鍵盤焦點(tab鍵)遊走時，應主動報讀出該項目內容。</li>
+          </ul>
+        </li>
+        <li>
+          <p>承前項(7)，鍵盤可操作類型一或類型二（不考量報讀）。</p>
+        </li>
+        <li>
+          <p>承項目(7)，若選擇類型二，則檢查當鍵盤焦點(tab鍵)停駐在圖片輪播圖片/跑馬燈項目，該圖片/跑馬燈項目會暫停，此時可清楚看見鍵盤焦點指示符。</p>
+        </li>
+        <li>
+          <p>再次按鍵盤焦點(tab鍵)，鍵盤焦點(tab鍵)可移動並選取下一項。</p>
+        </li>
+        <li>
+          <p>鍵盤焦點(tab鍵)取到各可聚焦元素時，確認在不同瀏覽器中，鍵盤焦點（tab鍵）皆呈現瀏覽器預設的指示樣式或由網頁作者指定的明確可見變化的視覺樣式。</p>
+        </li>
+        <li>
+          <p>檢查焦點指示器的區域至少有 1 CSS像素圍繞該元素，檢查指示器在聚焦與未聚焦狀態之間對比度的改變，指示器的區域是否具有 3:1對比值。</p>
+        </li>
+        <li>
+          <p>確認輪播圖、跑馬燈各元件之名稱及角色與其功能相符。</p>
+        </li>
+        <li>
+          <p>確認以鍵盤tab鍵及shift+tab鍵可遊走輪播/跑馬燈組件時，最終可順利離開整組組件。</p>
+        </li>
+        <li>
+          <p>以上均符合則全數通過。</p>
+        </li>
+      </ol>
+      <p style="margin: 20px 0 10px 0;"><strong>註一：</strong>若第一個鍵盤焦點是整組輪播，並且能報讀整組件為輪播，則暫停、中止或直接在視覺且無障礙均隱藏的機制（如暫停鈕、隱藏鈕、移除鈕），可以為第二個焦點。</p>
+      <p><strong>註一的白話文說明：</strong>有些程式會用一個大標籤包裹整個輪播或跑馬燈，然後讓那個大標籤可聚焦並報讀「輪播圖」。這樣就會導致暫停鈕、隱藏鈕、移除鈕會是輪播組件第二個可聚焦的元件。</p>
+    </div>
+
+  </main>
+
+  <script>
+    (function () {
+      /* Skip to main */
+      var skip = document.querySelector('.skip-link');
+      if (skip) {
+        skip.addEventListener('click', function () {
+          var target = document.getElementById('mainh1');
+          if (!target) return;
+          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: false });
+        });
+      }
+
+      const accordionData = [{
+        title: "指引1.4：可辨識",
+        content: `
+                    <p><strong>CS1140101E</strong> 當使用者介面元件取得焦點時，使用CSS變更其呈現方式</p>
+                    <p>⇒ 檢測方式(8)、(10)通過，則此項通過</p>
+                    <p><strong>GN2141100E</strong> 使用網頁作者設定的高可視焦點指示器</p>
+                    <p>⇒ 檢測方式(8)、(10)、(11)通過，則此項通過</p>
+                `
+      }, {
+        title: "指引2.1：鍵盤可操作",
+        content: `
+                    <p><strong>GN1210101E</strong> 確認所有功能都能透過鍵盤介面來操作</p>
+                    <p>⇒ 檢測方式(2)、(3)、(4)、(5)、(8)全部通過，則此項通過</p>
+                    <p><strong>GN1210200E</strong> 確認使用者不會困在內容中</p>
+                    <p>⇒ 檢測方式(10)、(14)全部通過，則此項通過</p>
+                `
+      }, {
+        title: "指引2.2：充足時間",
+        content: `
+                    <p><strong>GN1220200E</strong> 讓內容能加以暫停，並可從暫停處重新開始</p>
+                    <p>⇒ 檢測方式(4)通過，則此項通過</p>
+                    <p><strong>GN1220202E</strong> 在網頁內使用可以停止移動、閃動、自動更新等內容的控制元件</p>
+                    <p>⇒ 檢測方式(1)、(2)、(3)通過，則此項通過</p>
+                `
+      }, {
+        title: "指引2.4：可導覽",
+        content: `
+                    <p><strong>GN1240300E</strong> 按照內容的序列及關連性來安排互動元件的放置順序</p>
+                    <p>⇒ 檢測方式(6)通過，則此項通過</p>
+                `
+      }, {
+        title: "指引4.1：相容性",
+        content: `
+                    <p><strong>GN1410200E</strong> 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知</p>
+                    <p>⇒ 檢測方式(7)、(13)通過，則此項通過</p>
+                `
+      },];
+
+
+      function initializeAccordion(containerId, data) {
+        const container = document.getElementById(containerId);
+        if (!container) {
+          console.error(`Accordion container with ID '${containerId}' not found.`);
+          return;
+        }
+
+        let accordionHtml = '';
+
+        data.forEach((item, index) => {
+          const triggerId = `trigger${index + 1}`;
+          const contentId = `content${index + 1}`;
+
+          accordionHtml += `
+            <div class="accordion-item">
+              <h3>
+                <button 
+                  class="accordion-trigger" 
+                  aria-expanded="false" 
+                  aria-controls="${contentId}"
+                  id="${triggerId}"
+                >
+                  ${item.title}
+                </button>
+              </h3>
+              <div 
+                class="accordion-content" 
+                id="${contentId}" 
+                role="region" 
+                aria-labelledby="${triggerId}"
+                hidden
+              >
+                ${item.content}
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = `<div class="accordion-container">${accordionHtml}</div>`;
+
+        const triggers = container.querySelectorAll('.accordion-trigger');
+
+        triggers.forEach(trigger => {
+          trigger.addEventListener('click', () => {
+            const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+            const content = document.getElementById(trigger.getAttribute('aria-controls'));
+
+            trigger.setAttribute('aria-expanded', !isExpanded);
+
+            content.hidden = isExpanded;
+
+            content.classList.toggle('is-open');
+          });
+
+          trigger.addEventListener('keydown', (e) => {
+            const parent = trigger.closest('.accordion-container');
+            const allTriggers = parent.querySelectorAll('.accordion-trigger');
+            const currentIndex = Array.from(allTriggers).indexOf(trigger);
+
+            if (e.key === 'ArrowDown' && currentIndex < allTriggers.length - 1) {
+              allTriggers[currentIndex + 1].focus();
+            } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+              allTriggers[currentIndex - 1].focus();
+            }
+          });
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeAccordion('accordionContainer', accordionData);
+      });
+
+
+      const root = document.getElementById('heroCarousel');
+      const slides = Array.from(root.querySelectorAll('.slide'));
+      const prevBtn = root.querySelector('.prev');
+      const nextBtn = root.querySelector('.next');
+      const dots = Array.from(root.querySelectorAll('.dot'));
+      const toggleBtn = document.getElementById('togglePlay');
+
+      const total = slides.length;
+      let index = 0;
+      let interval = null;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const cfgAutoplay = root.dataset.autoplay === 'true';
+      const cfgInterval = Math.max(parseInt(root.dataset.interval || '3600', 10), 1500);
+      let userPrefAutoPlay = cfgAutoplay && !reduceMotion;
+
+      function setActive(newIndex) {
+        index = (newIndex + total) % total;
+        slides.forEach((el, i) => {
+          el.classList.toggle('is-active', i === index);
+          // el.setAttribute('aria-label', `${i+1} / ${total}`);
+        });
+        dots.forEach((d, i) => d.setAttribute('aria-current', i === index ? 'true' : 'false'));
+      }
+      function next() { setActive(index + 1); }
+      function prev() { setActive(index - 1); }
+
+      function startAutoPlay() {
+        if (interval || !userPrefAutoPlay) return;
+        interval = setInterval(next, cfgInterval);
+        toggleBtn.setAttribute('aria-pressed', 'true');
+        toggleBtn.textContent = '⏸';
+      }
+      function stopAutoPlay() {
+        if (interval) { clearInterval(interval); interval = null; }
+        toggleBtn.setAttribute('aria-pressed', 'false');
+        toggleBtn.textContent = '▶';
+      }
+
+      prevBtn.addEventListener('click', prev);
+      nextBtn.addEventListener('click', next);
+      toggleBtn.addEventListener('click', () => {
+        userPrefAutoPlay = !userPrefAutoPlay;
+        if (userPrefAutoPlay) { startAutoPlay(); } else { stopAutoPlay(); }
+      });
+
+      dots.forEach((d, i) => d.addEventListener('click', () => setActive(i)));
+
+      slides.forEach((slide, i) => {
+        slide.addEventListener('focus', () => {
+          stopAutoPlay();
+          setActive(i);
+        });
+      });
+
+      root.addEventListener('focusout', (e) => {
+        if (!root.contains(e.relatedTarget)) {
+          if (userPrefAutoPlay) { startAutoPlay(); }
+        }
+      });
+      root.addEventListener('mouseenter', stopAutoPlay);
+      root.addEventListener('mouseleave', () => { if (userPrefAutoPlay) { startAutoPlay(); } });
+
+      setActive(0);
+      if (!reduceMotion && userPrefAutoPlay) { startAutoPlay(); }
+    })();
+  </script>
+</body>
+
+</html>

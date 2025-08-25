@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>無障礙範例</title>
+  <style>
+    :root{
+      --ink:#0f172a;        /* 字色 */
+      --muted:#475569;      /* 次要字色 */
+      --bg:#f8fafc;         /* 背景 */
+      --card:#ffffff;       /* 卡片 */
+      --brand:#0a63ff;      /* 主色 */
+      --ring: #0a63ff;      /* 焦點框 */
+      --ok:#0f766e;         /* 成功訊息 */
+      --warn:#b91c1c;       /* 警示訊息 */
+      --radius:14px;
+      --fontColor: #414040;
+    }
+    *{box-sizing:border-box; color:var(--fontColor) ;}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans TC",sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -20%, #e8f0ff 0, transparent 60%),
+        radial-gradient(1200px 600px at 110% 120%, #eaf7ef 0, transparent 60%),
+        var(--bg);
+      padding:24px;
+      display:flex; justify-content:center; align-items:flex-start;
+    }
+
+    header{
+      margin: 30px 0 10px 0;
+      text-align: center;
+    }
+
+    /* Skip link */
+    .skip-link{
+      position:absolute;left:12px;top:0;transform:translateY(-150%);
+      padding:12px 16px;background:#fff;border:2px solid var(--focus);
+      border-radius:8px;text-decoration:none;color:var(--ink);
+      font-weight:600;z-index:1000;
+    }
+    .skip-link:focus,.skip-link:focus-visible{transform:translateY(10px);}
+    h1{margin-top:40px;}
+    .haspopup_inside{margin-top:200px;}
+    .wrap{
+      width:min(960px, 100%);
+      display:grid; gap:16px;
+    }
+    header h1{
+      font-size: clamp(22px, 2.2vw, 30px);
+      margin:0 0 4px;
+    }
+    header p{color:var(--muted); margin:0}
+
+    /* 搜尋卡片 */
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow: 0 8px 30px rgba(2,8,23,.06);
+      padding:16px;
+    }
+    form[role="search"]{
+      display:grid; gap:12px;
+    }
+    .row{
+      display:grid; grid-template-columns: 1fr auto; gap:12px;
+    }
+    label{font-weight:600}
+    input[type="search"]{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid #cbd5e1;
+      border-radius:12px;
+      font-size:16px;
+      background:#fff;
+    }
+    button{
+      padding:12px 16px;
+      border:0;
+      border-radius:12px;
+      background:var(--brand);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+    }
+    /* 可見焦點樣式 */
+    :where(input,button,a,[tabindex]):focus-visible{
+      outline: 3px solid var(--ring);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 6px rgba(10,99,255,.15);
+    }
+
+    /* 狀態訊息（role="status"）—可見 & 給螢幕報讀器 */
+    .status{
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:600;
+      line-height:1.45;
+    }
+    .status.ok{ background:#ecfdf5; color:var(--ok); border:1px solid #a7f3d0; }
+    .status.warn{ background:#fef2f2; color:var(--warn); border:1px solid #fecaca; }
+
+    /* 結果列表 */
+    .results{
+      display:grid; gap:12px;
+    }
+    .results header{
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .count{ color:var(--muted); font-size:14px; }
+    ul.list{
+      list-style:none; padding:0; margin:0;
+      display:grid; gap:10px;
+    }
+    .item{
+      background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:12px;
+    }
+    .item h3{ margin:0 0 6px; font-size:18px;}
+    .meta{ color:var(--muted); font-size:14px; margin:0 0 6px}
+    .desc{ margin:0; }
+    .item a{ display:inline-block; margin-top:6px; }
+
+
+    .card h3{margin-bottom: 0;}
+    .card ol{margin-top: 10px;}
+
+
+    /* 視覺隱藏工具類（若需完全隱藏訊息視覺但保留可讀，改用 .sr-only） */
+    .sr-only{
+      position:absolute!important; width:1px!important; height:1px!important;
+      padding:0!important; margin:-1px!important; overflow:hidden!important;
+      clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important;
+    }
+  </style>
+</head>
+<body>
+    <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+  <main class="wrap">
+    <header>
+      <h1 id="mainh1">元件及組件網站無障礙檢測列表</h1>
+      <p>114年網站無障礙檢測人員回訓</p>
+    </header>
+
+    <!-- 搜尋區：使用語意化 role="search" -->
+    <section class="card" aria-labelledby="searchTitle">
+      <h2 id="searchTitle" style="margin-top:0">關鍵字查詢</h2>
+      <form role="search" id="searchForm">
+        <div class="row">
+          <div>
+            <label for="q" style="display:inline-block; margin-bottom: 10px;">請輸入關鍵字(搜尋後會於下方產生相應資訊)</label>
+            <input id="q" name="q" type="search" placeholder="例如：鍵盤、ARIA、公告..." autocomplete="off" />
+          </div>
+          <div style="align-self:end">
+            <button type="submit" id="doSearch">查詢</button>
+          </div>
+        </div>
+
+        <!-- 主動告知區（live region）。以可見方式呈現，方便檢測員觀察；同時是 SR 可讀。 -->
+        <div id="liveStatus" class="status" role="status" aria-live="polite" aria-atomic="true">
+          尚未查詢。
+        </div>
+      </form>
+    </section>
+
+    <!-- 結果區 -->
+    <section class="card results" aria-labelledby="resultTitle" role="region">
+      <header>
+        <h2 id="resultTitle" style="margin:0">查詢結果</h2>
+        <p class="count" id="countText" aria-live="off">目前 0 筆</p>
+      </header>
+      <ul class="list" id="resultList" aria-describedby="resultTitle"></ul>
+    </section>
+
+    <section class="card" style="color: #475569; font-size: large; text-align: center; margin: 20px 0;">逐步更新...</section>
+
+    <!-- 教學重點（供檢測員） -->
+    <!-- <section class="card" aria-labelledby="tipsTitle">
+      <h2 id="tipsTitle" style="margin-top:0">檢測員教學重點</h2>
+      <h3>必要檢測項目</h3>
+      <ol>
+        <li>使用螢幕報讀器（或 Accessibility 樹）確認 <code>role="status"</code> 的 live region 有讀出「找到 X 筆」或「查無資料」。</li>
+        <li>檢查表單語意：<code>role="search"</code>、<code>label</code> 與輸入框關聯正確。</li>
+        <li>檢查焦點可見度：以 <kbd>Tab</kbd> 操作時有清楚的焦點框。</li>
+      </ol>
+      <h3>建議項目(非必要但有更佳)</h3>
+      <ol>
+        <li>在查詢後，確認頁面上 <strong>自動出現</strong> 筆數告知（視覺可見）。</li>
+        <li>結果區塊以 <code>role="region"</code> 並以標題 <code>aria-labelledby</code> 關聯，結構清晰。</li>
+      </ol> -->
+    </section>
+  </main>
+
+  <script>
+      /* Skip to main */
+    (function(){
+      var skip = document.querySelector('.skip-link');
+      if (skip) {
+        skip.addEventListener('click', function () {
+          var target = document.getElementById('mainh1');
+          if (!target) return;
+          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: false });
+        });
+      }
+    })();
+
+  // ===== 模擬資料庫（JSON 陣列） =====
+  const DB = [
+    { id: 1,  title: "純圖片輪播-操作：向前向後-指示圈搭配Enter", category: "輪播", tags:["會動則需有暫停鍵","無功能純資訊","切換時需主動報讀"], desc: "示範所有功能可用鍵盤操作（含焦點可見）。", exampleUrl:"./pic_only_carousel/PreNextBtn_indexCircle_pic_only.html" },
+    { id: 2,  title: "純圖片輪播-操作：Tab鍵遍歷", category: "輪播", tags:["會動則需有暫停鍵","無功能純資訊","切換時需主動報讀"], desc: "比較 assertive 與 polite，與 role=status 差異。", exampleUrl:"./pic_only_carousel/tabKey_only_pic_only.html" },
+    { id: 3,  title: "含功能項輪播-操作：左右鍵搭配Tab鍵(索引標籤)", category: "輪播", tags:["role=tab","索引標籤","會動則需有暫停鍵"], desc: "正確關聯 label/輸入框，避免僅用 placeholder。", exampleUrl:"./pic_and_link_carousel/tabIndexCircle_pic_link.html" },
+    { id: 4,  title: "頁籤-操作：左右鍵搭配Enter選取後進入對應面板", category: "頁籤", tags:["role=tab","aria-selected=true","tab操作","左右鍵","焦點順序"], desc: "文字/圖形元素對比度達成至少 4.5:1。", exampleUrl:"./tab/Left_right_EnterSpace_key_tabs.html" },
+    { id: 5,  title: "頁籤-操作：左右鍵搭配Tab鍵進入對應面板", category: "頁籤", tags:["role=tab","aria-selected=true","tab操作","左右鍵","焦點順序"], desc: "確保焦點移動符合視覺與操作邏輯。", exampleUrl:"./tab/Left_right_key_tabs.html" },
+    { id: 6,  title: "頁籤-操作：Tab鍵依序遍歷", category: "頁籤", tags:["role=tab","aria-selected=true","tab順序"], desc: "依功能與目的撰寫內容導向的替代文字。", exampleUrl:"./tab/tab_key_through_tabs.html" },
+    { id: 7,  title: "對話框", category: "對話框", tags:["對話框","彈窗","燈箱","aria-mpdal=true"], desc: "需暴露可讀的角色，且有焦點及報讀管理。", exampleUrl:"./dialog/dailog.html" },
+    { id: 8,  title: "同頁資料查詢", category: "資料查詢", tags:["AA,同頁查詢","role=status"], desc: "同頁查詢資料後應主動告知結果。", exampleUrl:"./data_search/data_search.html" },
+  ];
+
+  // ===== DOM 快取 =====
+  const form = document.getElementById('searchForm');
+  const input = document.getElementById('q');
+  const list = document.getElementById('resultList');
+  const liveStatus = document.getElementById('liveStatus');
+  const countText = document.getElementById('countText');
+
+  // ===== 工具：標準化字串 =====
+  const norm = s => (s||"").toString().trim().toLowerCase();
+
+  // 支援多關鍵字（空白分隔）；所有關鍵字都要匹配（AND）
+  function matchRecord(rec, terms){
+    if (!terms.length) return true; // 空字串視為「顯示全部」
+    const hay = [
+      rec.title, rec.desc, rec.category, ...(rec.tags||[])
+    ].map(norm).join(' ');
+    return terms.every(t => hay.includes(t));
+  }
+
+function render(items){
+  list.innerHTML = '';
+  const frag = document.createDocumentFragment();
+
+  items.forEach(rec => {
+    const li = document.createElement('li');
+    li.className = 'item';
+
+    // 產生每個標題的唯一 id，供 aria-describedby 使用
+    const titleId = `title-${rec.id}`;
+
+    // 若你想針對每筆給不同範例網址，可在 DB 補上 rec.exampleUrl
+    // 否則先用 title 動態組 URL（可改成你的實際網域結構）
+    const exampleUrl = rec.exampleUrl ?? `https://example.com/examples/${encodeURIComponent(rec.title)}`;
+
+    li.innerHTML = `
+      <h3 id="${titleId}">${escapeHTML(rec.title)}</h3>
+      <p class="meta">分類：${escapeHTML(rec.category)}　｜　標籤：${(rec.tags||[]).map(escapeHTML).join('、')||'—'}</p>
+      <p class="desc">${escapeHTML(rec.desc)}</p>
+      <a href="${exampleUrl}" aria-describedby="${titleId}" target="_blank" rel="noopener" >查看範例（另開新視窗）</a>
+    `;
+    frag.appendChild(li);
+  });
+
+  list.appendChild(frag);
+}
+
+  function updateAnnounce(count, q){
+    const msg = count > 0
+      ? `查詢「${q || '（空白，顯示全部）'}」共找到 ${count} 筆資料。`
+      : `查詢「${q || '（空白）'}」查無資料，請重新查找。`;
+
+    // 視覺顏色提示 + 讀屏宣告（role="status"）
+    liveStatus.textContent = msg;
+    liveStatus.className = `status ${count>0 ? 'ok' : 'warn'}`;
+
+    // 非 live 的靜態數字，避免重複冗餘朗讀
+    countText.textContent = `目前 ${count} 筆`;
+  }
+
+  function doSearch(q){
+    const terms = norm(q).split(/\s+/).filter(Boolean);
+    const results = DB.filter(rec => matchRecord(rec, terms));
+    render(results);
+    updateAnnounce(results.length, q);
+  }
+
+  // 逸出 HTML（避免 XSS，在教學範例中仍保持好習慣）
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, c=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  // 事件：提交查詢
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    doSearch(input.value);
+  });
+
+  // 初始：顯示全部並宣告（也可改成不宣告，僅在使用者觸發時宣告）
+  doSearch('');
+  input.focus();
+  </script>
+</body>
+</html>

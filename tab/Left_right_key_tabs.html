@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>頁籤類型：左右鍵直接切換頁籤（無須 Enter/Space）</title>
+  <style>
+    :root {
+      --brand: #0a63ff;
+      --selected-green: #16a34a;
+      --PanelBtn: #268d8d;
+      --ink: #111;
+      --muted-ink: #4b5563;
+      --surface: #ffffff;
+      --surface-2: #d0ddf7;
+      --line: #ccd2dd;
+      --dline: #ecedf0;
+      --focus-ring: var(--brand);
+      --focus-tab: #9c9c9c;
+      --radius: 12px;
+
+      --panel-bg: #f7f7f8;
+
+      --a-ink-900: #111827;
+      --a-ink-700: #374151;
+      --a-ink-500: #6b7280;
+      --a-line: #e5e7eb;
+      --a-panel: #ffffff;
+      --a-radius: 10px;
+      --a-focus: #0a63ff;
+      --a-blue: #005fcc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -20%, #e8f0ff 0, transparent 60%),
+        radial-gradient(1200px 600px at 110% 120%, #eaf7ef 0, transparent 60%),
+        #f6f7fb;
+      line-height: 1.6;
+    }
+
+    main {
+      margin-top: 40px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      transform: translateY(-150%);
+      padding: 12px 16px;
+      background: #fff;
+      border: 2px solid var(--brand);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 600;
+      z-index: 1000;
+    }
+
+    .skip-link:focus,
+    .skip-link:focus-visible {
+      transform: translateY(12px);
+      outline: none;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #tab-container {
+      max-width: 980px;
+      margin: 32px auto;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .04);
+    }
+
+    [role="tablist"] {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      padding: 0 4px;
+      margin: 0 0 12px 0;
+    }
+
+    [role="tab"] {
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted-ink);
+      padding: 10px 14px;
+      font-size: 16px;
+      border-radius: 10px 10px 0 0;
+      position: relative;
+      transition: background-color .18s ease, color .18s ease;
+    }
+
+    [role="tab"]:hover {
+      background: var(--surface-2);
+      color: var(--ink);
+    }
+
+    [role="tab"][aria-selected="true"] {
+      color: var(--ink);
+    }
+
+    [role="tab"][aria-selected="true"]::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: -1px;
+      height: 5px;
+      background: var(--selected-green);
+      border-radius: 2px 2px 0 0;
+    }
+
+    [role="tab"]:focus-visible {
+      outline: 1px solid var(--focus-tab);
+      box-shadow: 0 0 0 1px rgba(10, 99, 255, .18);
+    }
+
+    [role="tabpanel"] {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px 16px 20px;
+    }
+
+    [role="tabpanel"][hidden] {
+      display: none;
+    }
+
+    h2 {
+      margin: 0 0 6px 0;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin: 0 0 12px 0;
+      color: var(--muted-ink);
+    }
+
+    .panel-button {
+      -webkit-tap-highlight-color: transparent;
+      padding: 10px 14px;
+      font-size: 16px;
+      background: var(--PanelBtn);
+      color: #fff;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background-color .18s ease;
+      box-shadow: 0 2px 10px rgba(10, 99, 255, .22);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(10, 99, 255, .25);
+    }
+
+    .panel-button:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 6px rgba(10, 99, 255, .18);
+    }
+
+    .panel-button:active {
+      transform: translateY(0);
+    }
+
+    .disclosure {
+      border: 1px solid var(--dline);
+      border-radius: 10px;
+      background: var(--surface);
+      overflow: hidden;
+      margin-top: 12px;
+      padding: 5px;
+    }
+
+    .disclosure-panel {
+      border-top: 1px solid var(--line);
+      background: var(--panel-bg);
+      padding: 14px 16px;
+    }
+
+    .chevron {
+      width: .75rem;
+      height: .75rem;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(-45deg);
+      transition: transform 160ms ease;
+      flex: 0 0 auto;
+      margin-left: 4px;
+    }
+
+    .panel-button[aria-expanded="true"] .chevron {
+      transform: rotate(45deg);
+    }
+
+    :where(.disclosure-panel) :where(a, button, input, select, textarea) {
+      border-radius: 8px;
+    }
+
+    :where(.disclosure-panel) :where(a, button, input, select, textarea):focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+      border: 0;
+      padding: 0;
+      margin: -1px;
+    }
+
+    a {
+      color: var(--brand);
+      text-underline-offset: 3px;
+    }
+
+    a:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 6px rgba(10, 99, 255, .18);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+
+    .accordion-container {
+      max-width: 880px;
+      margin: 32px auto;
+      background: var(--a-panel);
+      border: 1px solid var(--a-line);
+      border-radius: var(--a-radius);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid var(--a-line);
+    }
+
+    .accordion-item:last-child {
+      border-bottom: 0;
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      background: #fff;
+      border: 0;
+      text-align: left;
+      padding: 14px 48px 14px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--a-ink-900);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .accordion-trigger:hover {
+      background: #e9e8e8;
+    }
+
+    .accordion-trigger::after {
+      content: "+";
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--a-ink-500);
+      font-weight: 700;
+    }
+
+    .accordion-trigger[aria-expanded="true"]::after {
+      content: "–";
+    }
+
+    .accordion-content {
+      background: #fff;
+      color: var(--ink-700);
+      border-top: 1px solid var(--a-line);
+      padding: 0 16px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .25s ease, padding .2s ease;
+    }
+
+    .accordion-content.is-open {
+      padding: 12px 16px 16px;
+      max-height: 520px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .accordion-content {
+        transition: none;
+      }
+    }
+
+    .accordion-content p {
+      margin: 8px 0 0;
+      line-height: 1.6;
+    }
+
+    .accordion-content strong {
+      color: var(--a-ink-900);
+    }
+
+
+    #quickLink,
+    a[href="#auditCode"],
+    a[href="#detectionItem"] {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: 8px 12px;
+      margin: 8px 8px 16px 0;
+      border: 1px solid var(--a-line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--a-ink-900);
+      text-decoration: none;
+      font-weight: 600;
+      line-height: 1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+    }
+
+    #quickLink::before,
+    a[href="#auditCode"]::before,
+    a[href="#detectionItem"]::before {
+      content: "↘";
+      font-weight: 700;
+      color: var(--a-ink-500);
+    }
+
+    #quickLink:hover,
+    a[href="#auditCode"]:hover,
+    a[href="#detectionItem"]:hover {
+      background: #3f4f5e;
+      color: #fff;
+    }
+
+    #quickLink:focus-visible,
+    a[href="#auditCode"]:focus-visible,
+    a[href="#detectionItem"]:focus-visible {
+      outline: 3px solid var(--a-focus);
+      outline-offset: 3px;
+      box-shadow: none;
+    }
+
+    #quickLink {
+      display: block;
+      margin: 16px auto;
+      width: fit-content;
+    }
+
+
+    h2 {
+      margin: 40px 0 12px;
+      font-size: 20px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: var(--a-ink-900);
+      letter-spacing: .2px;
+      border-bottom: 2px solid var(--a-line);
+      padding-bottom: 6px;
+    }
+
+    h2:focus-visible {
+      outline: 3px solid var(--a-focus);
+      outline-offset: 4px;
+    }
+
+
+    .test-guide-container h2#detectionItem {
+      text-align: left;
+      margin: 20px 0 12px;
+      font-size: 20px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: var(--a-ink-900);
+      letter-spacing: .2px;
+      border-bottom: 2px solid var(--a-line);
+      padding-bottom: 6px;
+    }
+
+
+    .test-guide-container h3 {
+      margin: 8px 0 16px;
+      font-size: 17px;
+      line-height: 1.5;
+      font-weight: 700;
+      color: var(--a-ink-700);
+      padding: 8px 12px;
+      border-left: 4px solid var(--a-blue);
+      background: #f9fafb;
+      border-radius: 6px;
+    }
+
+    .test-guide-container h3:focus-visible {
+      outline: 3px solid var(--a-focus);
+      outline-offset: 3px;
+    }
+
+
+    .test-guide-container {
+      max-width: 880px;
+      margin: 32px auto;
+      padding: 24px;
+      background: #fff;
+      border: 1px solid var(--a-line);
+      border-radius: var(--a-radius);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+    }
+
+    .test-guide-container ol,
+    .test-guide-container ul {
+      margin-left: 20px;
+      line-height: 1.6;
+    }
+
+    .test-guide-container li p {
+      margin-bottom: .5rem;
+    }
+
+
+    .accordion-container,
+    .accordion-item {
+      overflow: visible;
+    }
+
+    .accordion-trigger:focus,
+    .accordion-trigger:focus-visible {
+      position: relative;
+      z-index: 2;
+      outline-offset: 4px;
+    }
+
+
+    .accordion-content {
+      overflow: hidden;
+    }
+
+    .accordion-content:focus,
+    .accordion-content:focus-visible {
+      position: relative;
+      z-index: 1;
+      outline-offset: 4px;
+    }
+
+    .accordion-trigger {
+      scroll-margin-block-start: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+  <main>
+    <h1 id="mainh1">頁籤類型：左右鍵直接切換頁籤（無須 Enter/Space）</h1>
+    <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a><a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
+
+    <div id="tab-container">
+      <div role="tablist" aria-label="範例頁籤元件" aria-orientation="horizontal">
+        <button role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1" tabindex="0">WCAG 2.1</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2" tabindex="-1">網站無障礙規範</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3" tabindex="-1">網站無障礙標章</button>
+      </div>
+
+      <div id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
+        <h2>WCAG 2.1是什麼？</h2>
+        <p>WCAG 2.1為W3C(World Wide Web Consortium)協會的WAI(Web Accessibility Initiative)組織訂定的無障礙網頁內容標準相關規範2.1版。</p>
+
+        <section class="disclosure" aria-labelledby="tab1-disclosure-btn">
+          <button id="tab1-disclosure-btn" class="panel-button" type="button" aria-expanded="false"
+            aria-controls="tab1-disclosure-panel" aria-describedby="tab1-disclosure-hint">
+            展開更多說明
+            <span class="chevron" aria-hidden="true"></span>
+          </button>
+
+          <div id="tab1-disclosure-panel" class="disclosure-panel" role="region" aria-labelledby="tab1-disclosure-btn"
+            hidden>
+            <p>我國當前網站無障礙規範為網站無障礙規範(110.07)。</p>
+            <p>參考WAI組織的WCAG 2.1(Web Content Accessibility Guidelines 2.1)而來。</p>
+          </div>
+        </section>
+      </div>
+
+      <div id="panel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2" hidden>
+        <h2>網站無障礙規範</h2>
+        <p>網站無障礙規範請見：</p>
+        <a href="https://accessibility.moda.gov.tw/Accessible/Guide/68" target="_blank" rel="noopener">
+          點擊後於新視窗打開網站無障礙規範(110.07)
+        </a>
+      </div>
+
+      <div id="panel-3" role="tabpanel" tabindex="0" aria-labelledby="tab-3" hidden>
+        <h2>如何獲取網站無障礙標章？</h2>
+        <p>申請網站無障礙標章，通過檢測後，即可於無障礙網路空間服務網下載標章，並將標章張貼於網站中。</p>
+      </div>
+    </div>
+
+    <h2 id="auditCode">相應稽核評量碼</h2>
+    <div id="accordionContainer"></div>
+
+    <a id="quickLink" href="#mainh1" aria-label="移至待檢測元件">移至待檢測元件</a>
+
+    <h2 id="detectionItem">檢測方式</h2>
+    <div class="test-guide-container">
+      <h3>檢測項目：以左右鍵直接切換之頁籤</h3>
+      <ol>
+        <li>
+          <p>以鍵盤焦點（Tab 鍵）遊走到頁籤。</p>
+        </li>
+        <li>
+          <p>確認頁籤報讀「索引標籤已選取」。</p>
+        </li>
+        <li>
+          <p>以鍵盤 ← / → 鍵在頁籤項目間移動。</p>
+        </li>
+        <li>
+          <p>確認被 ← / → 鍵移動到之頁籤會報讀「索引標籤已選取」。</p>
+        </li>
+        <li>
+          <p>確認被 ← / → 鍵移動到之頁籤，其對應面板已同步切換並顯示。</p>
+        </li>
+        <li>
+          <p>確認可用 Tab 鍵進入對應的頁籤面板。</p>
+        </li>
+        <li>
+          <p>進入面板後，面板內資訊可獲得；若面板內有互動元件，則需可操作。</p>
+        </li>
+        <li>
+          <p>以 Shift+Tab 回到頁籤項目，再切換其他頁籤並確認第 (3)～(7) 均可順利操作。</p>
+        </li>
+        <li>
+          <p>確認頁籤組件中各元件之名稱與角色與其功能相符（正確 ARIA 揭露）。</p>
+        </li>
+        <li>
+          <p>在不同瀏覽器中，鍵盤焦點（Tab）呈現瀏覽器預設的焦點樣式（如雙色黑白、雙色藍白）或作者自訂之明確可見樣式。</p>
+        </li>
+        <li>
+          <p>檢查焦點指示器區域至少有 1 個 CSS 像素圍繞該元素，且聚焦/未聚焦之間具 3:1 對比；若未達 3:1，則指示器邊線厚度需達 2 個 CSS 像素。</p>
+        </li>
+        <li>
+          <p>確認可用 Tab / Shift+Tab 順利離開整組頁籤組件（不會被困住）。</p>
+        </li>
+        <li>
+          <p>以上均符合則全數通過。</p>
+        </li>
+      </ol>
+
+  </main>
+
+  <script>
+    (function () {
+      var skip = document.querySelector('.skip-link');
+      if (skip) {
+        skip.addEventListener('click', function () {
+          var target = document.getElementById('mainh1');
+          if (!target) return;
+          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: false });
+        });
+      }
+
+
+      const accordionData = [
+        {
+          title: "指引1.4：可辨識",
+          content: `
+      <p><strong>CS1140101E</strong> 當使用者介面元件取得焦點時，使用 CSS 變更其呈現方式。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(6)、(7)、(10) 通過，則此項通過。</p>
+      <p><strong>GN2141100E</strong> 使用網頁作者設定的高可視焦點指示器。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(6)、(7)、(10)、(11) 通過，則此項通過。</p>
+    `
+        },
+        {
+          title: "指引2.1：鍵盤可操作",
+          content: `
+      <p><strong>GN1210101E</strong> 確認所有功能都能透過鍵盤介面來操作。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8) 全部通過，則此項通過。</p>
+      <p><strong>GN1210200E</strong> 確認使用者不會困在內容中。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8)、(12) 全部通過，則此項通過。</p>
+    `
+        },
+        {
+          title: "指引2.4：可導覽",
+          content: `
+      <p><strong>GN1240300E</strong> 按照內容的序列及關連性來安排互動元件的放置順序。</p>
+      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7) 通過，則此項通過。</p>
+    `
+        },
+        {
+          title: "指引4.1：相容性",
+          content: `
+      <p><strong>GN1410200E</strong> 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知。</p>
+      <p>⇒ 檢測方式 (1)、(2)、(3)、(4)、(5)、(6)、(7)、(8)、(9) 通過，則此項通過。</p>
+    `
+        }
+      ];
+
+      function initializeAccordion(containerId, data) {
+        const container = document.getElementById(containerId);
+        if (!container) {
+          console.error(`Accordion container with ID '${containerId}' not found.`);
+          return;
+        }
+
+        let accordionHtml = '';
+
+        data.forEach((item, index) => {
+          const triggerId = `trigger${index + 1}`;
+          const contentId = `content${index + 1}`;
+
+          accordionHtml += `
+            <div class="accordion-item">
+              <h3>
+                <button 
+                  class="accordion-trigger" 
+                  aria-expanded="false" 
+                  aria-controls="${contentId}"
+                  id="${triggerId}"
+                  aria-label="${item.title}"
+                >
+                  ${item.title}
+                </button>
+              </h3>
+              <div 
+                class="accordion-content" 
+                id="${contentId}" 
+                role="region" 
+                aria-labelledby="${triggerId}"
+                hidden
+              >
+                ${item.content}
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = `<div class="accordion-container">${accordionHtml}</div>`;
+
+        const triggers = container.querySelectorAll('.accordion-trigger');
+
+        triggers.forEach(trigger => {
+          trigger.addEventListener('click', () => {
+            const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+            const content = document.getElementById(trigger.getAttribute('aria-controls'));
+
+            trigger.setAttribute('aria-expanded', !isExpanded);
+
+            content.hidden = isExpanded;
+
+            content.classList.toggle('is-open');
+          });
+
+          trigger.addEventListener('keydown', (e) => {
+            const parent = trigger.closest('.accordion-container');
+            const allTriggers = parent.querySelectorAll('.accordion-trigger');
+            const currentIndex = Array.from(allTriggers).indexOf(trigger);
+
+            if (e.key === 'ArrowDown' && currentIndex < allTriggers.length - 1) {
+              allTriggers[currentIndex + 1].focus();
+            } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+              allTriggers[currentIndex - 1].focus();
+            }
+          });
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeAccordion('accordionContainer', accordionData);
+      });
+
+      const tablist = document.querySelector('[role="tablist"]');
+      const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+      const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+
+      function activateTab(tab, { setFocus = true } = {}) {
+        tabs.forEach(t => {
+          t.setAttribute('aria-selected', 'false');
+          t.setAttribute('tabindex', '-1');
+        });
+        panels.forEach(p => p.hidden = true);
+
+        tab.setAttribute('aria-selected', 'true');
+        tab.setAttribute('tabindex', '0');
+        const panel = document.getElementById(tab.getAttribute('aria-controls'));
+        if (panel) panel.hidden = false;
+
+        if (setFocus) tab.focus();
+      }
+
+      function activateByDelta(current, delta) {
+        const i = tabs.indexOf(current);
+        const next = (i + delta + tabs.length) % tabs.length;
+        activateTab(tabs[next], { setFocus: true });
+      }
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => activateTab(tab, { setFocus: false }));
+      });
+
+      tablist.addEventListener('keydown', (e) => {
+        const key = e.key;
+        const target = e.target;
+        if (target.getAttribute('role') !== 'tab') return;
+
+        switch (key) {
+          case 'ArrowRight':
+          case 'Right':
+            e.preventDefault();
+            activateByDelta(target, +1);
+            break;
+          case 'ArrowLeft':
+          case 'Left':
+            e.preventDefault();
+            activateByDelta(target, -1);
+            break;
+          case 'Home':
+            e.preventDefault();
+            activateTab(tabs[0], { setFocus: true });
+            break;
+          case 'End':
+            e.preventDefault();
+            activateTab(tabs[tabs.length - 1], { setFocus: true });
+            break;
+          case 'Enter':
+          case ' ':
+          case 'Spacebar':
+            e.preventDefault();
+            activateTab(target, { setFocus: true });
+            break;
+        }
+      });
+
+      tabs.forEach(t => {
+        const selected = t.getAttribute('aria-selected') === 'true';
+        t.setAttribute('tabindex', selected ? '0' : '-1');
+        const p = document.getElementById(t.getAttribute('aria-controls'));
+        if (p) p.hidden = !selected;
+      });
+
+      const disclosureRoot = document.querySelector('#panel-1 .disclosure');
+      if (disclosureRoot) {
+        const btn = disclosureRoot.querySelector('.panel-button');
+        const panel = disclosureRoot.querySelector('.disclosure-panel');
+
+        btn.setAttribute('aria-expanded', 'false');
+        panel.hidden = true;
+
+        btn.addEventListener('click', function () {
+          const expanded = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!expanded));
+          panel.hidden = expanded;
+        });
+
+        panel.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            btn.setAttribute('aria-expanded', 'false');
+            panel.hidden = true;
+            btn.focus();
+          }
+        });
+
+        const sync = new MutationObserver(function () {
+          const isHidden = panel.hasAttribute('hidden');
+          btn.setAttribute('aria-expanded', String(!isHidden));
+        });
+        sync.observe(panel, { attributes: true, attributeFilter: ['hidden'] });
+      }
+    })();
+  </script>
+</body>
+
+</html>

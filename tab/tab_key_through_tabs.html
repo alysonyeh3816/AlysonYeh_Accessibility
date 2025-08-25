@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>頁籤：以Tab 遍歷之頁籤</title>
+  <link rel="stylesheet" href="../css/accordion.css">
+  <script src="../js/accordion.js" defer></script>
+  <style>
+    :root {
+      --ink: #111;
+      --line: #ccc;
+      --tab-bg: #dbe5f5dc;
+      --panel-bg: #fff;
+      --brand: #0a63ff;
+      --focus-ring: 3px;
+      --focus-shadow: rgba(10, 99, 255, .35);
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      padding: 24px
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      transform: translateY(-150%);
+      padding: 12px 16px;
+      background: #fff;
+      border: 2px solid var(--brand);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 600;
+      z-index: 1000;
+    }
+
+    .skip-link:focus,
+    .skip-link:focus-visible {
+      transform: translateY(12px);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #tab-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    [role="tablist"] {
+      display: flex;
+      justify-content: flex-start;
+      gap: 0;
+      border-bottom: 1px solid var(--line);
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      flex-wrap: wrap;
+    }
+
+    [role="tab"] {
+      flex: 0 0 auto;
+      appearance: none;
+      background: var(--tab-bg);
+      border: 1px solid var(--line);
+      border-bottom: none;
+      padding: 10px 14px;
+      cursor: pointer;
+      position: relative;
+      z-index: 0;
+    }
+
+    [role="tab"][aria-selected="true"] {
+      background: #fcfcfc;
+      border-top: 6px solid #0b50b8;
+    }
+
+    [role="tab"]:focus-visible {
+      outline: var(--focus-ring) solid var(--brand);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 calc(var(--focus-ring) + 1px) var(--focus-shadow);
+      z-index: 2;
+    }
+
+    [role="tabpanel"] {
+      border: 1px solid var(--line);
+      padding: 12px 12px 20px;
+      background: var(--panel-bg);
+      overflow: visible;
+      position: relative;
+      z-index: 0;
+    }
+
+    [role="tabpanel"]:focus-visible {
+      outline: var(--focus-ring) solid var(--brand);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 calc(var(--focus-ring) + 1px) var(--focus-shadow);
+      z-index: 2;
+    }
+
+    .panel-button {
+      padding: 6px 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color .2s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-button:hover,
+    .panel-button:focus {
+      background: #0056b3;
+    }
+
+    .panel-button:focus {
+      outline: var(--focus-ring) solid var(--brand);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 calc(var(--focus-ring) + 1px) var(--focus-shadow);
+    }
+
+    a:focus {
+      outline: var(--focus-ring) solid var(--brand);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 calc(var(--focus-ring) + 1px) var(--focus-shadow);
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+  <main>
+    <h1 id="mainh1">頁籤：以Tab 遍歷之頁籤</h1>
+    <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a><a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
+
+    <div id="tab-container">
+      <div role="tablist" aria-label="範例頁籤元件" id="tabs">
+        <button role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1" tabindex="0">頁籤一</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2" tabindex="-1">頁籤二</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3" tabindex="-1">頁籤三</button>
+      </div>
+
+      <div id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
+        <h2>頁籤一的對應內容</h2>
+        <p>這是頁籤一的內容。這裡可以放置更多的文案。</p>
+        <button class="panel-button">一個範例按鈕，點了不會有效果</button>
+      </div>
+
+      <div id="panel-2" role="tabpanel" tabindex="-1" aria-labelledby="tab-2" hidden>
+        <h2>頁籤二的對應內容</h2>
+        <p>這是頁籤二的內容。這裡可以放置更多的文案。</p>
+        <a href="javascript:void(0);">一個範例連結，點了不會有效果</a>
+      </div>
+
+      <div id="panel-3" role="tabpanel" tabindex="-1" aria-labelledby="tab-3" hidden>
+        <h2>頁籤三的對應內容</h2>
+        <p>這是頁籤三的內容。這裡可以放置更多的文案。</p>
+      </div>
+    </div>
+    <h2 id="auditCode">相應稽核評量碼</h2>
+    <div id="accordionContainer"></div>
+
+    <a id="quickLink" href="#mainh1" aria-label="移至待檢測元件">移至待檢測元件</a>
+
+    <h2 id="detectionItem">檢測方式</h2>
+    <div class="test-guide-container">
+      <h3>檢測項目：以 Tab 鍵遍歷之頁籤</h3>
+      <ol>
+        <li>
+          <p>以鍵盤焦點（Tab 鍵）遊走到頁籤。</p>
+        </li>
+        <li>
+          <p>確認被遊走到之頁籤報讀「索引標籤已選取」。</p>
+        </li>
+        <li>
+          <p>以鍵盤 Tab 鍵遊走頁籤，確認可進入對應的頁籤面板。</p>
+        </li>
+        <li>
+          <p>走入對應面板後，面板內資訊可取得；若面板內有互動元件，則需可操作。</p>
+        </li>
+        <li>
+          <p>再以 Tab 依序遍歷各頁籤，確認各頁籤均可執行第 (2)～(4) 項之操作。</p>
+        </li>
+        <li>
+          <p>再以 Shift+Tab 反向遊走頁籤，確認各面板與頁籤均可按邏輯被遊走。</p>
+        </li>
+        <li>
+          <p>確認頁籤組件中各元件之名稱與角色與其功能相符（正確 ARIA 揭露）。</p>
+        </li>
+        <li>
+          <p>在不同瀏覽器中，鍵盤焦點（Tab）呈現瀏覽器預設焦點樣式（如雙色黑白、雙色藍白）或作者指定之明確可見樣式。</p>
+        </li>
+        <li>
+          <p>檢查焦點指示器：區域至少有 1 CSS 像素圍繞該元素，且聚焦/未聚焦狀態間具 3:1 對比；若未達 3:1，則指示器邊線厚度需達 2 CSS 像素。</p>
+        </li>
+        <li>
+          <p>確認以 Tab / Shift+Tab 可順利離開整組頁籤組件（不會被困住）。</p>
+        </li>
+        <li>
+          <p>以上均符合則全數通過。</p>
+        </li>
+      </ol>
+
+  </main>
+
+  <script>
+(function () {
+  // Skip Link：焦點錨到 #mainh1
+  function initSkipLink() {
+    var skip = document.querySelector('.skip-link');
+    if (!skip) return;
+    skip.addEventListener('click', function () {
+      var target = document.getElementById('mainh1');
+      if (!target) return;
+      if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: false });
+    });
+  }
+
+  // 以 Tab 遍歷之頁籤：只使用 Tab/Shift+Tab 在頁籤與面板之間往返（不使用左右鍵）
+  function initTabs() {
+    const tablist = document.getElementById('tabs');
+    if (!tablist) return;
+
+    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+
+    const getPanelByTab = (tab) => document.getElementById(tab.getAttribute('aria-controls'));
+    const getTabByPanel = (panel) => document.getElementById(panel.getAttribute('aria-labelledby'));
+
+    function selectTab(tab, { focusTab = true, focusPanel = false } = {}) {
+      tabs.forEach(t => {
+        const sel = (t === tab);
+        t.setAttribute('aria-selected', sel ? 'true' : 'false');
+        t.tabIndex = sel ? 0 : -1;
+
+        const p = getPanelByTab(t);
+        if (sel) {
+          p.hidden = false;
+          p.tabIndex = 0;
+        } else {
+          p.hidden = true;
+          p.tabIndex = -1;
+        }
+      });
+      if (focusTab) tab.focus();
+      if (focusPanel) getPanelByTab(tab).focus();
+    }
+
+    const getNextTab = (currentTab) => {
+      const i = tabs.indexOf(currentTab);
+      if (i === -1 || i === tabs.length - 1) return null;
+      return tabs[i + 1];
+    };
+
+    const getPrevTab = (currentTab) => {
+      const i = tabs.indexOf(currentTab);
+      if (i <= 0) return null;
+      return tabs[i - 1];
+    };
+
+    const FOCUSABLE = [
+      'a[href]:not([tabindex="-1"])',
+      'button:not([disabled])',
+      'input:not([disabled]):not([type="hidden"])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
+    function getFocusableInPanel(panel) {
+      const list = Array.from(panel.querySelectorAll(FOCUSABLE));
+      if (panel.tabIndex >= 0) list.unshift(panel);
+      // 只取可見的
+      return list.filter(el => (el.offsetParent !== null) || el === panel);
+    }
+
+    // 點擊頁籤：切換到該面板
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => selectTab(tab, { focusTab: true }));
+    });
+
+    // 在面板內以 Tab 往後、Shift+Tab 往前：跨面板跳轉
+    panels.forEach(panel => {
+      panel.addEventListener('keydown', (e) => {
+        if (e.key !== 'Tab' || e.ctrlKey || e.metaKey) return;
+
+        const focusables = getFocusableInPanel(panel);
+        if (focusables.length === 0) return;
+
+        const active = document.activeElement;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        // 往後，從面板末端跳到下一個頁籤（並選中它）
+        if (!e.shiftKey && active === last) {
+          const thisTab = getTabByPanel(panel);
+          const next = getNextTab(thisTab);
+          if (next) {
+            e.preventDefault();
+            selectTab(next, { focusTab: true });
+          }
+        }
+        // 往前，從面板開頭跳回目前的頁籤按鈕
+        else if (e.shiftKey && active === first) {
+          e.preventDefault();
+          const thisTab = getTabByPanel(panel);
+          thisTab.focus();
+        }
+      });
+    });
+
+    // 在 tablist 內，Shift+Tab 往回：若要回到上一個面板的尾端
+    tablist.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || !e.shiftKey || e.ctrlKey || e.metaKey) return;
+
+      const currentTab = document.activeElement;
+      if (!currentTab || currentTab.getAttribute('role') !== 'tab') return;
+
+      const prev = getPrevTab(currentTab);
+      if (!prev) return;
+
+      e.preventDefault();
+      selectTab(prev, { focusTab: false });
+      const prevPanel = getPanelByTab(prev);
+      const list = getFocusableInPanel(prevPanel);
+      const target = list[list.length - 1] || prevPanel;
+      target.focus();
+    });
+
+    // 預設選中第一個
+    if (tabs[0]) selectTab(tabs[0], { focusTab: false });
+  }
+
+  // Accordion 資料（依你提供的文案）
+  const accordionData = [
+    {
+      title: "指引1.4：可辨識",
+      content: `
+        <p><strong>CS1140101E</strong> 當使用者介面元件取得焦點時，使用 CSS 變更其呈現方式。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(4)、(5)、(6)、(8) 通過，則此項通過。</p>
+        <p><strong>GN2141100E</strong> 使用網頁作者設定的高可視焦點指示器。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(4)、(5)、(6)、(8)、(9) 通過，則此項通過。</p>
+      `
+    },
+    {
+      title: "指引2.1：鍵盤可操作",
+      content: `
+        <p><strong>GN1210101E</strong> 確認所有功能都能透過鍵盤介面來操作。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(4)、(5) 全部通過，則此項通過。</p>
+        <p><strong>GN1210200E</strong> 確認使用者不會困在內容中。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(4)、(5)、(10) 全部通過，則此項通過。</p>
+      `
+    },
+    {
+      title: "指引2.4：可導覽",
+      content: `
+        <p><strong>GN1240300E</strong> 按照內容的序列及關連性來安排互動元件的放置順序。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(4)、(5)、(6) 通過，則此項通過。</p>
+      `
+    },
+    {
+      title: "指引4.1：相容性",
+      content: `
+        <p><strong>GN1410200E</strong> 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知。</p>
+        <p>⇒ 檢測方式 (1)、(2)、(3)、(4)、(5)、(6)、(7) 通過，則此項通過。</p>
+      `
+    }
+  ];
+
+  // 等 DOM 解析完成後執行（可確保 defer 腳本順序、元素存在）
+  document.addEventListener('DOMContentLoaded', function () {
+    initSkipLink();
+    initTabs();
+
+    if (typeof window.initializeAccordion === 'function') {
+      initializeAccordion('accordionContainer', accordionData);
+    } else {
+      console.error('initializeAccordion 未載入。請確認 script 載入順序或檔案路徑。');
+    }
+  });
+})();
+  </script>
+</body>
+
+</html>
