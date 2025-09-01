@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../css/accordion.css" />
     <script src="../js/accordion.js" defer></script>
-    <title>頁籤類型：以左右鍵搭配Enter鍵切換頁籤</title>
+    <title>頁籤類型：以左右鍵搭配Enter鍵切換頁籤(並含有操作說明)</title>
     <style>
       :root {
         --brand: #0a63ff;
@@ -17,7 +17,7 @@
         --line: #ccd2dd;
         --dline: #ecedf0;
         --focus-ring: var(--brand);
-        --focus-tab: #949494;
+        --focus-tab: #9c9c9c;
         --radius: 12px;
         --panel-bg: #f7f7f8;
       }
@@ -76,6 +76,38 @@
 
       h1 {
         text-align: center;
+      }
+
+      #tooltip {
+        height: 0;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+
+      #tooltip.visible {
+        opacity: 1;
+        height: fit-content;
+      }
+      .access-note {
+        background-color: #e6f6ea;
+        border: 2px solid #4caf50;
+        color: #0a2f0f;
+        padding: 1rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin: 1.5rem auto;
+        width: fit-content;
+      }
+
+      .access-note strong {
+        color: #064420;
+        margin-top: 10px;
+        display: inline-block;
+      }
+
+      .access-note ol {
+        margin: 0 30px;
       }
 
       #tab-container {
@@ -269,7 +301,37 @@
       <a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
     </div>
     <main>
-      <h1 id="mainh1">頁籤類型：以左右鍵搭配Enter鍵切換頁籤</h1>
+      <h1 id="mainh1">頁籤類型：以左右鍵搭配Enter鍵切換頁籤(並含有操作說明)</h1>
+      <div
+        id="tooltip"
+        role="note"
+        class="access-note"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <p>使用鍵盤操作頁籤組件的方法如下：</p>
+        <ol>
+          <li>當焦點停留在索引標籤上時，可按鍵盤 ← 或 → 鍵切換不同標籤。</li>
+          <li>按 Enter 或空白鍵可選取目前標籤，對應的內容面板會顯示在下方。</li>
+          <li>
+            若要進入面板操作其中的功能項（例如連結），請再按一次 Tab
+            鍵，焦點將移至面板內容。
+          </li>
+          <li>
+            在面板中繼續按 Tab
+            鍵可逐一瀏覽功能項；若焦點已在最後一個功能項，再按 Tab
+            會離開頁籤組件。
+          </li>
+          <li>
+            若想回到索引標籤，請使用 Shift+Tab
+            依序退回至標籤列，再重新選擇其他標籤。
+          </li>
+        </ol>
+        <p>
+          <strong>螢幕報讀器使用者：</strong>
+          選取標籤後，請按 Tab 進入面板，再以瀏覽模式閱讀內容。
+        </p>
+      </div>
       <div id="tab-container">
         <div
           role="tablist"
@@ -456,6 +518,31 @@
           target.focus({ preventScroll: false });
         });
 
+        const tabContainer = document.getElementById("tab-container");
+        const tooltip = document.getElementById("tooltip");
+
+        // 當焦點進入 tab-container（包含子元素）
+        tabContainer.addEventListener("focusin", () => {
+          tooltip.classList.add("visible");
+
+          // 觸發 aria-live 重新讀取
+          let original = tooltip.innerHTML;
+          tooltip.innerHTML =
+            original + '<span class="visually-hidden"> </span>';
+          original = tooltip.innerHTML;
+          setTimeout(() => {
+            tooltip.innerHTML = original;
+          }, 50);
+        });
+
+        // // 當焦點離開 tab-container（包含子元素）
+        // tabContainer.addEventListener("focusout", (e) => {
+        //   // 檢查是否真的離開容器（避免子元素之間切換時就隱藏）
+        //   if (!tabContainer.contains(e.relatedTarget)) {
+        //     tooltip.classList.remove("visible");
+        //   }
+        // });
+
         const tablist = document.querySelector('[role="tablist"]');
         const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
         const panels = Array.from(
@@ -576,34 +663,34 @@
         {
           title: "指引1.4：可辨識",
           content: `
-      <p><strong>CS1140101E</strong> 當使用者介面元件取得焦點時，使用 CSS 變更其呈現方式。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(10) 通過，則此項通過。</p>
-      <p><strong>GN2141100E</strong> 使用網頁作者設定的高可視焦點指示器。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(10)、(11) 通過，則此項通過。</p>
-    `,
+        <p><strong>CS1140101E</strong> 當使用者介面元件取得焦點時，使用 CSS 變更其呈現方式。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(10) 通過，則此項通過。</p>
+        <p><strong>GN2141100E</strong> 使用網頁作者設定的高可視焦點指示器。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(10)、(11) 通過，則此項通過。</p>
+      `,
         },
         {
           title: "指引2.1：鍵盤可操作",
           content: `
-      <p><strong>GN1210101E</strong> 確認所有功能都能透過鍵盤介面來操作。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8) 全部通過，則此項通過。</p>
-      <p><strong>GN1210200E</strong> 確認使用者不會困在內容中。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8)、(12) 全部通過，則此項通過。</p>
-    `,
+        <p><strong>GN1210101E</strong> 確認所有功能都能透過鍵盤介面來操作。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8) 全部通過，則此項通過。</p>
+        <p><strong>GN1210200E</strong> 確認使用者不會困在內容中。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7)、(8)、(12) 全部通過，則此項通過。</p>
+      `,
         },
         {
           title: "指引2.4：可導覽",
           content: `
-      <p><strong>GN1240300E</strong> 按照內容的序列及關連性來安排互動元件的放置順序。</p>
-      <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7) 通過，則此項通過。</p>
-    `,
+        <p><strong>GN1240300E</strong> 按照內容的序列及關連性來安排互動元件的放置順序。</p>
+        <p>⇒ 檢測方式 (1)、(3)、(5)、(6)、(7) 通過，則此項通過。</p>
+      `,
         },
         {
           title: "指引4.1：相容性",
           content: `
-      <p><strong>GN1410200E</strong> 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知。</p>
-      <p>⇒ 檢測方式 (1)、(2)、(3)、(4)、(5)、(6)、(7)、(8)、(9) 通過，則此項通過。</p>
-    `,
+        <p><strong>GN1410200E</strong> 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知。</p>
+        <p>⇒ 檢測方式 (1)、(2)、(3)、(4)、(5)、(6)、(7)、(8)、(9) 通過，則此項通過。</p>
+      `,
         },
       ];
 
@@ -619,4 +706,3 @@
     </script>
   </body>
 </html>
-
