@@ -101,15 +101,15 @@
   .card{border:1px solid #ddd;border-radius:.5rem;overflow:hidden;background:#fff}
   .card .body{padding:1rem}
 
-  /* 表單與頁籤（保留 10+2 考點） */
+  /* 表單與頁籤 */
   .form-group{margin:1rem 0} label{display:block;margin-bottom:.35rem;font-weight:700}
   input[type="text"],input[type="email"],textarea{width:100%;padding:.6rem;border:1px solid #aaa;border-radius:.35rem}
   textarea{min-height:120px}
   .options{display:flex;flex-wrap:wrap;gap:1rem}
   .btn{display:inline-block;background:#2c3e50;color:#fff;border:none;border-radius:.5rem;padding:.7rem 1.1rem}
   .btn:hover{filter:brightness(1.05)}
-  .btn:focus{outline:0} /* sighted-only 考題：焦點不可見 */
-  .muted{color:#9aa}    /* sighted-only 考題：低對比 */
+  .btn:focus{outline:0} 
+  .muted{color:#9aa}   
 
   .fake-select{position:relative;border:1px solid #aaa;border-radius:.35rem;padding:.6rem;cursor:pointer}
   .fake-select span{color:#555}
@@ -199,34 +199,34 @@
   </div>
 </section>
 
-<!-- HERO ticker（考題：無暫停） -->
+<!-- HERO ticker -->
 <div class="hero-ticker">
   <p id="hero-rotator" >今日主題：Open House Taipei 城市導覽</p>
 </div>
 
 <!-- 主要內容：12 筆資料 & 即時查詢 -->
-<main id="main" class="wrap" ><!-- 錯置 role（考題） -->
+<main id="main" class="wrap" >
   <section id="events" aria-label="近期活動">
     <h2>近期活動</h2>
 
     <!-- 全站查詢（移除按鈕，輸入即時篩選） -->
     <div class="querybar">
-      <input type="text" id="q-global" placeholder="全站查詢關鍵字（搜尋所有頁籤）"><!-- 缺 label（考題） -->
+      <input type="text" id="q-global" placeholder="全站查詢關鍵字（搜尋所有頁籤）">
       <span id="count-global" class="muted" >全部顯示</span>
     </div>
 
-    <div class="tabs" aria-label="活動分類"><!-- 子項非 role=tab（考題） -->
+    <div class="tabs" aria-label="活動分類">
       <div class="tab-bar">
         <a  href="#panel-all" class="tab-link active">全部</a>
         <a  href="#panel-workshop" class="tab-link">工作坊</a>
         <a  href="#panel-lecture" class="tab-link">講座</a>
-        <a  href="#panel-review" class="tab-link">特別企劃</a><!-- 原：活動回顧 -->
+        <a  href="#panel-review" class="tab-link">特別企劃</a>
       </div>
 
       <!-- 全部 -->
       <div class="tab-panel" id="panel-all">
         <div class="querybar">
-          <input type="text" id="q-all" placeholder="在「全部」內再查詢"><!-- 缺 label（考題） -->
+          <input type="text" id="q-all" placeholder="在「全部」內再查詢">
           <span id="count-all" class="muted">共 12 筆</span>
         </div>
         <div class="grid cols-2 list" data-type="all">
@@ -415,13 +415,13 @@
         </div>
       </div>
 
-      <!-- 特別企劃（原活動回顧） -->
+      <!-- 特別企劃 -->
       <div class="tab-panel" id="panel-review" hidden>
         <div class="querybar">
           <input type="text" id="q-review" placeholder="在「特別企劃」內再查詢">
           <span id="count-review" class="muted" >共 3 筆</span>
         </div>
-        <div class="grid cols-2 list" data-type="feature" id="events"><!-- 故意重複 id=events（考題） -->
+        <div class="grid cols-2 list" data-type="feature">
           <article class="card item" data-cat="feature" data-tags="特別企劃 城市導覽 建築 Open House Taipei">
             <div class="body">
               <h3>2025 OPEN HOUSE TAIPEI 打開台北-傳承・創生</h3>
@@ -453,7 +453,7 @@
     <h2>活動報名表</h2>
     <form id="signupForm" action="#" method="post" novalidate>
       <div class="form-group">
-        <input type="text" id="yourname" name="yourname" placeholder="您的姓名（必填）"><!-- 無 label（考題） -->
+        <input type="text" id="yourname" name="yourname" placeholder="您的姓名（必填）">
       </div>
       <div class="form-group">
         <label for="email">電子郵件</label>
@@ -484,7 +484,7 @@
         </div>
       </div>
       <button type="submit" class="btn">送出報名</button>
-      <p class="muted" style="margin-top:.5rem">小提醒：報名成功將寄送 Email 通知。</p><!-- 低對比（考題） -->
+      <p class="muted" style="margin-top:.5rem">小提醒：報名成功將寄送 Email 通知。</p>
     </form>
   </section>
 
@@ -494,7 +494,7 @@
     <p>年度報告已發布，您可以 <a href="#" title="測試用空連結">點此處</a> 下載 PDF。</p>
   </section> -->
 
-  <!-- 聯絡資訊（QR 無替代文字：考題） -->
+  <!-- 聯絡資訊 -->
   <section id="contact" aria-labelby="contactIfo">
     <h2 id="contactIfo">聯絡資訊</h2>
     <div class="grid cols-2">
@@ -510,7 +510,7 @@
       <div>
         <form action="#" method="post">
           <div class="form-group">
-            <h5>線上留言</h5><!-- 標題跳級（考題） -->
+            <h5>線上留言</h5>
             <label for="cname">姓名</label><span>(必填)</span>
             <input id="cname" name="cname" type="text">
           </div>
@@ -523,7 +523,7 @@
             <textarea id="cmsg" name="cmsg"></textarea>
           </div>
           <button type="submit" class="btn">送出</button>
-          <p class="muted" style="margin-top:.5rem">小提醒：x留言成功後將寄送 Email 通知。</p><!-- 低對比（考題） -->
+          <p class="muted" style="margin-top:.5rem">小提醒：留言成功後將寄送 Email 通知。</p>
         </form>
       </div>
     </div>
@@ -644,7 +644,7 @@ $(function(){
   setInterval(function(){ i=(i+1)%msgs.length; el.textContent = msgs[i]; }, 2500);
 })();
 
-/* 自製下拉 */
+/* 下拉 */
 (function(){
   const box = document.getElementById('fakeSelect');
   if(!box) return;
