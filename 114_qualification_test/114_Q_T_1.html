@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>一頁式網站無障礙檢測考題-城學報名｜CityLearn</title>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;line-height:1.6;color:#222;background:#fff}
+  a{color:#0b70d0;text-decoration:none} a:hover{text-decoration:underline}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:20;background:#333;color:#fff}
+  .nav .wrap{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .brand{font-weight:700}
+  .menu{display:flex;gap:.5rem}
+  .menu a{display:block;padding:.5rem .75rem;color:#fff;border-radius:.375rem}
+  .menu a:hover{background:#444}
+
+  /* slick 基礎 */
+  .slick-slider{position:relative;display:block;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+  .slick-list{position:relative;display:block;overflow:hidden;margin:0;padding:0}
+  .slick-track{position:relative;top:0;left:0;display:block;margin-left:auto;margin-right:auto}
+  .slick-slide{display:none;float:left;height:100%;min-height:1px}
+  .slick-initialized .slick-slide{display:block}
+  .slick-arrow.slick-hidden{display:none}
+
+  /* ── 主視覺輪播（無背景圖；可視卡更多） ───────────────────── */
+  .index-kv{position:relative;overflow:hidden;background:#fff;border-bottom:1px solid #eee}
+  .index-kv .cya-container{max-width:1200px;margin:0 auto;padding:40px 12px 24px;position:relative}
+
+  .kv-content{position:absolute;top:0;left:0;width:300px;height:320px;padding:18px;color:#333;z-index:10}
+  .main-text{font-weight:600;font-size:1.7rem;line-height:1.33;font-family:'Noto Serif TC',serif;margin-bottom:14px}
+
+  .block{display:flex;align-items:center}
+  .block-left{width:130px;min-height:44px}
+  .fraction{display:flex;align-items:baseline;height:44px;margin-left:14px;font-weight:400;font-size:1.05rem;font-family:'Noto Serif TC',serif;color:#333}
+  .fraction .current{font-size:1.5em;line-height:1}
+  .slick-button-group{position:relative;width:130px;height:44px}
+
+  .slick-prev,.slick-next,.slick-toggle{
+    position:absolute;top:50%;width:40px;height:40px;margin-top:-20px;border-radius:50%;
+    border:1px solid #333;background:transparent no-repeat center/18px;cursor:pointer;font-size:0
+  }
+  .slick-prev{left:0;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23222'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e")}
+  .slick-next{right:0;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23222'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e")}
+  .slick-toggle{left:50%;transform:translateX(-50%);border:1px solid #333;background-size:15px}
+  .slick-toggle.is-playing{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23222' viewBox='0 0 24 24'%3e%3cpath d='M6 19h4V5H6v14zm8-14v14h4V5h-4z'/%3e%3c/svg%3e")}
+  .slick-toggle.is-paused{ background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23222' viewBox='0 0 24 24'%3e%3cpath d='M8 5v14l11-7z'/%3e%3c/svg%3e")}
+
+  /* 讓左右可見項目更多：桌機可見 3 張完整 + 1 張部分 */
+  .index-swiper{padding-left:260px;overflow:visible}
+  .slider-item{width:100%;max-width:260px;padding:0 10px}
+  .item{padding:1px;border:1px solid #e3e3d7;border-radius:240px;transition:border-color .2s, box-shadow .2s;background:#222}
+  .image{position:relative;border-radius:215px;overflow:hidden}
+  .image:before{content:"";display:block;padding-top:135%}
+  .image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+  .image .mask{position:absolute;inset:0;background:linear-gradient(0deg,#fcfcfc,#94caff8f);transition:height .5s ease-in-out;height:100%}
+  .slick-active .image .mask{height:0}
+
+  .index-kv .slick-dots{display:none!important}
+
+  /* 行動版：控制列搬到輪播前；縮小圖片 */
+  .mobile-controls{display:none;gap:.5rem;align-items:center;margin:0 0 .5rem 0}
+  .mobile-controls .fraction{margin-left:8px}
+  @media (max-width:1024px){
+    .kv-content{top:auto;bottom:0;width:100%;height:auto;padding:14px 12px}
+    .index-swiper{padding-left:0}
+    .slider-item{max-width:230px;padding:0 8px}
+    .main-text{font-size:1.4rem;margin-bottom:10px}
+    .index-kv .cya-container{padding:36px 12px 260px}
+  }
+  @media (max-width:767px){
+    .mobile-controls{display:flex}
+    .kv-content .slick-button-group{display:none}
+    .kv-content .fraction{display:none}
+    .main-text{font-size:1.25rem;margin:0 0 6px}
+    .index-kv .cya-container{padding:20px 12px 200px}
+    .slider-item{max-width:180px;padding:0 6px}
+    .item{border-radius:22px}
+    .image{border-radius:18px}
+    .image:before{padding-top:125%}
+  }
+
+  /* HERO ticker */
+  .hero-ticker{max-width:1200px;margin:10px auto 0;padding:0 12px}
+  .hero-ticker p{margin:0;padding:6px 10px;background:#f0f3f6;border:1px solid #e5e7eb;border-radius:8px}
+
+  /* 主內容區 */
+  .wrap{max-width:1200px;margin:auto;padding:2rem 1rem}
+  section{margin:2rem 0}
+  h2{margin:.25rem 0 1rem}
+
+  .grid{display:grid;gap:1rem}
+  @media(min-width:768px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+  .card{border:1px solid #ddd;border-radius:.5rem;overflow:hidden;background:#fff}
+  .card .body{padding:1rem}
+
+  /* 表單與頁籤（保留 10+2 考點） */
+  .form-group{margin:1rem 0} label{display:block;margin-bottom:.35rem;font-weight:700}
+  input[type="text"],input[type="email"],textarea{width:100%;padding:.6rem;border:1px solid #aaa;border-radius:.35rem}
+  textarea{min-height:120px}
+  .options{display:flex;flex-wrap:wrap;gap:1rem}
+  .btn{display:inline-block;background:#2c3e50;color:#fff;border:none;border-radius:.5rem;padding:.7rem 1.1rem}
+  .btn:hover{filter:brightness(1.05)}
+  .btn:focus{outline:0} /* sighted-only 考題：焦點不可見 */
+  .muted{color:#9aa}    /* sighted-only 考題：低對比 */
+
+  .fake-select{position:relative;border:1px solid #aaa;border-radius:.35rem;padding:.6rem;cursor:pointer}
+  .fake-select span{color:#555}
+  .fake-select .panel{display:none;position:absolute;z-index:10;left:0;right:0;top:100%;background:#fff;border:1px solid #aaa;border-top:0;max-height:240px;overflow:auto}
+  .fake-select.open .panel{display:block}
+  .fake-select .panel div{padding:.6rem;border-top:1px solid #eee}
+
+  .tabs{border:1px solid #e5e5e5;border-radius:.5rem;background:#fff}
+  .tab-bar{display:flex;gap:.25rem;flex-wrap:wrap;background:#f7f8f9;border-bottom:1px solid #e5e5e5;padding:.5rem}
+  .tab-bar a{display:inline-block;padding:.5rem .9rem;border-radius:.375rem;background:#fff;border:1px solid #e5e5e5;color:#222}
+  .tab-bar a.active{background:#e9f1ff;border-color:#bcd3ff}
+  .tab-panel{padding:1rem}
+  .tab-panel[hidden]{display:none}
+
+  .querybar{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0 1rem}
+  .querybar input[type="text"]{flex:1;min-width:240px}
+
+  h5{font-size: x-large;}
+  form label{display: inline-block;}
+
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+
+<!-- 導覽 -->
+<nav class="nav" role="navigation" aria-label="主要導覽">
+  <div class="wrap">
+    <div class="brand">城學報名｜CityLearn</div>
+    <div class="menu">
+      <a href="#kv">近期主打</a>
+      <a href="#events">活動列表</a>
+      <a href="#register">報名表單</a>
+      <a href="#contact">聯絡資訊</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 主視覺輪播 -->
+<section class="index-kv" id="kv" aria-label="近期主打輪播">
+  <div class="cya-container">
+    <section class="carousel-root">
+      <div class="kv-content">
+        <div class="main-text">從教室到城市，<br>學習不設限</div>
+        <div class="block">
+          <div class="block-left">
+            <div class="slick-button-group" aria-controls="carouselSlides">
+              <button id="btnPlay" class="slick-toggle is-playing" type="button" aria-pressed="true" aria-label="播放"></button>
+              <button id="btnPrev" class="slick-prev"  type="button" aria-label="上一項"></button>
+              <button id="btnNext" class="slick-next"  type="button" aria-label="下一項"></button>
+            </div>
+          </div>
+          <div class="block-right">
+            <span class="fraction"><span class="current">1</span> ⁄ <span class="total">6</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="index-swiper">
+        <!-- 行動版控制列（JS 會搬同一組按鈕到這裡） -->
+        <div id="mobileControls" class="mobile-controls">
+          <span class="fraction"><span class="current">1</span> ⁄ <span class="total">6</span></span>
+        </div>
+
+        <ul class="slider kv-slider" id="carouselSlides">
+          <li class="slider-item"><span class="test"><div class="item"><div class="image">
+            <img src="https://webpageprod-ws.ntu.edu.tw/001/Upload/1757/relpic/116131/258390/a35ad3de-eb37-4707-ac8f-08723e00e341.jpg" alt="" aria-hidden="true">
+            <div class="mask"></div></div></div></span></li>
+          <li class="slider-item"><span class="test"><div class="item"><div class="image">
+            <img src="https://cms-carrier.ntpu.edu.tw/uploads/1141111_AI_11ace9aede.png" alt="" aria-hidden="true">
+            <div class="mask"></div></div></div></span></li>
+          <li class="slider-item"><span class="test"><div class="item"><div class="image">
+            <img src="https://clap.condenast.com.tw/public/2025/ss26all/images/mainlogo/tpefw25.png" alt="" aria-hidden="true">
+            <div class="mask"></div></div></div></span></li>
+          <li class="slider-item"><span class="test"><div class="item"><div class="image">
+            <img src="https://www.mocataipei.org.tw/upload/2025_09_0319/20250903151347ytzwukUJj1.jpg" alt="" aria-hidden="true">
+            <div class="mask"></div></div></div></span></li>
+          <li class="slider-item"><span class="test"><div class="item"><div class="image">
+            <img src="https://www.class.tcyd.gov.taipei/archive/participate/active472/default/5Lq655Sf6Kit6KiIXzI1MTAwODExMTYzOQ(3D(3D.jpg" alt="" aria-hidden="true">
+            <div class="mask"></div></div></div></span></li>
+          <li class="slider-item"><span class="test"><div class="item"><div class="image">
+            <img src="https://systemeblob.blob.core.windows.net/allticket-prod/media/cfb3e0be-494c-4384-9106-2aade22253be.jpg" alt="" aria-hidden="true">
+            <div class="mask"></div></div></div></span></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- HERO ticker（考題：無暫停） -->
+<div class="hero-ticker">
+  <p id="hero-rotator" >今日主題：Open House Taipei 城市導覽</p>
+</div>
+
+<!-- 主要內容：12 筆資料 & 即時查詢 -->
+<main id="main" class="wrap" ><!-- 錯置 role（考題） -->
+  <section id="events" aria-label="近期活動">
+    <h2>近期活動</h2>
+
+    <!-- 全站查詢（移除按鈕，輸入即時篩選） -->
+    <div class="querybar">
+      <input type="text" id="q-global" placeholder="全站查詢關鍵字（搜尋所有頁籤）"><!-- 缺 label（考題） -->
+      <span id="count-global" class="muted" >全部顯示</span>
+    </div>
+
+    <div class="tabs" aria-label="活動分類"><!-- 子項非 role=tab（考題） -->
+      <div class="tab-bar">
+        <a  href="#panel-all" class="tab-link active">全部</a>
+        <a  href="#panel-workshop" class="tab-link">工作坊</a>
+        <a  href="#panel-lecture" class="tab-link">講座</a>
+        <a  href="#panel-review" class="tab-link">特別企劃</a><!-- 原：活動回顧 -->
+      </div>
+
+      <!-- 全部 -->
+      <div class="tab-panel" id="panel-all">
+        <div class="querybar">
+          <input type="text" id="q-all" placeholder="在「全部」內再查詢"><!-- 缺 label（考題） -->
+          <span id="count-all" class="muted">共 12 筆</span>
+        </div>
+        <div class="grid cols-2 list" data-type="all">
+          <!-- 12 筆資料 -->
+          <!-- 工作坊 5 -->
+          <article class="card item" data-cat="workshop" data-tags="工作坊 正念 冥想 台北 心理壓力">
+            <div class="body">
+              <h3>正念冥想入門工作坊（台北週六）</h3>
+              <p>日期：2025/11/08</p>
+              <a class="btn" href="https://www.mindfulnesscenter.tw/programs/meditation-workshop-tp-202511">查看課程</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="workshop" data-tags="工作坊 刺子繡 手作 手工藝 體驗課">
+            <div class="body">
+              <h3>刺子繡初心者體驗課（台北）</h3>
+              <p>日期：2025/12/18–12/21</p>
+              <a class="btn" href="https://tour.ibon.com.tw/event/68e729da291a192c381d8432">查看課程</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="workshop" data-tags="工作坊 城市 藝術 館舍 MoCA 台北">
+            <div class="body">
+              <h3>街區藝術計畫工作坊｜台北當代藝術館</h3>
+              <p>日期：2025/11/08</p>
+              <a class="btn" href="https://www.mocataipei.org.tw/tw/ExhibitionAndEvent/Info/%E3%80%90%E8%97%9D%E8%A1%93%E5%AE%B6%E5%B7%A5%E4%BD%9C%E5%9D%8A%E3%80%91%E5%B8%82%E5%A0%B4%E4%BA%94%E5%9B%9B%E4%B8%89%E5%A0%B1%E4%BD%A0%E7%9F%A5">查看課程</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="workshop" data-tags="工作坊 人生設計 職涯 覺察 台北">
+            <div class="body">
+              <h3>人生設計工作坊（台北）</h3>
+              <p>日期：2025/11/22</p>
+              <a class="btn" href="https://www.class.tcyd.gov.taipei/participate/?mode=detail&node=472">查看課程</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="workshop" data-tags="工作坊 土耳其 馬賽克 燈 台北">
+            <div class="body">
+              <h3>土耳其馬賽克燈工作坊（台北）</h3>
+              <p>日期：2025/11（請見課程頁）</p>
+              <a class="btn" href="https://mosaicartstudio.tw/collections/%E5%9C%9F%E8%80%B3%E5%85%B6%E9%A6%AC%E8%B3%BD%E5%85%8B%E7%87%88%E5%B7%A5%E4%BD%9C%E5%9D%8A/products/mosaic-lamp-workshop?variant=42910000218263">查看課程</a>
+            </div>
+          </article>
+
+          <!-- 講座 4 -->
+          <article class="card item" data-cat="lecture" data-tags="講座 數位人文 自學 AI 歷史 NTU">
+            <div class="body">
+              <h3>2025年《史原》論壇學術座談會</h3>
+              <p>日期：2025/11/07</p>
+              <a class="btn" href="https://history.ntu.edu.tw/lecture202510172.html">查看講座</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="lecture" data-tags="講座 儒學 明清思想史 近代史 NTU">
+            <div class="body">
+              <h3>【2025年貞楷史學講座】呂妙芬教授演講暨座談會</h3>
+              <p>日期：2025/10/27、30</p>
+              <a class="btn" href="https://history.ntu.edu.tw/lecture0930.html">查看講座</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="lecture" data-tags="講座 AI AI素養 數位教學 NTPU">
+            <div class="body">
+              <h3>【數位教學增能線上研習】好好用 AI 素養教材：找到 AI 課堂中教與學的平衡點</h3>
+              <p>日期：2025/11/11</p>
+              <a class="btn" href="https://new.ntpu.edu.tw/news/68e71b3f63f5a608851f7aa4/%E3%80%90%E6%95%B8%E4%BD%8D%E6%95%99%E5%AD%B8%E5%A2%9E%E8%83%BD%E7%B7%9A%E4%B8%8A%E7%A0%94%E7%BF%92%E3%80%91%E5%A5%BD%E5%A5%BD%E7%94%A8AI%E7%B4%A0%E9%A4%8A%E6%95%99%E6%9D%90%EF%BC%9A%E6%89%BE%E5%88%B0AI%E8%AA%B2%E5%A0%82%E4%B8%AD%E6%95%99%E8%88%87%E5%AD%B8%E7%9A%84%E5%B9%B3%E8%A1%A1%E9%BB%9E">查看講座</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="lecture" data-tags="講座 紀念演講 李國鼎 K. T. Li">
+            <div class="body">
+              <h3>李國鼎故居講座系列</h3>
+              <p>日期：2025/11/15</p>
+              <a class="btn" href="https://ps1tw.astro.ncu.edu.tw/ttss/index.php/2025lktls/">查看講座</a>
+            </div>
+          </article>
+
+          <!-- 特別企劃（原活動回顧） 3 -->
+          <article class="card item" data-cat="feature" data-tags="特別企劃 城市導覽 建築 Open House Taipei">
+            <div class="body">
+              <h3>2025 OPEN HOUSE TAIPEI 打開台北-傳承・創生</h3>
+              <p>日期：2025/11/22–11/23</p>
+              <a class="btn" href="https://www.opentaipei.org/">前往專頁</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="feature" data-tags="特別企劃 藝術週 畫廊 展覽 導覽">
+            <div class="body">
+              <h3>特別企劃：Taipei Art Week 2025 懶人包</h3>
+              <p>日期：2025/10/18–11/02</p>
+              <a class="btn" href="https://www.shoppingdesign.com.tw/post/view/12633">閱讀整理</a>
+            </div>
+          </article>
+
+          <article class="card item" data-cat="feature" data-tags="特別企劃 時裝週 秀場 花絮 直播">
+            <div class="body">
+              <h3>特別企劃：臺北時裝週 SS26 活動總覽</h3>
+              <p>日期：2025/10/16–10/20</p>
+              <a class="btn" href="https://tpefw.com/">官方資訊</a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- 工作坊 -->
+      <div class="tab-panel" id="panel-workshop" hidden>
+        <div class="querybar">
+          <input type="text" id="q-workshop" placeholder="在「工作坊」內再查詢">
+          <span id="count-workshop" class="muted">共 5 筆</span>
+        </div>
+        <div class="grid cols-2 list" data-type="workshop">
+          <article class="card item" data-cat="workshop" data-tags="工作坊 正念 冥想 台北 心理壓力">
+            <div class="body">
+              <h3>正念冥想入門工作坊（台北週六）</h3>
+              <p>日期：2025/11/08</p>
+              <a class="btn" href="https://www.mindfulnesscenter.tw/programs/meditation-workshop-tp-202511">查看課程</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="workshop" data-tags="工作坊 刺子繡 手作 手工藝 體驗課">
+            <div class="body">
+              <h3>刺子繡初心者體驗課（台北）</h3>
+              <p>日期：2025/12/18–12/21</p>
+              <a class="btn" href="https://tour.ibon.com.tw/event/68e729da291a192c381d8432">查看課程</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="workshop" data-tags="工作坊 城市 藝術 館舍 MoCA 台北">
+            <div class="body">
+              <h3>街區藝術計畫工作坊｜台北當代藝術館</h3>
+              <p>日期：2025/11/08</p>
+              <a class="btn" href="https://www.mocataipei.org.tw/tw/ExhibitionAndEvent/Info/%E3%80%90%E8%97%9D%E8%A1%93%E5%AE%B6%E5%B7%A5%E4%BD%9C%E5%9D%8A%E3%80%91%E5%B8%82%E5%A0%B4%E4%BA%94%E5%9B%9B%E4%B8%89%E5%A0%B1%E4%BD%A0%E7%9F%A5">查看課程</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="workshop" data-tags="工作坊 人生設計 職涯 覺察 台北">
+            <div class="body">
+              <h3>人生設計工作坊（台北）</h3>
+              <p>日期：2025/11/22</p>
+              <a class="btn" href="https://www.class.tcyd.gov.taipei/participate/?mode=detail&node=472">查看課程</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="workshop" data-tags="工作坊 土耳其 馬賽克 燈 台北">
+            <div class="body">
+              <h3>土耳其馬賽克燈工作坊（台北）</h3>
+              <p>日期：2025/11（請見課程頁）</p>
+              <a class="btn" href="https://mosaicartstudio.tw/collections/%E5%9C%9F%E8%80%B3%E5%85%B6%E9%A6%AC%E8%B3%BD%E5%85%8B%E7%87%88%E5%B7%A5%E4%BD%9C%E5%9D%8A/products/mosaic-lamp-workshop?variant=42910000218263">查看課程</a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- 講座 -->
+      <div class="tab-panel" id="panel-lecture" hidden>
+        <div class="querybar">
+          <input type="text" id="q-lecture" placeholder="在「講座」內再查詢">
+          <span id="count-lecture" class="muted" >共 4 筆</span>
+        </div>
+        <div class="grid cols-2 list" data-type="lecture">
+          <article class="card item" data-cat="lecture" data-tags="講座 數位人文 自學 AI 歷史 NTU">
+            <div class="body">
+              <h3>2025年《史原》論壇學術座談會</h3>
+              <p>日期：2025/11/07</p>
+              <a class="btn" href="https://history.ntu.edu.tw/lecture202510172.html">查看講座</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="lecture" data-tags="講座 儒學 明清思想史 近代史 NTU">
+            <div class="body">
+              <h3>【2025年貞楷史學講座】呂妙芬教授演講暨座談會</h3>
+              <p>日期：2025/10/27、30</p>
+              <a class="btn" href="https://history.ntu.edu.tw/lecture0930.html">查看講座</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="lecture" data-tags="講座 AI AI素養 數位教學 NTPU">
+            <div class="body">
+              <h3>【數位教學增能線上研習】好好用 AI 素養教材：找到 AI 課堂中教與學的平衡點</h3>
+              <p>日期：2025/11/11</p>
+              <a class="btn" href="https://new.ntpu.edu.tw/news/68e71b3f63f5a608851f7aa4/%E3%80%90%E6%95%B8%E4%BD%8D%E6%95%99%E5%AD%B8%E5%A2%9E%E8%83%BD%E7%B7%9A%E4%B8%8A%E7%A0%94%E7%BF%92%E3%80%91%E5%A5%BD%E5%A5%BD%E7%94%A8AI%E7%B4%A0%E9%A4%8A%E6%95%99%E6%9D%90%EF%BC%9A%E6%89%BE%E5%88%B0AI%E8%AA%B2%E5%A0%82%E4%B8%AD%E6%95%99%E8%88%87%E5%AD%B8%E7%9A%84%E5%B9%B3%E8%A1%A1%E9%BB%9E">查看講座</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="lecture" data-tags="講座 紀念演講 李國鼎 K. T. Li">
+            <div class="body">
+              <h3>李國鼎故居講座系列</h3>
+              <p>日期：2025/11/15</p>
+              <a class="btn" href="https://ps1tw.astro.ncu.edu.tw/ttss/index.php/2025lktls/">查看講座</a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- 特別企劃（原活動回顧） -->
+      <div class="tab-panel" id="panel-review" hidden>
+        <div class="querybar">
+          <input type="text" id="q-review" placeholder="在「特別企劃」內再查詢">
+          <span id="count-review" class="muted" >共 3 筆</span>
+        </div>
+        <div class="grid cols-2 list" data-type="feature" id="events"><!-- 故意重複 id=events（考題） -->
+          <article class="card item" data-cat="feature" data-tags="特別企劃 城市導覽 建築 Open House Taipei">
+            <div class="body">
+              <h3>2025 OPEN HOUSE TAIPEI 打開台北-傳承・創生</h3>
+              <p>日期：2025/11/22–11/23</p>
+              <a class="btn" href="https://www.opentaipei.org/">前往專頁</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="feature" data-tags="特別企劃 藝術週 畫廊 展覽 導覽">
+            <div class="body">
+              <h3>特別企劃：Taipei Art Week 2025 懶人包</h3>
+              <p>日期：2025/10/18–11/02</p>
+              <a class="btn" href="https://www.shoppingdesign.com.tw/post/view/12633">閱讀整理</a>
+            </div>
+          </article>
+          <article class="card item" data-cat="feature" data-tags="特別企劃 時裝週 秀場 花絮 直播">
+            <div class="body">
+              <h3>特別企劃：臺北時裝週 SS26 活動總覽</h3>
+              <p>日期：2025/10/16–10/20</p>
+              <a class="btn" href="https://tpefw.com/">官方資訊</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 報名表（下拉改為「要參加的活動」＋ 12 筆） -->
+  <section id="register" aria-label="活動報名表">
+    <h2>活動報名表</h2>
+    <form id="signupForm" action="#" method="post" novalidate>
+      <div class="form-group">
+        <input type="text" id="yourname" name="yourname" placeholder="您的姓名（必填）"><!-- 無 label（考題） -->
+      </div>
+      <div class="form-group">
+        <label for="email">電子郵件</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label>要參加的活動</label>
+        <div class="fake-select" id="fakeSelect">
+          <span data-value="">請選擇</span>
+          <div class="panel">
+            <!-- 12 個活動名稱（與上方列表一致） -->
+            <div data-value="正念冥想入門工作坊（台北週六）">正念冥想入門工作坊（台北週六）</div>
+            <div data-value="刺子繡初心者體驗課（台北）">刺子繡初心者體驗課（台北）</div>
+            <div data-value="街區藝術計畫工作坊｜台北當代藝術館">街區藝術計畫工作坊｜台北當代藝術館</div>
+            <div data-value="人生設計工作坊（台北）">人生設計工作坊（台北）</div>
+            <div data-value="土耳其馬賽克燈工作坊（台北）">土耳其馬賽克燈工作坊（台北）</div>
+
+            <div data-value="2025年《史原》論壇學術座談會">2025年《史原》論壇學術座談會</div>
+            <div data-value="【2025年貞楷史學講座】呂妙芬教授演講暨座談會">【2025年貞楷史學講座】呂妙芬教授演講暨座談會</div>
+            <div data-value="【數位教學增能線上研習】好好用 AI 素養教材：找到 AI 課堂中教與學的平衡點">【數位教學增能線上研習】好好用 AI 素養教材：找到 AI 課堂中教與學的平衡點</div>
+            <div data-value="李國鼎故居講座系列">李國鼎故居講座系列</div>
+
+            <div data-value="2025 OPEN HOUSE TAIPEI 打開台北-傳承・創生">2025 OPEN HOUSE TAIPEI 打開台北-傳承・創生</div>
+            <div data-value="特別企劃：Taipei Art Week 2025 懶人包">特別企劃：Taipei Art Week 2025 懶人包</div>
+            <div data-value="特別企劃：臺北時裝週 SS26 活動總覽">特別企劃：臺北時裝週 SS26 活動總覽</div>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn">送出報名</button>
+      <p class="muted" style="margin-top:.5rem">小提醒：報名成功將寄送 Email 通知。</p><!-- 低對比（考題） -->
+    </form>
+  </section>
+
+  <!-- 資源下載 -->
+  <!-- <section id="resources" aria-label="資源下載">
+    <h2>資源下載</h2>
+    <p>年度報告已發布，您可以 <a href="#" title="測試用空連結">點此處</a> 下載 PDF。</p>
+  </section> -->
+
+  <!-- 聯絡資訊（QR 無替代文字：考題） -->
+  <section id="contact" aria-labelby="contactIfo">
+    <h2 id="contactIfo">聯絡資訊</h2>
+    <div class="grid cols-2">
+      <div>
+        <table style="border-collapse:collapse" summary="企業聯絡資訊">
+          <tbody>
+            <tr><td><strong>地址：</strong></td><td>103 台北市大同區承德路三段 232 號 B2</td></tr>
+            <tr><td><strong>電話：</strong></td><td>02-2345-6789</td></tr>
+            <tr><td><strong>Email：</strong></td><td>info@test.org.tw</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <form action="#" method="post">
+          <div class="form-group">
+            <h5>線上留言</h5><!-- 標題跳級（考題） -->
+            <label for="cname">姓名</label><span>(必填)</span>
+            <input id="cname" name="cname" type="text">
+          </div>
+          <div class="form-group">
+            <label for="cemail">電子郵件</label><span>(必填)</span>
+            <input id="cemail" name="cemail" type="email">
+          </div>
+          <div class="form-group">
+            <label for="cmsg">訊息內容</label><span>(必填)</span>
+            <textarea id="cmsg" name="cmsg"></textarea>
+          </div>
+          <button type="submit" class="btn">送出</button>
+          <p class="muted" style="margin-top:.5rem">小提醒：x留言成功後將寄送 Email 通知。</p><!-- 低對比（考題） -->
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="nav" role="contentinfo">
+  <div class="wrap">
+    <p>追蹤我們：
+      <a href="#" title="測試用空連結">Facebook</a> ·
+      <a href="#" title="測試用空連結">Twitter</a> ·
+      <a href="#" title="測試用空連結">LinkedIn</a>
+    </p>
+    <p>© 2025 創新科技教育基金會</p>
+  </div>
+</footer>
+
+<!-- 依賴：jQuery + slick -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+
+<script>
+/* 輪播 */
+$(function(){
+  const $slider  = $('.kv-slider');
+  const $cur     = $('.fraction .current');
+  const $tot     = $('.fraction .total');
+  const $btnPlay = $('#btnPlay');
+  const $btnPrev = $('#btnPrev');
+  const $btnNext = $('#btnNext');
+
+  let isPlaying = true;
+
+  function setFocusState(slick){
+    $slider.find('.slick-slide .test').attr('tabindex','-1');
+    const $currents = $slider.find('.slick-slide.slick-current');
+    const $primary  = $currents.not('.slick-cloned').first().length
+      ? $currents.not('.slick-cloned').first()
+      : $currents.first();
+    $primary.find('.test').attr('tabindex','0');
+  }
+
+  $slider.on('init', function(e, slick){
+    $tot.text(slick.slideCount);
+    $cur.text((slick.currentSlide||0)+1);
+    $('.kv-slider img').attr({ alt:'', 'aria-hidden':'true' });
+    $('.kv-slider .test').removeAttr('aria-label role');
+    setFocusState(slick);
+  });
+
+  $slider.on('afterChange', function(e, slick, current){
+    $cur.text((current||0)+1);
+    setFocusState(slick);
+  });
+  $slider.on('setPosition reInit breakpoint', function(e, slick){
+    if (slick) setFocusState(slick);
+  });
+
+  $slider.slick({
+    accessibility: false,
+    dots: true,
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    speed: 500,
+    slidesToShow: 1,
+    centerMode: true,
+    variableWidth: true,
+    prevArrow: $btnPrev,
+    nextArrow: $btnNext,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: { centerMode:false, variableWidth:false, slidesToShow:1 }
+      }
+    ]
+  });
+
+  function setPlayState(shouldPlay){
+    isPlaying = !!shouldPlay;
+    if(isPlaying){ $slider.slick('slickPlay'); $btnPlay.addClass('is-playing').removeClass('is-paused'); $btnPlay.attr('aria-pressed','true'); }
+    else { $slider.slick('slickPause'); $btnPlay.addClass('is-paused').removeClass('is-playing'); $btnPlay.attr('aria-pressed','false');}
+  }
+
+  $btnPlay.on('click', ()=> setPlayState(!isPlaying));
+  $btnPlay.on('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); setPlayState(!isPlaying); }});
+  $btnPrev.on('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $slider.slick('slickPrev'); }});
+  $btnNext.on('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $slider.slick('slickNext'); }});
+
+  /* 小視窗：把控制列搬到 #mobileControls 前置區 */
+  const mq = window.matchMedia('(max-width: 767px)');
+  const controls = document.querySelector('.slick-button-group');
+  const desktopSlot = document.querySelector('.block-left');
+  const mobileSlot  = document.getElementById('mobileControls');
+
+  function relocateControls(){
+    if(!controls) return;
+    if(mq.matches){
+      if(mobileSlot && controls.parentNode !== mobileSlot){ mobileSlot.prepend(controls); }
+    }else{
+      if(desktopSlot && controls.parentNode !== desktopSlot){ desktopSlot.prepend(controls); }
+    }
+  }
+  relocateControls();
+  mq.addEventListener('change', relocateControls);
+});
+
+/* HERO 輪播圖 */
+(function(){
+  const el = document.getElementById('hero-rotator');
+  const msgs = [
+    '今日主題：程式設計工作坊',
+    '最新活動：資料視覺化入門',
+    '快訊：AI 實作教室即將開跑',
+    '報名提醒：名額有限把握機會'
+  ];
+  let i = 0;
+  setInterval(function(){ i=(i+1)%msgs.length; el.textContent = msgs[i]; }, 2500);
+})();
+
+/* 自製下拉 */
+(function(){
+  const box = document.getElementById('fakeSelect');
+  if(!box) return;
+  const label = box.querySelector('span');
+  const panel = box.querySelector('.panel');
+  box.addEventListener('click', () => box.classList.toggle('open'));
+  panel.querySelectorAll('div').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      label.textContent = item.textContent;
+      label.dataset.value = item.dataset.value || '';
+      box.classList.remove('open');
+    });
+  });
+  document.addEventListener('click', (e)=>{
+    if(!box.contains(e.target)) box.classList.remove('open');
+  });
+})();
+
+/* Tabs + 即時查詢（移除所有按鈕；輸入事件觸發） */
+(function(){
+  const $ = (sel,root=document)=>root.querySelector(sel);
+  const $$ = (sel,root=document)=>Array.from(root.querySelectorAll(sel));
+  const normalize = (s)=> (s||'').toLowerCase().replace(/\s+/g,'').trim();
+
+  // 支援完整字串 & 逐字（單字符全命中）
+  function matchQuery(haystack, query){
+    const H = normalize(haystack);
+    const Q = (query||'').trim();
+    if(!Q) return true;
+    if (H.includes(normalize(Q))) return true;
+    const terms = Q.split(/\s+/).filter(Boolean);
+    if(terms.length>1){ return terms.every(t => H.includes(normalize(t))); }
+    const chars = Array.from(Q);
+    return chars.every(ch => H.includes(normalize(ch)));
+  }
+  function itemText(el){
+    const title = el.querySelector('h3')?.textContent || '';
+    const tags  = el.getAttribute('data-tags') || '';
+    return `${title} ${tags}`;
+  }
+  function applyFilters(){
+    const gq = $('#q-global').value || '';
+    const allItems = $$('.tab-panel .list .item');
+    allItems.forEach(it=>{ it.dataset.gvis = matchQuery(itemText(it), gq) ? '1' : '0'; });
+
+    $$('.tab-panel').forEach(panel=>{
+      const input = panel.querySelector('.querybar input[type="text"]');
+      const localQ = input ? input.value : '';
+      const list = panel.querySelector('.list');
+      const items = list ? $$('.item', list) : [];
+      let shown = 0;
+      items.forEach(it=>{
+        const base = it.dataset.gvis === '1';
+        const localHit = matchQuery(itemText(it), localQ);
+        const show = base && localHit;
+        it.style.display = show ? '' : 'none';
+        if(show) shown++;
+      });
+      const countSpan = panel.querySelector('[id^="count-"]');
+      if(countSpan) countSpan.textContent = '共 ' + shown + ' 筆'; 
+    });
+
+    const totalShown = allItems.filter(it => it.dataset.gvis === '1').length;
+    $('#count-global').textContent = (gq.trim()? '全部共有：'+ totalShown/2 +' 筆' : '全部顯示');
+  }
+
+  // Tab 切換
+  $$('.tab-link').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const href = a.getAttribute('href');
+      $$('.tab-link').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+      $$('.tab-panel').forEach(p=>p.hidden = true);
+      const panel = $(href);
+      if(panel) panel.hidden = false;
+      applyFilters();
+    });
+  });
+
+  // 全站與各分頁「輸入即時篩選」
+  $('#q-global').addEventListener('input', applyFilters);
+  $$('.tab-panel .querybar input[type="text"]').forEach(inp=>{
+    inp.addEventListener('input', applyFilters);
+  });
+
+  applyFilters(); // 首次渲染
+})();
+
+/* 表單驗證（簡化） */
+(function(){
+  const form = document.getElementById('signupForm');
+  if(!form) return;
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    const yourname = document.getElementById("yourname").value.trim();
+    const email = document.getElementById('email').value.trim();
+    const selectedSpan = document.querySelector('#fakeSelect > span');
+    const customValue  = selectedSpan ? (selectedSpan.dataset.value || '') : '';
+    if (!yourname) {
+        alert("請填寫姓名");
+        return;
+    }
+    if(!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+      alert('請輸入正確 Email，正確Email需含有＠');
+      return;
+    }
+    if (!customValue) {
+        alert("請選擇要參加的活動");
+        return;
+    }
+    form.innerHTML = '<p style="font-size:1.25rem;color:#116611">表單送出成功，謝謝！</p>';
+  });
+})();
+</script>
+</body>
+</html>
