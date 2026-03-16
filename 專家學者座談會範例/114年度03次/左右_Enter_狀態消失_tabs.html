@@ -4,12 +4,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>左右鍵移動時，當前頁籤狀態顯示消失</title>
+  <title>114年專案03場座談會</title>
   <style>
     :root {
       --brand: #0a63ff;
       --PanelBtn: #268d8d;
       --ink: #111;
+      --muted: #5b6b87
       --muted-ink: #4b5563;
       --surface: #ffffff;
       --surface-2: #d0ddf7;
@@ -67,6 +68,13 @@
       text-align: center;
     }
 
+    .description {
+    color: var(--muted);
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    }
+    
     /* 容器 */
     #tab-container {
       max-width: 980px;
@@ -264,7 +272,8 @@
 <body>
   <a href="#mainh1" class="skip-link">跳到主要內容區</a>
   <main>
-    <h1 id="mainh1">頁籤類型：以左右鍵搭配Enter鍵切換頁籤，且左右鍵移動時當前狀態顯示消失</h1>
+    <h1 id="mainh1">座談會示範範例</h1>
+    <span class="description">說明：以左右鍵搭配Enter鍵切換頁籤。左右鍵移動時，當前狀態顯示消失，並第一項頁籤無對應內容頁</span>
     <div id="tab-container">
       <div role="tablist" aria-label="範例頁籤元件" aria-orientation="horizontal">
         <button role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1" tabindex="0">WCAG 2.2</button>
