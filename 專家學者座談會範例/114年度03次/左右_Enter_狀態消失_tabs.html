@@ -286,7 +286,7 @@
         <button role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3" tabindex="-1">網站無障礙標章</button>
       </div>
 
-      <div id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
+      <div id="panel-1" XXX="tabpanel" tabindex="0" aria-labelledby="tab-1">
         <h2>二版本之間差異？</h2>
         <p>相較於 2.1 版，WCAG 2.2 於三大面進行加深：強化視覺對比導引、優化行動端互動體驗，加大降低認知操作門檻。</p>
 
@@ -304,13 +304,13 @@
         </section>
       </div>
 
-      <div id="panel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2" hidden>
+      <div id="panel-2" XXX="tabpanel" role="tabpanel" tabindex="0" aria-labelledby="tab-2" hidden>
         <h2>網站無障礙規範</h2>
         <p>網站無障礙規範請見：</p>
         <a href="https://accessibility.moda.gov.tw/Accessible/Guide/68" target="_blank" rel="noopener">點擊後於新視窗打開網站無障礙規範(110.07)</a>
       </div>
 
-      <div id="panel-3" role="tabpanel" tabindex="0" aria-labelledby="tab-3" hidden>
+      <div id="panel-3" XXX="tabpanel" role="tabpanel" tabindex="0" aria-labelledby="tab-3" hidden>
         <h2>如何獲取網站無障礙標章？</h2>
         <p>申請網站無障礙標章，通過檢測後，即可於無障礙網路空間服務網下載標章，並將標章張貼於網站中。</p>
       </div>
@@ -333,7 +333,7 @@
       /* ---------- 頁籤行為 ---------- */
       const tablist = document.querySelector('[role="tablist"]');
       const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
-      const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+      const panels = Array.from(document.querySelectorAll('[XXX="tabpanel"]'));
 
       function clearSelectedVisual() {
         tabs.forEach(t => t.classList.remove('selected-visual'));
