@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>無障礙複雜圖片說明範例：文字說明於其他頁</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/complex_pic.css">
+    <link rel="stylesheet" href="../css/accordion.css">
+    <script src="../js/accordion.js" defer></script>
+    <script src="../js/audit_complex_pix_data.js" defer></script>
+    <script src="../js/common.js" defer></script>
+</head>
+
+<body>
+    <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+
+    <div class="top-link">
+        <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a>
+        <a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
+    </div>
+
+    <main>
+        <h1 id="mainh1">複雜圖片：圖片替代說明放置於其他頁</h1>
+
+        <section id="wcagComparison" class="complex-image" aria-labelledby="posterTitle">
+
+            <h2 id="posterTitle">WCAG 2.2 與 WCAG 2.1 有什麼不同？</h2>
+            <p id="posterSummary">
+                WCAG 2.2：讓操作更容易看見、更容易點選，也更容易完成。
+            </p>
+             <div id="poster-description" class="poster-description">
+                <ol>
+                    <li>
+                        <p><strong>WCAG 2.2新增9項成功準則：</strong></p>
+
+                        <ul>
+                            <li>
+                                <p><strong>A級｜新增2項</strong></p>
+
+                                <ul>
+                                    <li>
+                                        <strong>3.2.6 一致性幫助：</strong>
+                                        重複出現的協助機制，應維持一致的相對順序。
+                                    </li>
+
+                                    <li>
+                                        <strong>3.3.7 冗餘輸入：</strong>
+                                        同一流程中已輸入的資訊，不應要求使用者再次輸入。
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <p><strong>AA級｜新增4項</strong></p>
+
+                                <ul>
+                                    <li>
+                                        <strong>2.4.11 焦點不遮蔽（最小）：</strong>
+                                        鍵盤焦點元件不得被作者建立的內容完全遮蔽。
+                                    </li>
+
+                                    <li>
+                                        <strong>2.5.7 拖曳動作：</strong>
+                                        需要拖曳完成的功能，應提供不需拖曳的單一指標操作方式。
+                                    </li>
+
+                                    <li>
+                                        <strong>2.5.8 目標尺寸（最小）：</strong>
+                                        操作目標原則上至少為24 × 24 CSS像素，或保有足夠間距。
+                                    </li>
+
+                                    <li>
+                                        <strong>3.3.8 無障礙認證（最小）：</strong>
+                                        登入流程不得只依賴記憶、解謎或重新輸入等認知功能測試。
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <p><strong>AAA級｜新增3項</strong></p>
+
+                                <ul>
+                                    <li>2.4.12 焦點不遮蔽（加強）</li>
+                                    <li>2.4.13 焦點外觀</li>
+                                    <li>3.3.9 無障礙認證（加強）</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <p><strong>WCAG 2.2刪除1項成功準則：</strong></p>
+
+                        <ul>
+                            <li>
+                                <strong>4.1.1 語法分析：</strong>
+                                因現代瀏覽器與輔助科技的處理方式已改變，
+                                WCAG 2.2將此項成功準則因過時而刪除。
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <p><strong>WCAG 2.2的四大強化重點：</strong></p>
+
+                        <ul>
+                            <li>焦點可見</li>
+                            <li>操作容易</li>
+                            <li>表單友善</li>
+                            <li>認證無障礙</li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <p><strong>一句話掌握版本差異：</strong></p>
+
+                        <p>
+                            WCAG 2.2延續WCAG 2.1架構，進一步強化鍵盤焦點、
+                            拖曳替代方式、操作目標尺寸、冗餘輸入及無障礙認證。
+                        </p>
+                    </li>
+
+                    <li>
+                        <p><strong>資料來源及版本資訊：</strong></p>
+
+                        <ul>
+                            <li>資料來源：W3C Web Accessibility Initiative（WAI）。</li>
+                            <li>
+                                WCAG 2.2於2023年10月5日成為W3C Recommendation。
+                            </li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="poster-figure">
+                <img src="../images/WCAG2.2變更項目.png" alt="WCAG 2.2與WCAG 2.1差異宣傳海報，完整文字說明位於圖片下方"
+                    aria-describedby="posterTitle posterSummary poster-description">
+            </div>
+
+           
+        </section>
+
+        <section>
+            <h2>類似的範例</h2>
+            <div class="other-ex">
+                <div class="other-ex-layer">
+                    <a href="./complex_pic_instruction_down.html" target="_blank" title="另開新視窗">複雜圖片文字說明於下方</a>
+                    <a href="./complex_pic_instruction_up.html" title="按下後重新載入本頁">複雜圖片文字說明於上方</a>
+                    <a href="./complex_pic_instruction_invissible.html" target="_blank" title="另開新視窗">複雜圖片文字說明不可視</a>
+                </div>
+                <div class="other-ex-layer">
+                    <a href="./complex_pic_instruction_otherpage.html" target="_blank" title="另開新視窗">複雜圖片文字說明於其他頁</a>
+                    <a href="./complex_pic_instruction_download.html" target="_blank" title="另開新視窗">複雜圖片文字說明下載</a>
+                </div>
+            </div>
+        </section>
+
+
+        <h2 id="auditCode">相應稽核評量碼</h2>
+        <div id="accordionContainer"></div>
+
+        <a id="quickLink" href="#mainh1" aria-label="移至待檢測元件">移至待檢測元件</a>
+
+        <h2 id="detectionItem">檢測方式</h2>
+        <div class="test-guide-container">
+            <h3>檢測項目：資訊圖片</h3>
+            <ol>
+                <li>
+                    <p>確認圖片是否為複雜圖片，若非則以一般圖片方式檢測，若是則進入2。</p>
+                </li>
+                <li>
+                    <p>若圖片為複雜圖片，在開啟NVDA報讀器狀態下，按下鍵盤「g」，確認報讀完整性。</p>
+                </li>
+                <li>
+                    <p>若報讀可完整說明複雜圖片內容，則此項通過。</p>
+                </li>
+                <li>
+                    <p>若圖片報讀不完整，則確認圖片相鄰位置是否有圖片內容說明，且說明可提供圖片內容等價資訊。</p>
+                </li>
+                <li>
+                    <p>若相鄰處有提供等價說明，則此項通過。</p>
+                </li>
+            </ol>
+        </div>
+        <a href="../index.html" class="back-to-catalog">回到目錄</a>
+
+    </main>
+
+</body>
+
+</html>
