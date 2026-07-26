@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>無障礙圖片輪播範例</title>
+  <link rel="stylesheet" href="../css/accordion.css">
+    <link rel="stylesheet" href="../css/common.css">
+  <script src="../js/accordion.js" defer></script>
+  <style>
+    :root {
+      --card-w: min(100%, 960px);
+      --slide-h: clamp(260px, 45vw, 520px);
+      --brand: #0a63ff;
+      --ink: #111;
+      --surface: #ffffff;
+      --line: #ccd2dd;
+      --radius: 12px;
+    }
+
+    *:focus-visible {
+      outline: 3px solid #1b5ae0;
+      outline-offset: 2px;
+      box-shadow:
+        0 0 0 4px #fff;
+      border-radius: 6px;
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -20%, #e8f0ff 0, transparent 60%),
+        radial-gradient(1200px 600px at 110% 120%, #eaf7ef 0, transparent 60%),
+        #f6f7fb;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      transform: translateY(-150%);
+      padding: 12px 16px;
+      background: #fff;
+      border: 2px solid var(--brand);
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 600;
+      z-index: 1000;
+    }
+
+    .skip-link:focus,
+    .skip-link:focus-visible {
+      transform: translateY(12px);
+      outline: none;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 40px 0;
+    }
+
+
+    .carousel {
+      position: relative;
+      width: min(100%, 900px);
+      margin-inline: auto;
+      /*overflow: hidden; */
+      background: #111;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 20%);
+    }
+
+    .carousel-item {
+      display: none;
+    }
+
+    .carousel-item.active {
+      display: block;
+    }
+
+    /* 整張圖片都是連結，也是每張投影片的第一個鍵盤焦點。 */
+    .carousel-image-link {
+      display: block;
+      position: relative;
+      color: #fff;
+    }
+
+    .carousel-image-link img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+
+    /* 使用 outline 避免焦點框被圖片或容器裁掉。 */
+    .carousel-image-link:focus-visible {
+      outline: 4px solid #fff;
+      /*橘色焦點框*/
+      outline-offset: -6px;
+      /*橘色焦點框向內推6px */
+      box-shadow: 0 0 0 4px #ffbf47;
+      /*無偏移、無模糊　外擴 4px 白框*/
+    }
+
+
+    .carousel-caption {
+      position: absolute;
+      inset: auto 0 0;
+      margin: 0;
+      padding: 3rem 7rem 1rem 1.25rem;
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      font-weight: 700;
+      line-height: 1.4;
+      pointer-events: none;
+      background: linear-gradient(transparent, rgb(0 0 0 / 80%));
+      text-shadow: 0 1px 3px #000;
+    }
+
+    /* 控制鍵直接疊在圖片右下方，不另留空白控制列。 */
+    .controls {
+      position: absolute;
+      left: 0.75rem;
+      top: 0.75rem;
+      z-index: 2;
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .controls [aria-controls="myCarousel-items"] {
+      font-weight: bolder;
+    }
+
+    .controls button {
+      display: grid;
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0;
+      place-items: center;
+      color: #fff;
+      background: rgb(0 0 0 / 75%);
+      border: 2px solid #fff;
+      border-radius: 0.35rem;
+      font: inherit;
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background: #005a9c;
+    }
+
+    .controls button:focus-visible {
+      color: #111;
+      background: #ffbf47;
+      border-color: #111;
+      outline: 3px solid #fff;
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+
+  <div class="top-link">
+    <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a>
+    <a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
+  </div>
+
+  <main>
+    <h1 id="mainh1">輪播-純圖片輪播：使用上一張、下一張按鈕切換並焦點可走入面板</h1>
+    <section id="myCarousel" class="carousel" aria-roledescription="輪播" aria-label="臺灣自然景觀精選">
+
+      <!-- 符號只負責視覺呈現；aria-label 才是報讀名稱。 -->
+      <div class="controls" aria-label="輪播控制">
+        <button type="button" class="rotation" aria-label="停止自動輪播" aria-pressed="false">
+          <span aria-hidden="true">❚❚</span>
+        </button>
+        <button type="button" class="previous" aria-controls="myCarousel-items" aria-label="上一張">
+          <span aria-hidden="true">←</span>
+        </button>
+        <button type="button" class="next" aria-controls="myCarousel-items" aria-label="下一張">
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <!--
+        aria-live="off"：自動輪播時不逐張打斷報讀。
+        暫停或以按鈕手動切換時，JavaScript 會改成 polite。
+      -->
+      <div id="myCarousel-items" class="carousel-items" aria-live="off">
+        <div class="carousel-item active" role="group" aria-roledescription="投影片" aria-label="第 1 張，共 4 張">
+          <!-- 有實際網址時，只要把 # 換成網址即可。 -->
+          <a class="carousel-image-link" href="#">
+            <img src="../images/01-山林晨霧.png" alt="晨光照射層疊山巒與林間步道，山谷間瀰漫薄霧。">
+            <p class="carousel-caption" aria-hidden="true">山林晨霧</p>
+          </a>
+        </div>
+
+        <div class="carousel-item" role="group" aria-roledescription="投影片" aria-label="第 2 張，共 4 張">
+          <a class="carousel-image-link" href="#">
+            <img src="../images/02-蔚藍海岸.png" alt="清澈蔚藍海水環繞岩石海岸，遠方可見綠色岬角。">
+            <p class="carousel-caption" aria-hidden="true">蔚藍海岸</p>
+          </a>
+        </div>
+
+        <div class="carousel-item" role="group" aria-roledescription="投影片" aria-label="第 3 張，共 4 張">
+          <a class="carousel-image-link" href="#">
+            <img src="../images/03-山間茶園.png" alt="夕陽照亮山坡上排列整齊的翠綠茶園，遠方山巒層層延伸。">
+            <p class="carousel-caption" aria-hidden="true">山間茶園</p>
+          </a>
+        </div>
+
+        <div class="carousel-item" role="group" aria-roledescription="投影片" aria-label="第 4 張，共 4 張">
+          <a class="carousel-image-link" href="#">
+            <img src="../images/04-濕地夕照.png" alt="夕陽映照平靜濕地與岸邊蘆葦，幾隻飛鳥掠過遠方天空。">
+            <p class="carousel-caption" aria-hidden="true">濕地夕照</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <h2 id="auditCode">相應稽核評量碼</h2>
+    <div id="accordionContainer"></div>
+
+    <a id="quickLink" href="#mainh1" aria-label="移至待檢測元件">移至待檢測元件</a>
+
+    <h2 id="detectionItem">檢測方式</h2>
+    <div class="test-guide-container">
+      <h3>檢測項目：純資訊輪播或跑馬燈</h3>
+      <ol>
+        <li>
+          <p>確認輪播/跑馬燈組件是否會動，若不會動則進入(5)。</p>
+        </li>
+        <li>
+          <p>若輪播／跑馬燈組件具有自動播放或自動移動效果，則：</p>
+          <ul>
+            <li>應確認組件中提供暫停按鈕（或刪除/隱藏按鈕，下同，統稱為「暫停/中止/隱藏元件」）。</li>
+            <li>該暫停/中止/隱藏元件應為整個輪播/跑馬燈組件中第一個可聚焦元件。</li>
+          </ul>
+        </li>
+        <li>
+          <p>若第一個可聚焦元件為整個輪播/跑馬燈組件本身，則暫停/中止/隱藏元件可作為第二個可聚焦元件，並確認可用鍵盤操作暫停/中止/隱藏功能且行為相符。</p>
+        </li>
+        <li>
+          <p>若輪播組件提供暫停機制，則以下須擇一達成：</p>
+          <ul>
+            <li><strong>類型一</strong>：同時提供暫停、播放按鈕，須確認兩者均可操作。</li>
+            <li><strong>類型二</strong>：僅提供暫停按鈕，確認該按鈕具切換功能，可進行暫停及播放。</li>
+          </ul>
+        </li>
+        <li>
+          <p>以滑鼠確認各輪播圖/跑馬燈是否具有功能（例如連結）。</p>
+        </li>
+        <li>
+          <p>確認具有功能後，以 Tab 鍵遊走組件各元件，焦點跳位順序應符合邏輯。</p>
+        </li>
+        <li>
+          <p>確認各元件可操作（<em>需在無法達成類型一的前提下方可採用類型二</em>）：</p>
+          <ul>
+            <li>
+              <strong>類型一</strong>（Tab 可走入各「項目」）：
+              <ul>
+                <li>焦點遊走至某項目時，被選中之項目應可視。</li>
+                <li>應主動報讀該項目內容；若為連結，應可用 Enter/空白鍵啟動。</li>
+              </ul>
+            </li>
+            <li>
+              <strong>類型二</strong>（Tab 無法走入各「項目」，但可走到控制元件）：
+              <ul>
+                <li>
+                  <strong>A 方式（向前/向後按鈕）</strong>：
+                  <ul>
+                    <li>焦點停留於切換按鈕時，應報讀其名稱（如向前/向後/上一張/下一張）。</li>
+                    <li>按下切換按鈕後，被選中之項目應可視。</li>
+                    <li>螢幕報讀器應主動報讀對應的圖片資訊（或回饋按鈕已按下）。</li>
+                    <li>Tab 可繼續遊走至對應之唯一項目，且可鍵盤啟動其功能（如連結）。</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>B 方式（指示標籤）</strong>：
+                  <ul>
+                    <li>焦點停留於指示標籤時，應朗讀項目值或名稱（如項目一/項目二）。</li>
+                    <li>被選取的項目需清楚可見。</li>
+                    <li>被選取時應主動朗讀相應提示（如已按下/已選取）。</li>
+                    <li>使用者可透過 Tab 將焦點移動到該唯一項目；若為連結可用 Enter/空白鍵啟動。</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <p>承(7)，確認鍵盤可操作（類型一或類型二，<em>此處不考量報讀</em>）。</p>
+        </li>
+        <li>
+          <p>（若採類型一）當焦點停於某項目時，該項目會暫停，且焦點指示器清楚可見。</p>
+        </li>
+        <li>
+          <p>再次按 Tab，焦點可移動並選取下一項。</p>
+        </li>
+        <li>
+          <p>焦點取到各可聚焦元素時，在不同瀏覽器均呈現預設焦點樣式或作者設定的明確可見樣式。</p>
+        </li>
+        <li>
+          <p>焦點指示器至少有 1 CSS 像素圍繞元素，且聚焦/未聚焦對比變化達 3:1；若對比不足，指示器邊線厚度至少 2 CSS 像素。</p>
+        </li>
+        <li>
+          <p>確認名稱/角色/行為相符：</p>
+          <ul>
+            <li>輪播圖片為圖片角色。</li>
+            <li>暫停鍵、向前/向後鍵為按鈕角色。</li>
+            <li>具連結功能之項目為連結角色。</li>
+            <li>（類型二 A）按下向左/向右鍵後應主動報讀對應圖片資訊（或回饋已按下）。</li>
+            <li>（類型二 B）指示標籤被選取後應主動報讀相應提示（如已按下/已選取）。</li>
+          </ul>
+        </li>
+        <li>
+          <p>以 Tab 與 Shift+Tab 遊走整組組件，最終可順利離開該組件。</p>
+        </li>
+        <li>
+          <p>以上均符合則全數通過。</p>
+        </li>
+      </ol>
+
+      <p style="margin: 40px 0 10px 0;"><strong>註一：</strong>若第一個鍵盤焦點是整組輪播，並且能報讀整組件為輪播，則暫停/中止/隱藏等機制可以為第二個焦點。</p>
+      <p><strong>註一（白話）：</strong>有些實作會用一個大標籤包裹整個輪播（或在前方放說明標籤）並讓其可聚焦與報讀「輪播圖」，因此暫停/隱藏等按鈕就會成為第二個可聚焦元件。</p>
+
+    </div>
+    <a href="../index.html" class="back-to-catalog">回到目錄</a>
+
+  </main>
+
+  <script>
+    /* Skip to main */
+    var skip = document.querySelector('.skip-link');
+    if (skip) {
+      skip.addEventListener('click', function () {
+        var target = document.getElementById('mainh1');
+        if (!target) return;
+        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: false });
+      });
+    }
+
+
+    'use strict';
+
+    class CarouselPreviousNext {
+      constructor(node) {
+        this.node = node;
+        this.items = [...node.querySelectorAll('.carousel-item')];
+        this.liveRegion = node.querySelector('.carousel-items');
+        this.rotationButton = node.querySelector('.rotation');
+        this.previousButton = node.querySelector('.previous');
+        this.nextButton = node.querySelector('.next');
+
+        this.currentIndex = 0;
+        this.interval = 4500; // 自動換圖間隔：5000 毫秒＝5 秒。
+        this.timer = null;
+        this.hasFocus = false;
+        this.hasHover = false;
+        // 尊重使用者的「減少動態效果」系統設定。
+        this.isPlaying = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        this.rotationButton.addEventListener('click', () => this.togglePlayback());
+        this.previousButton.addEventListener('click', () => this.showPrevious());
+        this.nextButton.addEventListener('click', () => this.showNext());
+
+        node.addEventListener('focusin', (event) => {
+          // 焦點只停在「停止／開始自動輪播」按鈕時，不暫停輪播；
+          // 焦點進入投影片、上一張或下一張時，則暫停自動換圖。
+          this.hasFocus = event.target !== this.rotationButton;
+          this.liveRegion.setAttribute(
+            'aria-live',
+            this.isPlaying && !this.hasFocus ? 'off' : 'polite'
+          );
+        });
+
+        node.addEventListener('focusout', (event) => {
+          if (!node.contains(event.relatedTarget)) {
+            this.hasFocus = false;
+            if (this.isPlaying) this.liveRegion.setAttribute('aria-live', 'off');
+          }
+        });
+
+        node.addEventListener('mouseenter', () => { this.hasHover = true; });
+        node.addEventListener('mouseleave', () => { this.hasHover = false; });
+
+        this.show(0);
+        this.updatePlaybackButton();
+        this.scheduleNext();
+      }
+
+      show(index) {
+        this.currentIndex = (index + this.items.length) % this.items.length;
+
+        this.items.forEach((item, itemIndex) => {
+          const active = itemIndex === this.currentIndex;
+          item.classList.toggle('active', active);
+          item.setAttribute('aria-hidden', String(!active));
+
+          // 隱藏投影片內的連結不可進入 Tab 順序。
+          const link = item.querySelector('a');
+          link.tabIndex = active ? 0 : -1;
+        });
+      }
+
+      showPrevious() { this.show(this.currentIndex - 1); }
+      showNext() { this.show(this.currentIndex + 1); }
+
+      togglePlayback() {
+        this.isPlaying = !this.isPlaying;
+        this.liveRegion.setAttribute('aria-live', this.isPlaying ? 'off' : 'polite');
+        this.updatePlaybackButton();
+        this.scheduleNext();
+      }
+
+      updatePlaybackButton() {
+        const symbol = this.rotationButton.querySelector('span');
+        symbol.textContent = this.isPlaying ? '❚❚' : '▶';
+        this.rotationButton.setAttribute(
+          'aria-pressed',
+          this.isPlaying ? 'false' : 'true'
+        );
+      }
+
+      scheduleNext() {
+        window.clearTimeout(this.timer);
+        this.timer = window.setTimeout(() => {
+          // 焦點在停止／開始按鈕時，hasFocus 為 false，因此仍會繼續輪播；
+          // 焦點進入上一張、下一張或投影片時，hasFocus 為 true，因此暫停。
+          if (this.isPlaying && !this.hasFocus && !this.hasHover) {
+            this.showNext();
+          }
+          this.scheduleNext();
+        }, this.interval);
+      }
+    }
+
+    new CarouselPreviousNext(document.querySelector('#myCarousel'));
+
+
+    /* 選項卡（Tab）的事件處理器 */
+
+
+
+    const accordionData = [
+      {
+        title: "指引1.4：可辨識",
+        content: `
+    <p>CS1140101E 當使用者介面元件取得焦點時，使用 CSS 變更其呈現方式。</p>
+    <p>⇒ 檢測方式 (1)、(4)、(6)、(7)、(8)、(9)、(11) 通過，則此項通過。</p>
+    <p>GN2141100E 使用網頁作者設定的高可視焦點指示器。</p>
+    <p>⇒ 檢測方式 (1)、(4)、(6)、(7)、(8)、(9)、(11)、(12) 通過，則此項通過。</p>
+    `
+      },
+      {
+        title: "指引2.1：鍵盤可操作",
+        content: `
+    <p>GN1210101E 確認所有功能都能透過鍵盤介面來操作。</p>
+    <p>⇒ 檢測方式 (2)、(3)、(4)、(5)、(7)、(8)、(9) 全部通過，則此項通過。</p>
+    <p>GN1210200E 確認使用者不會困在內容中。</p>
+    <p>⇒ 檢測方式 (2)、(3)、(4)、(5)、(7)、(8)、(9)、(10)、(14) 全部通過，則此項通過。</p>
+    `
+      },
+      {
+        title: "指引2.2：充足時間",
+        content: `
+    <p>GN1220200E 讓內容能加以暫停，並可從暫停處重新開始。</p>
+    <p>⇒ 檢測方式 (1)、(2)、(3)、(4) 通過，則此項通過。</p>
+    <p>GN1220202E 在網頁內使用可以停止移動、閃動、自動更新等內容的控制元件。</p>
+    <p>⇒ 檢測方式 (1)、(2)、(3) 通過，則此項通過。</p>
+    `
+      },
+      {
+        title: "指引2.4：可導覽",
+        content: `
+    <p>GN1240300E 按照內容的序列及關連性來安排互動元件的放置順序。</p>
+    <p>⇒ 檢測方式 (1)、(2)、(5)、(6) 通過，則此項通過。</p>
+    `
+      },
+      {
+        title: "指引4.1：相容性",
+        content: `
+    <p>GN1410200E 使用者介面元件應暴露名稱與角色，允許直接設定可由使用者設定的屬性，並在變更時提供通知。</p>
+    <p>⇒ 檢測方式 (7)、(13) 通過，則此項通過。</p>
+    `
+      }
+    ];
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof window.initializeAccordion === 'function') {
+        window.initializeAccordion('accordionContainer', accordionData);
+      } else {
+        console.error('initializeAccordion 未載入。請確認 ../js/accordion.js 是否將函式掛到 window。');
+      }
+    });
+  </script>
+</body>
+
+</html>
