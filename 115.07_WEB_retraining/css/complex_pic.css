@@ -1,0 +1,56 @@
+        .complex-image {
+            max-width: 880px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            color: #111;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .complex-image h2 {
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+            line-height: 1.4;
+        }
+
+        .poster-figure {
+            margin: 2rem auto;
+            text-align: center;
+            max-width: 60%;
+        }
+
+        .poster-figure img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+            border: 1px solid #767676;
+        }
+
+        .poster-description>ol {
+            margin: 0 auto;
+            padding-left: 2rem;
+        }
+
+        .poster-description>ol>li {
+            margin-bottom: 1.5rem;
+            padding-left: 0.25rem;
+        }
+
+        .poster-description ul {
+            margin: 0.5rem 0 0.75rem;
+            padding-left: 2.25rem;
+        }
+
+        .poster-description ul ul {
+            margin-top: 0.5rem;
+            list-style-type: square;
+        }
+
+        .poster-description li+li {
+            margin-top: 0.4rem;
+        }
+
+        .poster-description p {
+            margin: 0.4rem 0;
+        }
