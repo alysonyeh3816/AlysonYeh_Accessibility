@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>無障礙複雜圖片說明範例：文字說明於下方</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/complex_pic.css">
+    <link rel="stylesheet" href="../css/accordion.css">
+    <script src="../js/accordion.js" defer></script>
+    <script src="../js/audit_complex_pix_data.js" defer></script>
+    <script src="../js/common.js" defer></script>
+</head>
+
+<body>
+    <a href="#mainh1" class="skip-link">跳到主要內容區</a>
+
+    <div class="top-link">
+        <a href="#auditCode" aria-label="移至相應稽核評量碼">移至相應稽核評量碼</a>
+        <a href="#detectionItem" aria-label="移至檢測方式">移至檢測方式</a>
+    </div>
+
+    <main>
+        <h1 id="mainh1">複雜圖片：圖片替代說明放置於下方</h1>
+
+        <section id="wcagComparison" class="complex-image" aria-labelledby="posterTitle">
+
+            <h2 id="posterTitle">WCAG 2.2 與 WCAG 2.1 有什麼不同？</h2>
+            <p id="posterSummary">
+                WCAG 2.2：讓操作更容易看見、更容易點選，也更容易完成。
+            </p>
+
+            <div class="poster-figure">
+                <img src="../images/WCAG2.2變更項目.png" alt="WCAG 2.2與WCAG 2.1差異宣傳海報，完整文字說明位於圖片下方"
+                    aria-describedby="posterTitle posterSummary poster-description">
+            </div>
+
+            <div id="poster-description" class="poster-description">
+                <ol>
+                    <li>
+                        <p><strong>WCAG 2.2新增9項成功準則：</strong></p>
+
+                        <ul>
+                            <li>
+                                <p><strong>A級｜新增2項</strong></p>
+
+                                <ul>
+                                    <li>
+                                        <strong>3.2.6 一致性幫助：</strong>
+                                        重複出現的協助機制，應維持一致的相對順序。
+                                    </li>
+
+                                    <li>
+                                        <strong>3.3.7 冗餘輸入：</strong>
+                                        同一流程中已輸入的資訊，不應要求使用者再次輸入。
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <p><strong>AA級｜新增4項</strong></p>
+
+                                <ul>
+                                    <li>
+                                        <strong>2.4.11 焦點不遮蔽（最小）：</strong>
+                                        鍵盤焦點元件不得被作者建立的內容完全遮蔽。
+                                    </li>
+
+                                    <li>
+                                        <strong>2.5.7 拖曳動作：</strong>
+                                        需要拖曳完成的功能，應提供不需拖曳的單一指標操作方式。
+                                    </li>
+
+                                    <li>
+                                        <strong>2.5.8 目標尺寸（最小）：</strong>
+                                        操作目標原則上至少為24 × 24 CSS像素，或保有足夠間距。
+                                    </li>
+
+                                    <li>
+                                        <strong>3.3.8 無障礙認證（最小）：</strong>
+                                        登入流程不得只依賴記憶、解謎或重新輸入等認知功能測試。
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <p><strong>AAA級｜新增3項</strong></p>
+
+                                <ul>
+                                    <li>2.4.12 焦點不遮蔽（加強）</li>
+                                    <li>2.4.13 焦點外觀</li>
+                                    <li>3.3.9 無障礙認證（加強）</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <p><strong>WCAG 2.2刪除1項成功準則：</strong></p>
+
+                        <ul>
+                            <li>
+                                <strong>4.1.1 語法分析：</strong>
+                                因現代瀏覽器與輔助科技的處理方式已改變，
+                                WCAG 2.2將此項成功準則因過時而刪除。
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <p><strong>WCAG 2.2的四大強化重點：</strong></p>
+
+                        <ul>
+                            <li>焦點可見</li>
+                            <li>操作容易</li>
+                            <li>表單友善</li>
+                            <li>認證無障礙</li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <p><strong>一句話掌握版本差異：</strong></p>
+
+                        <p>
+                            WCAG 2.2延續WCAG 2.1架構，進一步強化鍵盤焦點、
+                            拖曳替代方式、操作目標尺寸、冗餘輸入及無障礙認證。
+                        </p>
+                    </li>
+
+                    <li>
+                        <p><strong>資料來源及版本資訊：</strong></p>
+
+                        <ul>
+                            <li>資料來源：W3C Web Accessibility Initiative（WAI）。</li>
+                            <li>
+                                WCAG 2.2於2023年10月5日成為W3C Recommendation。
+                            </li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section>
+            <h2>類似的範例</h2>
+            <div class="other-ex">
+                <div class="other-ex-layer">
+                    <a href="./complex_pic_instruction_down.html" title="按下後重新載入本頁">複雜圖片文字說明於下方</a>
+                    <a href="./complex_pic_instruction_up.html" target="_blank" title="另開新視窗">複雜圖片文字說明於下方>複雜圖片文字說明於上方</a>
+                    <a href="./complex_pic_instruction_invissible.html" target="_blank" title="另開新視窗">複雜圖片文字說明不可視</a>
+                </div>
+                <div class="other-ex-layer">
+                    <a href="./complex_pic_instruction_otherpage.html" target="_blank" title="另開新視窗">複雜圖片文字說明於其他頁</a>
+                    <a href="./complex_pic_instruction_download.html" target="_blank" title="另開新視窗">複雜圖片文字說明下載</a>
+                </div>
+            </div>
+        </section>
+
+
+        <h2 id="auditCode">相應稽核評量碼</h2>
+        <div id="accordionContainer"></div>
+
+        <a id="quickLink" href="#mainh1" aria-label="移至待檢測元件">移至待檢測元件</a>
+
+        <h2 id="detectionItem">檢測方式</h2>
+        <div class="test-guide-container">
+            <h3>檢測項目：純資訊輪播或跑馬燈</h3>
+            <ol>
+                <li>
+                    <p>確認輪播/跑馬燈組件是否會動，若不會動則進入(5)。</p>
+                </li>
+                <li>
+                    <p>若輪播／跑馬燈組件具有自動播放或自動移動效果，則：</p>
+                    <ul>
+                        <li>應確認組件中提供暫停按鈕（或刪除/隱藏按鈕，下同，統稱為「暫停/中止/隱藏元件」）。</li>
+                        <li>該暫停/中止/隱藏元件應為整個輪播/跑馬燈組件中第一個可聚焦元件。</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>若第一個可聚焦元件為整個輪播/跑馬燈組件本身，則暫停/中止/隱藏元件可作為第二個可聚焦元件，並確認可用鍵盤操作暫停/中止/隱藏功能且行為相符。</p>
+                </li>
+                <li>
+                    <p>若輪播組件提供暫停機制，則以下須擇一達成：</p>
+                    <ul>
+                        <li><strong>類型一</strong>：同時提供暫停、播放按鈕，須確認兩者均可操作。</li>
+                        <li><strong>類型二</strong>：僅提供暫停按鈕，確認該按鈕具切換功能，可進行暫停及播放。</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>以滑鼠確認各輪播圖/跑馬燈是否具有功能（例如連結）。</p>
+                </li>
+                <li>
+                    <p>確認具有功能後，以 Tab 鍵遊走組件各元件，焦點跳位順序應符合邏輯。</p>
+                </li>
+                <li>
+                    <p>確認各元件可操作（<em>需在無法達成類型一的前提下方可採用類型二</em>）：</p>
+                    <ul>
+                        <li>
+                            <strong>類型一</strong>（Tab 可走入各「項目」）：
+                            <ul>
+                                <li>焦點遊走至某項目時，被選中之項目應可視。</li>
+                                <li>應主動報讀該項目內容；若為連結，應可用 Enter/空白鍵啟動。</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>類型二</strong>（Tab 無法走入各「項目」，但可走到控制元件）：
+                            <ul>
+                                <li>
+                                    <strong>A 方式（向前/向後按鈕）</strong>：
+                                    <ul>
+                                        <li>焦點停留於切換按鈕時，應報讀其名稱（如向前/向後/上一張/下一張）。</li>
+                                        <li>按下切換按鈕後，被選中之項目應可視。</li>
+                                        <li>螢幕報讀器應主動報讀對應的圖片資訊（或回饋按鈕已按下）。</li>
+                                        <li>Tab 可繼續遊走至對應之唯一項目，且可鍵盤啟動其功能（如連結）。</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>B 方式（指示標籤）</strong>：
+                                    <ul>
+                                        <li>焦點停留於指示標籤時，應朗讀項目值或名稱（如項目一/項目二）。</li>
+                                        <li>被選取的項目需清楚可見。</li>
+                                        <li>被選取時應主動朗讀相應提示（如已按下/已選取）。</li>
+                                        <li>使用者可透過 Tab 將焦點移動到該唯一項目；若為連結可用 Enter/空白鍵啟動。</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <p>承(7)，確認鍵盤可操作（類型一或類型二，<em>此處不考量報讀</em>）。</p>
+                </li>
+                <li>
+                    <p>（若採類型一）當焦點停於某項目時，該項目會暫停，且焦點指示器清楚可見。</p>
+                </li>
+                <li>
+                    <p>再次按 Tab，焦點可移動並選取下一項。</p>
+                </li>
+                <li>
+                    <p>焦點取到各可聚焦元素時，在不同瀏覽器均呈現預設焦點樣式或作者設定的明確可見樣式。</p>
+                </li>
+                <li>
+                    <p>焦點指示器至少有 1 CSS 像素圍繞元素，且聚焦/未聚焦對比變化達 3:1；若對比不足，指示器邊線厚度至少 2 CSS 像素。</p>
+                </li>
+                <li>
+                    <p>確認名稱/角色/行為相符：</p>
+                    <ul>
+                        <li>輪播圖片為圖片角色。</li>
+                        <li>暫停鍵、向前/向後鍵為按鈕角色。</li>
+                        <li>具連結功能之項目為連結角色。</li>
+                        <li>（類型二 A）按下向左/向右鍵後應主動報讀對應圖片資訊（或回饋已按下）。</li>
+                        <li>（類型二 B）指示標籤被選取後應主動報讀相應提示（如已按下/已選取）。</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>以 Tab 與 Shift+Tab 遊走整組組件，最終可順利離開該組件。</p>
+                </li>
+                <li>
+                    <p>以上均符合則全數通過。</p>
+                </li>
+            </ol>
+
+            <p style="margin: 40px 0 10px 0;"><strong>註一：</strong>若第一個鍵盤焦點是整組輪播，並且能報讀整組件為輪播，則暫停/中止/隱藏等機制可以為第二個焦點。</p>
+            <p><strong>註一（白話）：</strong>有些實作會用一個大標籤包裹整個輪播（或在前方放說明標籤）並讓其可聚焦與報讀「輪播圖」，因此暫停/隱藏等按鈕就會成為第二個可聚焦元件。</p>
+
+        </div>
+        <a href="../index.html" class="back-to-catalog">回到目錄</a>
+
+    </main>
+
+</body>
+
+</html>
