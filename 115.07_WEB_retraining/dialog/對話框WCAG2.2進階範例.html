@@ -1,1 +1,766 @@
 
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WCAG 2.2 焦點未被遮蔽：AA／AAA 差異 Demo</title>
+    <link rel="stylesheet" href="../css/common.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-family: "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    body {
+      margin: 0;
+      color: #1f2937;
+      background: #eef2f7;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /*
+     * 未被遮罩覆蓋時，焦點框線與白底約可達 3:1 以上；
+     * 透過半透明遮罩後，對比會被刻意壓低至 3:1 以下。
+     */
+    :focus-visible {
+      outline: 4px solid rgb(118 123 216);
+      outline-offset: 4px;
+    }
+
+    .page {
+      width: min(1000px, calc(100% - 32px));
+      margin: 24px auto 56px;
+    }
+
+    .intro {
+      padding: 22px 26px;
+      background: #fff;
+      border: 2px solid #475569;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgb(15 23 42 / 10%);
+    }
+
+    .intro h1 {
+      margin-top: 0;
+    }
+
+    .warning {
+      padding: 12px 16px;
+      color: #7c2d12;
+      background: #ffedd5;
+      border-left: 6px solid #c2410c;
+    }
+
+    .mode-panel {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 16px 18px;
+      background: #eef2ff;
+      border: 2px solid #6366f1;
+      border-radius: 8px;
+    }
+
+    .mode-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .mode-button,
+    .mask-close {
+      min-height: 44px;
+      padding: 9px 16px;
+      border: 2px solid #4338ca;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    /*
+     * 所有測試元件均放在同一個相對定位區域內，
+     * 不再相對瀏覽器視窗使用 fixed 定位。
+     */
+    .demo-stage {
+      position: relative;
+      width: 100%;
+      height: 650px;
+      margin-top: 26px;
+      overflow: hidden;
+      background:
+        linear-gradient(#e5e7eb 1px, transparent 1px),
+        linear-gradient(90deg, #e5e7eb 1px, transparent 1px),
+        #f8fafc;
+      background-size: 24px 24px;
+      border: 3px solid #334155;
+      border-radius: 14px;
+      box-shadow: 0 14px 32px rgb(15 23 42 / 12%);
+    }
+
+    .stage-title {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      z-index: 1;
+      margin: 0;
+      padding: 5px 9px;
+      font-size: 1rem;
+      background: #fff;
+      border-radius: 6px;
+    }
+
+    .demo-target {
+      position: absolute;
+      left: 50%;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: min(360px, calc(100% - 80px));
+      min-height: 58px;
+      padding: 12px 18px;
+      color: #0f172a;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      background: #fff;
+      border: 2px solid #64748b;
+      border-radius: 8px;
+      transform: translateX(-50%);
+    }
+
+    /*
+     * 遮罩範圍：stage 內 top 72px 至 452px。
+     * 不透明色帶：stage 內 top 188px 至 318px。
+     */
+    #fullyOpaqueCoveredLink {
+      top: 220px;
+    }
+
+    #semiTransparentCoveredButton {
+      top: 350px;
+    }
+
+    #notCoveredButton {
+      top: 510px;
+    }
+
+    .floating-mask {
+      position: absolute;
+      left: 50%;
+      top: 72px;
+      z-index: 20;
+      width: min(700px, calc(100% - 40px));
+      height: 380px;
+      overflow: hidden;
+      border: 4px solid #7c2d12;
+      border-radius: 14px;
+      box-shadow: 0 24px 60px rgb(0 0 0 / 32%);
+      transform: translateX(-50%);
+    }
+
+    /*
+     * 標題區完全不透明。
+     * 下方頁面文字不會再穿透進來，避免畫面重疊。
+     */
+    .mask-header {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      height: 112px;
+      padding: 18px 22px;
+      background: #ffedd5;
+      border-bottom: 2px solid #9a3412;
+    }
+
+    .mask-header h2 {
+      margin: 0 0 4px;
+    }
+
+    .mask-header p {
+      margin: 0;
+    }
+
+    /*
+     * 只有遮罩下方的測試區使用半透明背景。
+     */
+    .semi-transparent-area {
+      position: absolute;
+      inset: 112px 0 0;
+      z-index: 1;
+      background: rgb(255 245 235 / 82%);
+    }
+
+    /*
+     * 完全不透明覆蓋區。
+     * 被測連結與其焦點框線會完整落在本區域內。
+     */
+    .opaque-obscuring-band {
+      position: absolute;
+      top: 112px;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      height: 130px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 8px;
+      color: #7c2d12;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: #f4a261;
+      border-bottom: 2px solid #9a3412;
+    }
+
+    .status-panel {
+      min-height: 118px;
+      margin-top: 16px;
+      padding: 16px 20px;
+      color: #fff;
+      background: #111827;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+    }
+
+    .status-panel strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .aa {
+      color: #fde68a;
+    }
+
+    .aaa {
+      color: #bfdbfe;
+    }
+
+    .contrast {
+      color: #fca5a5;
+    }
+
+    .mode {
+      color: #c4b5fd;
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        width: min(100% - 16px, 1000px);
+        margin-top: 8px;
+      }
+
+      .intro {
+        padding: 18px;
+      }
+
+      .demo-stage {
+        height: 620px;
+      }
+
+      .floating-mask {
+        width: calc(100% - 20px);
+      }
+
+      .mask-header {
+        gap: 10px;
+        height: 126px;
+        padding: 14px;
+      }
+
+      .mask-header h2 {
+        font-size: 1.2rem;
+      }
+
+      .semi-transparent-area,
+      .opaque-obscuring-band {
+        top: 126px;
+      }
+
+      .opaque-obscuring-band {
+        height: 130px;
+      }
+
+      /*
+       * 小螢幕時依遮罩新的 header 高度重新定位測試元件。
+       */
+      #fullyOpaqueCoveredLink {
+        top: 234px;
+      }
+
+      #semiTransparentCoveredButton {
+        top: 370px;
+      }
+
+      #notCoveredButton {
+        top: 520px;
+      }
+
+      .demo-target {
+        width: calc(100% - 48px);
+      }
+
+      .mask-note {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <section class="intro">
+      <h1>WCAG 2.2 焦點未被遮蔽：AA／AAA 差異 Demo</h1>
+
+      <p class="warning">
+        本頁是刻意製作的錯誤與例外情境示範，不應直接套用於正式網站。
+      </p>
+
+      <p>
+        頁面載入後，遮罩會由作者自動呈現。請從遮罩內的
+        「關閉遮罩」按鈕開始持續按 Tab，焦點會移至遮罩下方的背景控制項。
+      </p>
+
+      <ol>
+        <li><strong>完全被不透明區覆蓋：</strong>元件本體與焦點框線完全不可見。</li>
+        <li><strong>完全被半透明區覆蓋：</strong>元件與焦點框線仍可辨識，但框線對比不足 3:1。</li>
+        <li><strong>完全未被覆蓋：</strong>作為符合 AA／AAA 的對照組。</li>
+      </ol>
+
+      <div class="mode-panel">
+        <strong>兩種開啟模式</strong>
+
+        <div>
+          <strong>作者自動呈現：</strong>
+          頁面載入時直接出現。即使提供 Esc，也不能套用
+          2.4.11 Note 2 的「使用者開啟內容」例外。
+        </div>
+
+        <div>
+          <strong>使用者主動開啟：</strong>
+          使用者按按鈕開啟後，若焦點位於被完全遮蔽的背景元件，
+          可直接按 Esc 關閉遮罩，且焦點維持在原元件上。
+        </div>
+
+        <div class="mode-buttons">
+          <button
+            type="button"
+            id="openUserMaskButton"
+            class="mode-button"
+          >
+            使用者主動開啟遮罩
+          </button>
+
+          <button
+            type="button"
+            id="reloadAuthorModeButton"
+            class="mode-button"
+          >
+            重新載入作者自動呈現模式
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="demo-stage"
+      aria-label="焦點遮蔽測試區"
+    >
+      <h2 class="stage-title">焦點遮蔽測試區</h2>
+
+      <a
+        id="fullyOpaqueCoveredLink"
+        class="demo-target"
+        href="#fully-opaque-covered"
+      >
+        背景連結：完全被不透明區覆蓋
+      </a>
+
+      <button
+        type="button"
+        id="semiTransparentCoveredButton"
+        class="demo-target"
+      >
+        背景按鈕：完全被半透明區覆蓋
+      </button>
+
+      <button
+        type="button"
+        id="notCoveredButton"
+        class="demo-target"
+      >
+        背景按鈕：完全未被遮罩覆蓋
+      </button>
+
+      <section
+        id="floatingMask"
+        class="floating-mask"
+        role="dialog"
+        aria-labelledby="maskTitle"
+        aria-describedby="maskDescription"
+      >
+        <div class="semi-transparent-area" aria-hidden="true"></div>
+
+        <div
+          class="opaque-obscuring-band"
+          aria-hidden="true"
+        >
+          完全不透明覆蓋區
+        </div>
+
+        <div class="mask-header">
+          <div>
+            <h2 id="maskTitle">懸浮警示內容（遮罩）</h2>
+            <p id="maskDescription">
+              標題區不透明；下方包含完全不透明區及半透明區。
+            </p>
+          </div>
+
+          <button
+            type="button"
+            id="closeMaskButton"
+            class="mask-close"
+          >
+            關閉遮罩
+          </button>
+        </div>
+
+      </section>
+    </section>
+
+    <aside
+      id="focusStatus"
+      class="status-panel"
+      role="status"
+      aria-live="polite"
+    >
+      <strong>目前狀態</strong>
+      <span class="mode">模式：作者自動呈現</span><br>
+      焦點位於遮罩內的「關閉遮罩」按鈕。
+    </aside>
+
+
+     <a href="../index.html" class="back-to-catalog">回到目錄</a>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const floatingMask =
+        document.querySelector("#floatingMask");
+
+      const closeMaskButton =
+        document.querySelector("#closeMaskButton");
+
+      const openUserMaskButton =
+        document.querySelector("#openUserMaskButton");
+
+      const reloadAuthorModeButton =
+        document.querySelector("#reloadAuthorModeButton");
+
+      const fullyOpaqueCoveredLink =
+        document.querySelector("#fullyOpaqueCoveredLink");
+
+      const semiTransparentCoveredButton =
+        document.querySelector("#semiTransparentCoveredButton");
+
+      const notCoveredButton =
+        document.querySelector("#notCoveredButton");
+
+      const focusStatus =
+        document.querySelector("#focusStatus");
+
+      let openingMode = "author-auto";
+      let maskIsOpen = true;
+      let userTriggerElement = null;
+
+      /*
+       * 教學用焦點順序：
+       * 關閉遮罩 → 完全不透明覆蓋 → 半透明覆蓋
+       * → 未覆蓋 → 回到關閉遮罩。
+       */
+      const testFocusOrder = [
+        closeMaskButton,
+        fullyOpaqueCoveredLink,
+        semiTransparentCoveredButton,
+        notCoveredButton
+      ];
+
+      function openMask(mode, triggerElement = null) {
+        openingMode = mode;
+        maskIsOpen = true;
+        userTriggerElement = triggerElement;
+        floatingMask.hidden = false;
+
+        requestAnimationFrame(() => {
+          closeMaskButton.focus();
+        });
+
+        updateStatusForFocus(closeMaskButton);
+      }
+
+      function closeMask({
+        preserveBackgroundFocus = false
+      } = {}) {
+        const focusedBeforeClose =
+          document.activeElement;
+
+        maskIsOpen = false;
+        floatingMask.hidden = true;
+
+        const focusWasBehindMask =
+          focusedBeforeClose === fullyOpaqueCoveredLink ||
+          focusedBeforeClose === semiTransparentCoveredButton ||
+          focusedBeforeClose === notCoveredButton;
+
+        if (
+          preserveBackgroundFocus &&
+          focusWasBehindMask
+        ) {
+          /*
+           * 不推進焦點；遮罩移除後，焦點仍停留在原背景元件。
+           */
+          focusedBeforeClose.focus();
+        } else if (
+          openingMode === "user-opened" &&
+          userTriggerElement instanceof HTMLElement &&
+          document.contains(userTriggerElement)
+        ) {
+          userTriggerElement.focus();
+        } else {
+          openUserMaskButton.focus();
+        }
+
+        updateStatusAfterClose(
+          focusedBeforeClose,
+          preserveBackgroundFocus &&
+            focusWasBehindMask
+        );
+      }
+
+      function handleTestTabOrder(event) {
+        if (!maskIsOpen || event.key !== "Tab") {
+          return;
+        }
+
+        event.preventDefault();
+
+        const currentIndex =
+          testFocusOrder.indexOf(document.activeElement);
+
+        let nextIndex;
+
+        if (event.shiftKey) {
+          nextIndex =
+            currentIndex <= 0
+              ? testFocusOrder.length - 1
+              : currentIndex - 1;
+        } else {
+          nextIndex =
+            currentIndex < 0 ||
+            currentIndex === testFocusOrder.length - 1
+              ? 0
+              : currentIndex + 1;
+        }
+
+        testFocusOrder[nextIndex].focus();
+      }
+
+      function updateStatusForFocus(focusedElement) {
+        const modeText =
+          openingMode === "author-auto"
+            ? "作者自動呈現"
+            : "使用者主動開啟";
+
+        if (focusedElement === closeMaskButton) {
+          focusStatus.innerHTML = `
+            <strong>目前焦點：關閉遮罩按鈕</strong>
+            <span class="mode">模式：${modeText}</span><br>
+            焦點位於遮罩內。
+          `;
+          return;
+        }
+
+        if (focusedElement === fullyOpaqueCoveredLink) {
+          const aaResult =
+            openingMode === "author-auto"
+              ? `
+                <span class="aa">
+                  AA 2.4.11：不符合。元件完全不可見，而且遮罩並非使用者主動開啟；即使可按 Esc，也不能套用 Note 2。
+                </span>
+              `
+              : `
+                <span class="aa">
+                  AA 2.4.11：可依 Note 2 視為符合；使用者可直接按 Esc 顯露目前焦點，且不必推進焦點。
+                </span>
+              `;
+
+          focusStatus.innerHTML = `
+            <strong>目前焦點：完全被不透明區覆蓋的背景連結</strong>
+            <span class="mode">模式：${modeText}</span><br>
+            ${aaResult}<br>
+            <span class="aaa">
+              AAA 2.4.12：不符合。元件任何部分遭作者內容遮蔽即不符合，且沒有相同的使用者開啟例外。
+            </span>
+          `;
+          return;
+        }
+
+        if (
+          focusedElement ===
+          semiTransparentCoveredButton
+        ) {
+          focusStatus.innerHTML = `
+            <strong>目前焦點：完全被半透明區覆蓋的背景按鈕</strong>
+            <span class="mode">模式：${modeText}</span><br>
+            <span class="aa">
+              AA 2.4.11：元件並非完全不可見，因此可符合最低限度要求。
+            </span><br>
+            <span class="aaa">
+              AAA 2.4.12：不符合。半透明、模糊或變暗效果重疊焦點元件，仍屬遮蔽。
+            </span><br>
+            <span class="contrast">
+              1.4.11／2.4.13：本例焦點框線透過遮罩後對比低於 3:1。
+            </span>
+          `;
+          return;
+        }
+
+        if (focusedElement === notCoveredButton) {
+          focusStatus.innerHTML = `
+            <strong>目前焦點：完全未被遮罩覆蓋的背景按鈕</strong>
+            <span class="mode">模式：${modeText}</span><br>
+            <span class="aa">AA 2.4.11：符合。</span><br>
+            <span class="aaa">AAA 2.4.12：符合。</span><br>
+            焦點框線未受遮罩影響，可作為對照組。
+          `;
+        }
+      }
+
+      function updateStatusAfterClose(
+        previousFocus,
+        focusWasPreserved
+      ) {
+        let focusName = "其他控制項";
+
+        if (
+          previousFocus === fullyOpaqueCoveredLink
+        ) {
+          focusName =
+            "完全被不透明區覆蓋的背景連結";
+        } else if (
+          previousFocus ===
+          semiTransparentCoveredButton
+        ) {
+          focusName =
+            "完全被半透明區覆蓋的背景按鈕";
+        } else if (
+          previousFocus === notCoveredButton
+        ) {
+          focusName =
+            "完全未被遮罩覆蓋的背景按鈕";
+        }
+
+        if (focusWasPreserved) {
+          focusStatus.innerHTML = `
+            <strong>遮罩已由 Esc 關閉</strong>
+            焦點仍停留在「${focusName}」上，沒有推進到下一個控制項。
+          `;
+        } else {
+          focusStatus.innerHTML = `
+            <strong>遮罩已關閉</strong>
+            焦點已移至可再次開啟遮罩的按鈕。
+          `;
+        }
+      }
+
+      closeMaskButton.addEventListener(
+        "click",
+        () => {
+          closeMask({
+            preserveBackgroundFocus: false
+          });
+        }
+      );
+
+      openUserMaskButton.addEventListener(
+        "click",
+        () => {
+          openMask(
+            "user-opened",
+            openUserMaskButton
+          );
+        }
+      );
+
+      reloadAuthorModeButton.addEventListener(
+        "click",
+        () => {
+          window.location.reload();
+        }
+      );
+
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (
+            maskIsOpen &&
+            event.key === "Escape"
+          ) {
+            event.preventDefault();
+
+            closeMask({
+              preserveBackgroundFocus: true
+            });
+          }
+        }
+      );
+
+      document.addEventListener(
+        "keydown",
+        handleTestTabOrder,
+        true
+      );
+
+      document.addEventListener(
+        "focusin",
+        () => {
+          if (!maskIsOpen) {
+            return;
+          }
+
+          updateStatusForFocus(
+            document.activeElement
+          );
+        }
+      );
+
+      requestAnimationFrame(() => {
+        closeMaskButton.focus();
+      });
+    })();
+  </script>
+</body>
+</html>
