@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>115年度網站無障礙檢測人員回訓測驗實測題</title>
+  <title>115年度網站無障礙檢測人員回訓測驗實作題</title>
   <style>
     :root {
       color-scheme: light;
@@ -44,8 +44,19 @@
       touch-action: manipulation;
     }
 
+    .visually-hidden {
+      clip: rect(1px, 1px, 1px, 1px);
+      clip-path: inset(50%);
+      height: 1px;
+      width: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+    }
+
     :focus-visible {
-      outline: 3px solid #ec713c;
+      outline: 3px solid hsl(34, 100%, 64%);
       outline-offset: 3px;
     }
 
@@ -385,7 +396,8 @@
     <h1>115年度網站無障礙檢測人員回訓測驗</h1>
     <p class="lead">
       本次回訓檢測實測等級為：AA。 <br>
-      本頁作為回訓檢測用頁，故本頁不使用「跳到主要內容區」頁內連結、「網站導覽」，意思就是：不用抓缺少「跳到主要內容區」及「網站導覽」這2項，抓這2項在這次測驗抓了也沒有分。
+      請採用網站無障礙規範(115.11)版進行檢測。 <br>
+      本頁作為回訓檢測用頁，故本頁不使用「跳到主要內容區」頁內連結、「網站導覽」，意思就是：不用抓缺少「跳到主要內容區」及「網站導覽」這2項，抓這2項在這次測驗裡抓了也沒有分。
     </p>
 
     <section class="card" aria-labelledby="carousel-title">
@@ -570,10 +582,12 @@
         <fieldset>
           <legend>驗證碼(必填)</legend>
 
-          <div aria-label="目前驗證碼"><div class="captcha-display" id="captcha-on-page" aria-hidden="true"></div></div>
+          <div class="captcha-display" id="captcha-on-page" aria-hidden="true"></div>
+
+          <img src="#" alt="驗證碼" class="visually-hidden">
 
           <p class="regenerate-row">
-            <a href="#" id="regenerate-code"><button>重新產生驗證碼</button></a>
+            <button id="regenerate-code">重新產生驗證碼</button>
           </p>
 
           <div class="code-inputs">
