@@ -1,0 +1,173 @@
+
+    :root {
+      --card-w: min(100%, 960px);
+      --slide-h: clamp(260px, 45vw, 520px);
+      --brand: #0a63ff;
+      --ink: #111;
+      --surface: #ffffff;
+      --line: #ccd2dd;
+      --radius: 12px;
+    }
+
+    *:focus-visible {
+      outline: 3px solid #1b5ae0;
+      outline-offset: 2px;
+      box-shadow:
+        0 0 0 4px #fff;
+      border-radius: 6px;
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -20%, #e8f0ff 0, transparent 60%),
+        radial-gradient(1200px 600px at 110% 120%, #eaf7ef 0, transparent 60%),
+        #f6f7fb;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      transform: translateY(-150%);
+      padding: 12px 16px;
+      background: #fff;
+      border: 2px solid var(--brand);
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 600;
+      z-index: 1000;
+    }
+
+    .skip-link:focus,
+    .skip-link:focus-visible {
+      transform: translateY(12px);
+      outline: none;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 40px 0;
+    }
+
+
+    .carousel {
+      position: relative;
+      width: min(100%, 900px);
+      margin-inline: auto;
+      /*overflow: hidden; */
+      background: #111;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 20%);
+    }
+
+    .carousel-item {
+      display: none;
+    }
+
+    .carousel-item.active {
+      display: block;
+    }
+
+    /* 整張圖片都是連結，也是每張投影片的第一個鍵盤焦點。 */
+    .carousel-image-link {
+      display: block;
+      position: relative;
+      color: #fff;
+    }
+
+    .carousel-image-link img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+
+    /* 使用 outline 避免焦點框被圖片或容器裁掉。 */
+    .carousel-image-link:focus-visible {
+      outline: 4px solid #fff;
+      /*橘色焦點框*/
+      outline-offset: -6px;
+      /*橘色焦點框向內推6px */
+      box-shadow: 0 0 0 4px #ffbf47;
+      /*無偏移、無模糊　外擴 4px 白框*/
+    }
+
+
+    .carousel-caption {
+      position: absolute;
+      inset: auto 0 0;
+      margin: 0;
+      padding: 3rem 7rem 1rem 1.25rem;
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      font-weight: 700;
+      line-height: 1.4;
+      pointer-events: none;
+      background: linear-gradient(transparent, rgb(0 0 0 / 80%));
+      text-shadow: 0 1px 3px #000;
+    }
+
+    /* 控制鍵直接疊在圖片右下方，不另留空白控制列。 */
+    .controls {
+      position: absolute;
+      left: 0.75rem;
+      top: 0.75rem;
+      z-index: 2;
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .controls [aria-controls="myCarousel-items"] {
+      font-weight: bolder;
+    }
+
+    .controls button {
+      display: grid;
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0;
+      place-items: center;
+      color: #fff;
+      background: rgb(0 0 0 / 75%);
+      border: 2px solid #fff;
+      border-radius: 0.35rem;
+      font: inherit;
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background: #005a9c;
+    }
+
+    .controls button:focus-visible {
+      color: #111;
+      background: #ffbf47;
+      border-color: #111;
+      outline: 3px solid #fff;
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
